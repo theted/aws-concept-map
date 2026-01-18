@@ -386,3 +386,25 @@
   - Testing DOM manipulation in Vitest with happy-dom is straightforward - just create elements and simulate clicks
   - The legend is already hidden on small screens (480px) via media query, so the toggle button provides desktop users with the same capability
 - All tests pass (117 tests: 7 data + 36 canvas + 37 info panel + 11 lambda + 20 layout + 6 legend toggle)
+
+## Add documentation in README
+
+- Rewrote README.md from a sparse stub to comprehensive documentation
+- Documentation includes:
+  - Project overview and features summary
+  - Getting started guide (prerequisites, installation, dev server)
+  - Build and test commands
+  - Project structure with file descriptions
+  - Architecture overview explaining CanvasRenderer, LayoutEngine, and InfoPanel
+  - Guide for adding new AWS services to the dataset
+  - Service categories table with colors and example services
+  - Keyboard shortcuts reference table
+  - Link to DEPLOYMENT.md for deployment instructions
+  - Tech stack summary
+  - Complete npm scripts reference
+- Gotchas discovered:
+  - README should reference DEPLOYMENT.md rather than duplicate deployment content to avoid maintenance burden
+  - The "Adding New Services" section is important for contributors - the x/y coordinates in JSON are ignored since LayoutEngine computes positions dynamically
+  - Including keyboard shortcuts in README helps discoverability since they're not visible in the UI
+  - Service count (57) and category count (10) should be verified against actual data before documenting
+- All tests continue to pass (117 tests)

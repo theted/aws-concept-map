@@ -49,4 +49,4 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Add detailed descriptions for all services
 - [x] Ensure smooth animations, especially when zooming in/out
 - [x] Add a "toggle legends" button which toggles service categories visibility
-- [ ] Add documentation in README
+- [x] Add documentation in README
