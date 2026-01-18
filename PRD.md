@@ -39,7 +39,7 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Initial implementation of network visualization using canvas element
 - [x] Ensure canvas navigation works as expected - users can both navigate through and zoom in the canvas element.
 - [x] Add support for showing detailed descriptions of services when clicked
-- [ ] Move content to json file(s)
+- [x] Move content to json file(s)
 - [ ] Add content for additional services, ensure every service has good bullet point and overview descriptions
 - [ ] Add extra description for each service, revealed by a "Learn more" button
 - [ ] Prepare CI/CD pipeline for deploymenet to AWS Lambda. Credentials can be expected to be stored as github secrets, and specified locally in .env for local development.

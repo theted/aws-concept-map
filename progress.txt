@@ -86,3 +86,17 @@
   - Tests for XSS protection (HTML escaping verification)
   - Tests for service switching
 - All tests passing (56 tests: 7 data + 29 canvas + 20 info panel)
+
+## Move content to JSON files
+
+- Created src/data/services.json containing all AWS service data:
+  - 34 services with name, category, description, details, keyPoints, and x/y coordinates
+  - Structured for easy editing by non-developers
+- Created src/data/connections.json containing all service relationships:
+  - 45 connections as [from, to] tuples
+  - Maintains the same graph structure as before
+- Refactored src/data/services.ts to import from JSON files:
+  - Uses Vite's native JSON import support
+  - Type assertions ensure proper TypeScript types (ServiceMap, Connection[])
+  - Clean separation of content (JSON) from code (TypeScript)
+- All existing tests continue to pass (56 tests) verifying data integrity
