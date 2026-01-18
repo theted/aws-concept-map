@@ -27,8 +27,7 @@ Tool for visualizing an assortment of AWS services. Intended to be used for lear
 
 ## Current state
 
-Initial proof of concept has been implemented. See this only as a guide - not the final implementation at all either regarding style or tech used!
-{{update the state after each commit}}
+Project structure has been set up with Vite, TypeScript, and Vitest. The POC code has been refactored into modular TypeScript files with proper separation of concerns (types, data, main logic). Tests verify data integrity.
 
 ## Steps
 
@@ -36,7 +35,7 @@ Initial proof of concept has been implemented. See this only as a guide - not th
 - [x] Create PRD
 - [x] Accept PRD
 - [x] Initial proof of concept implementation
-- [ ] Setup project structure and dependencies according to spec
+- [x] Setup project structure and dependencies according to spec
 - [ ] Initial implementation of network visualization using canvas element
 - [ ] Ensure canvas navigation works as expected - users can both navigate through and zoom in the canvas element.
 - [ ] Add support for showing detailed descriptions of services when clicked
