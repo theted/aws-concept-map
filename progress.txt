@@ -159,3 +159,51 @@
   - Tests for state reset when switching services or hiding panel
   - Tests for XSS protection in extended content
 - All tests passing (73 tests: 7 data + 29 canvas + 37 info panel)
+
+## Prepare CI/CD pipeline for deployment to AWS Lambda
+
+- Created Lambda handler in lambda/handler.ts:
+  - Serves static files from compiled Vite output in /dist directory
+  - Supports all common MIME types (HTML, CSS, JS, JSON, images, fonts)
+  - Binary files (PNG, JPG, WOFF, etc.) served as base64-encoded responses
+  - Directory traversal attack prevention by sanitizing paths
+  - SPA routing support: falls back to index.html for non-file routes
+  - Smart cache headers: no-cache for HTML, immutable for static assets
+  - Error handling with 404 and 500 responses
+  - Compatible with AWS Lambda Function URLs and API Gateway HTTP API
+- Created lambda/tsconfig.json for Lambda-specific TypeScript compilation
+- Created Dockerfile for AWS Lambda container:
+  - Multi-stage build: Node.js Alpine for building, AWS Lambda Node.js 20 for runtime
+  - First stage: installs dependencies, builds static site with Vite, compiles Lambda handler
+  - Second stage: copies built assets and handler into Lambda runtime environment
+  - Handler entry point: handler.handler
+- Created .github/workflows/ci.yml for continuous integration:
+  - Runs on push to main/master and pull requests
+  - TypeScript type checking
+  - Vitest test execution
+  - Application build verification
+  - Docker image build verification
+- Created .github/workflows/deploy.yml for continuous deployment:
+  - Runs on push to main/master with manual trigger option
+  - Configurable via GitHub variables: AWS_REGION, ECR_REPOSITORY, LAMBDA_FUNCTION_NAME
+  - Uses GitHub secrets for AWS credentials: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+  - Builds and pushes Docker image to Amazon ECR (tagged with git SHA and latest)
+  - Updates Lambda function with new container image
+  - Waits for Lambda update to complete before finishing
+- Created .env.example with documentation for required environment variables
+- Updated package.json with new scripts:
+  - build:lambda - compiles Lambda handler
+  - build:all - builds both static site and Lambda handler
+  - docker:build - builds Docker image locally
+  - docker:run - runs Docker container locally on port 9000
+- Added @types/aws-lambda dev dependency for TypeScript type support
+- Updated .gitignore to include lambda-dist/ output directory
+- Added comprehensive tests in lambda/handler.test.ts:
+  - Tests for serving index.html at root path
+  - Tests for MIME type detection (CSS, JS, PNG, SVG)
+  - Tests for directory traversal attack prevention
+  - Tests for 404 handling and SPA fallback
+  - Tests for binary file base64 encoding
+  - Tests for cache header configuration
+  - Tests for error handling (500 responses)
+- All tests passing (84 tests: 7 data + 29 canvas + 37 info panel + 11 lambda handler)

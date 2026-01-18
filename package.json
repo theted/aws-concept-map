@@ -6,9 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:lambda": "tsc -p lambda/tsconfig.json",
+    "build:all": "npm run build && npm run build:lambda",
     "preview": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "docker:build": "docker build -t aws-services-concept-map:local .",
+    "docker:run": "docker run -p 9000:8080 aws-services-concept-map:local"
   },
   "keywords": [
     "aws",
@@ -20,6 +24,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
     "happy-dom": "^20.3.1",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
