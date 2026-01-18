@@ -44,4 +44,4 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Add extra description for each service, revealed by a "Learn more" button
 - [x] Prepare CI/CD pipeline for deploymenet to AWS Lambda. Credentials can be expected to be stored as github secrets, and specified locally in .env for local development.
 - [x] Revise and polish design
-- [ ] Prepare deployment documentation
+- [x] Prepare deployment documentation

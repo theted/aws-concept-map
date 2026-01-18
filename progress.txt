@@ -241,3 +241,26 @@
 - Updated body font stack to include system fonts for cross-platform consistency
 - Added devtools category color (.devtools gradient class)
 - All tests continue to pass (84 tests)
+
+## Prepare deployment documentation
+
+- Created comprehensive DEPLOYMENT.md covering:
+  - Architecture overview with diagram
+  - Prerequisites and required AWS permissions (IAM policy)
+  - AWS infrastructure setup instructions:
+    - ECR repository creation
+    - Lambda function creation with execution role
+    - Function URL configuration with CORS
+  - GitHub Actions configuration:
+    - Required secrets (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+    - Optional variables (AWS_REGION, ECR_REPOSITORY, LAMBDA_FUNCTION_NAME)
+  - Local development commands (dev server, tests, builds)
+  - Local Docker testing with curl examples
+  - Manual deployment steps (without GitHub Actions)
+  - Troubleshooting section for common issues:
+    - Container startup failures
+    - Function URL 500 errors
+    - ECR push failures
+    - Deployment workflow failures
+  - Estimated AWS costs (< $1/month for low-traffic)
+- Updated PRD.md marking deployment documentation as complete
