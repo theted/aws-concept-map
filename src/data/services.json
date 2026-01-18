@@ -507,5 +507,373 @@
     ],
     "x": 50,
     "y": 500
+  },
+  "apigateway": {
+    "name": "API Gateway",
+    "category": "compute",
+    "description": "Create, publish, and manage APIs at scale",
+    "details": "API Gateway is a fully managed service for creating REST, HTTP, and WebSocket APIs. It acts as the front door for applications.",
+    "keyPoints": [
+      "REST, HTTP, and WebSocket API support",
+      "Integrates with Lambda, EC2, any HTTP endpoint",
+      "Built-in authorization (IAM, Cognito, Lambda authorizers)",
+      "Throttling and rate limiting",
+      "Caching to reduce backend calls",
+      "Pay per API call"
+    ],
+    "x": 650,
+    "y": 450
+  },
+  "cognito": {
+    "name": "Cognito",
+    "category": "security",
+    "description": "User authentication and identity management",
+    "details": "Cognito provides authentication, authorization, and user management for web and mobile apps. Different from IAM which is for AWS access.",
+    "keyPoints": [
+      "User Pools: user directory for sign-up/sign-in",
+      "Identity Pools: provide AWS credentials to users",
+      "Social identity providers (Google, Facebook, etc.)",
+      "SAML and OIDC federation",
+      "Built-in UI for authentication",
+      "MFA and password policies"
+    ],
+    "x": 1100,
+    "y": 50
+  },
+  "stepfunctions": {
+    "name": "Step Functions",
+    "category": "compute",
+    "description": "Serverless workflow orchestration",
+    "details": "Step Functions coordinates distributed applications using visual workflows. Integrates with Lambda and other AWS services.",
+    "keyPoints": [
+      "Visual workflow designer",
+      "Standard (long-running) and Express (high-volume) workflows",
+      "Built-in error handling and retries",
+      "Integrates with 200+ AWS services",
+      "State machine based on JSON definition",
+      "Pay per state transition"
+    ],
+    "x": 750,
+    "y": 500
+  },
+  "eventbridge": {
+    "name": "EventBridge",
+    "category": "messaging",
+    "description": "Serverless event bus for application integration",
+    "details": "EventBridge is a serverless event bus that connects applications using events. Formerly CloudWatch Events.",
+    "keyPoints": [
+      "Event-driven architecture",
+      "Filter events with rules and patterns",
+      "Connect AWS services, SaaS apps, custom apps",
+      "Schema registry for event discovery",
+      "Archive and replay events",
+      "Schedule-based triggers"
+    ],
+    "x": 900,
+    "y": 150
+  },
+  "secretsmanager": {
+    "name": "Secrets Manager",
+    "category": "security",
+    "description": "Manage and rotate secrets securely",
+    "details": "Secrets Manager helps protect access to applications and services by storing and managing secrets like database credentials and API keys.",
+    "keyPoints": [
+      "Store database credentials, API keys, tokens",
+      "Automatic secret rotation",
+      "Fine-grained IAM permissions",
+      "Encrypted at rest using KMS",
+      "Audit secret access with CloudTrail",
+      "Different from Parameter Store (more features, higher cost)"
+    ],
+    "x": 1050,
+    "y": 150
+  },
+  "codepipeline": {
+    "name": "CodePipeline",
+    "category": "devtools",
+    "description": "Continuous delivery service for fast updates",
+    "details": "CodePipeline automates the build, test, and deploy phases of your release process every time there is a code change.",
+    "keyPoints": [
+      "Automate CI/CD pipeline",
+      "Integrates with CodeBuild, CodeDeploy, GitHub, Jenkins",
+      "Visual pipeline editor",
+      "Parallel and sequential stages",
+      "Manual approval actions",
+      "Pay per active pipeline per month"
+    ],
+    "x": 1200,
+    "y": 50
+  },
+  "codebuild": {
+    "name": "CodeBuild",
+    "category": "devtools",
+    "description": "Fully managed build service",
+    "details": "CodeBuild compiles source code, runs tests, and produces software packages ready to deploy.",
+    "keyPoints": [
+      "Fully managed - no build servers to manage",
+      "Scales automatically",
+      "Pay per build minute",
+      "Supports many languages and build tools",
+      "Integrates with CodePipeline",
+      "Build spec file (buildspec.yml) defines build commands"
+    ],
+    "x": 1300,
+    "y": 50
+  },
+  "codedeploy": {
+    "name": "CodeDeploy",
+    "category": "devtools",
+    "description": "Automate code deployments",
+    "details": "CodeDeploy automates software deployments to EC2, Lambda, ECS, and on-premises servers.",
+    "keyPoints": [
+      "Deploy to EC2, Lambda, ECS, on-premises",
+      "In-place or Blue/Green deployment",
+      "Automatic rollback on failure",
+      "Deployment groups for targeting",
+      "AppSpec file defines deployment steps",
+      "Free for EC2 and Lambda deployments"
+    ],
+    "x": 1400,
+    "y": 50
+  },
+  "elasticache": {
+    "name": "ElastiCache",
+    "category": "database",
+    "description": "In-memory caching service",
+    "details": "ElastiCache provides fully managed Redis and Memcached. Used to improve performance by caching frequently accessed data.",
+    "keyPoints": [
+      "Redis or Memcached engines",
+      "Microsecond latency",
+      "Reduce database load",
+      "Session store for stateless applications",
+      "Runs in VPC with Security Groups",
+      "Multi-AZ with automatic failover (Redis)"
+    ],
+    "x": 600,
+    "y": 650
+  },
+  "redshift": {
+    "name": "Redshift",
+    "category": "database",
+    "description": "Cloud data warehouse for analytics",
+    "details": "Redshift is a fast, scalable data warehouse for analyzing large datasets using SQL and BI tools.",
+    "keyPoints": [
+      "Petabyte-scale data warehouse",
+      "Columnar storage for fast queries",
+      "SQL-based querying",
+      "Integrates with S3, DynamoDB, EMR",
+      "Redshift Spectrum queries S3 directly",
+      "Reserved instances for cost savings"
+    ],
+    "x": 800,
+    "y": 650
+  },
+  "athena": {
+    "name": "Athena",
+    "category": "database",
+    "description": "Query S3 data using SQL",
+    "details": "Athena is a serverless query service that analyzes data directly in S3 using standard SQL.",
+    "keyPoints": [
+      "Serverless - no infrastructure to manage",
+      "Query data in S3 using SQL",
+      "Pay per query ($5 per TB scanned)",
+      "Supports CSV, JSON, Parquet, ORC",
+      "Integrates with Glue Data Catalog",
+      "Great for ad-hoc queries and log analysis"
+    ],
+    "x": 1000,
+    "y": 650
+  },
+  "waf": {
+    "name": "WAF",
+    "category": "security",
+    "description": "Web Application Firewall",
+    "details": "WAF protects web applications from common web exploits like SQL injection and cross-site scripting (XSS).",
+    "keyPoints": [
+      "Protect against OWASP top 10 vulnerabilities",
+      "SQL injection and XSS protection",
+      "Rate limiting to prevent DDoS",
+      "Deploy on CloudFront, ALB, API Gateway",
+      "Managed rules by AWS and partners",
+      "Custom rules using Web ACLs"
+    ],
+    "x": 1200,
+    "y": 550
+  },
+  "shield": {
+    "name": "Shield",
+    "category": "security",
+    "description": "DDoS protection service",
+    "details": "Shield provides DDoS protection for AWS resources. Standard is free, Advanced offers enhanced protection.",
+    "keyPoints": [
+      "Shield Standard: free, automatic protection",
+      "Shield Advanced: enhanced DDoS protection",
+      "Advanced: 24/7 DDoS Response Team (DRT)",
+      "Advanced: cost protection (credits for scaling)",
+      "Protects CloudFront, Route 53, ELB, EC2",
+      "Advanced: real-time attack visibility"
+    ],
+    "x": 1300,
+    "y": 550
+  },
+  "guardduty": {
+    "name": "GuardDuty",
+    "category": "security",
+    "description": "Intelligent threat detection service",
+    "details": "GuardDuty continuously monitors for malicious activity and unauthorized behavior using ML and threat intelligence.",
+    "keyPoints": [
+      "Threat detection using ML",
+      "Analyzes CloudTrail, VPC Flow Logs, DNS logs",
+      "No agents or infrastructure to manage",
+      "Findings categorized by severity",
+      "Integrates with Security Hub and EventBridge",
+      "30-day free trial, then pay per analyzed data"
+    ],
+    "x": 1200,
+    "y": 450
+  },
+  "inspector": {
+    "name": "Inspector",
+    "category": "security",
+    "description": "Automated vulnerability assessment",
+    "details": "Inspector automatically assesses applications for vulnerabilities and deviations from best practices.",
+    "keyPoints": [
+      "Scans EC2 instances and container images",
+      "Network reachability analysis",
+      "CVE vulnerability detection",
+      "Integrates with Systems Manager Agent",
+      "Findings sent to Security Hub",
+      "Continuous scanning capability"
+    ],
+    "x": 1100,
+    "y": 250
+  },
+  "natgateway": {
+    "name": "NAT Gateway",
+    "category": "networking",
+    "description": "Allow private subnets to access internet",
+    "details": "NAT Gateway enables instances in private subnets to connect to the internet while remaining unreachable from the internet.",
+    "keyPoints": [
+      "Allow outbound internet from private subnets",
+      "Managed service (no patching)",
+      "Lives in public subnet",
+      "Highly available within AZ",
+      "Deploy one per AZ for fault tolerance",
+      "Pay per hour and per GB processed"
+    ],
+    "x": 150,
+    "y": 150
+  },
+  "eks": {
+    "name": "EKS",
+    "category": "compute",
+    "description": "Elastic Kubernetes Service - Managed Kubernetes",
+    "details": "EKS is a managed Kubernetes service that makes it easy to run Kubernetes on AWS without managing the control plane.",
+    "keyPoints": [
+      "Fully managed Kubernetes control plane",
+      "Run on EC2 or Fargate",
+      "Integrates with VPC networking",
+      "IAM for authentication",
+      "Automatic version upgrades available",
+      "Pay for control plane + worker nodes"
+    ],
+    "x": 450,
+    "y": 150
+  },
+  "kinesis": {
+    "name": "Kinesis",
+    "category": "messaging",
+    "description": "Real-time streaming data service",
+    "details": "Kinesis makes it easy to collect, process, and analyze real-time streaming data at scale.",
+    "keyPoints": [
+      "Data Streams: real-time data ingestion",
+      "Data Firehose: load streaming data to destinations",
+      "Data Analytics: SQL queries on streaming data",
+      "Video Streams: process video streams",
+      "Retention 1-365 days (Data Streams)",
+      "Scales to GBs/second"
+    ],
+    "x": 900,
+    "y": 250
+  },
+  "xray": {
+    "name": "X-Ray",
+    "category": "management",
+    "description": "Distributed tracing and debugging",
+    "details": "X-Ray helps debug and analyze distributed applications by tracing requests as they travel through your application.",
+    "keyPoints": [
+      "End-to-end request tracing",
+      "Service map visualization",
+      "Identify performance bottlenecks",
+      "Integrates with Lambda, API Gateway, ECS, EC2",
+      "Sampling rules to control cost",
+      "Trace annotations and metadata"
+    ],
+    "x": 1100,
+    "y": 350
+  },
+  "directconnect": {
+    "name": "Direct Connect",
+    "category": "networking",
+    "description": "Dedicated network connection to AWS",
+    "details": "Direct Connect establishes a dedicated private connection from your premises to AWS, bypassing the public internet.",
+    "keyPoints": [
+      "Dedicated 1 Gbps or 10 Gbps connections",
+      "Lower latency than internet",
+      "Consistent network performance",
+      "Reduce bandwidth costs for high data transfer",
+      "Connect to VPC via Virtual Private Gateway",
+      "Takes weeks to establish"
+    ],
+    "x": 0,
+    "y": 150
+  },
+  "vpngateway": {
+    "name": "VPN Gateway",
+    "category": "networking",
+    "description": "Encrypted VPN connection to VPC",
+    "details": "VPN Gateway (Virtual Private Gateway) enables encrypted VPN connections between your on-premises network and AWS VPC.",
+    "keyPoints": [
+      "Site-to-Site VPN over internet",
+      "IPsec encrypted connection",
+      "Quick to set up (vs Direct Connect)",
+      "Redundant connections supported",
+      "Can be used as backup for Direct Connect",
+      "Pay per VPN connection hour"
+    ],
+    "x": 0,
+    "y": 350
+  },
+  "storagegateway": {
+    "name": "Storage Gateway",
+    "category": "storage",
+    "description": "Hybrid cloud storage integration",
+    "details": "Storage Gateway connects on-premises software appliances with cloud storage, providing seamless integration between on-premises IT and AWS.",
+    "keyPoints": [
+      "File Gateway: NFS/SMB interface to S3",
+      "Volume Gateway: iSCSI block storage backed by S3",
+      "Tape Gateway: virtual tape library to S3/Glacier",
+      "Data cached locally for low-latency access",
+      "Integrates with S3, EBS snapshots, Glacier",
+      "Good for backup, disaster recovery, migration"
+    ],
+    "x": 1200,
+    "y": 650
+  },
+  "snowfamily": {
+    "name": "Snow Family",
+    "category": "storage",
+    "description": "Physical devices for data transfer",
+    "details": "Snow Family are physical devices for migrating large amounts of data to AWS when network transfer is too slow or costly.",
+    "keyPoints": [
+      "Snowcone: 8TB, portable, rugged",
+      "Snowball Edge: 80TB, compute capability",
+      "Snowmobile: 100PB, shipping container truck",
+      "Encrypted data transfer",
+      "For data migration and edge computing",
+      "Offline data transfer when network is impractical"
+    ],
+    "x": 1350,
+    "y": 650
   }
 }

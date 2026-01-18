@@ -100,3 +100,26 @@
   - Type assertions ensure proper TypeScript types (ServiceMap, Connection[])
   - Clean separation of content (JSON) from code (TypeScript)
 - All existing tests continue to pass (56 tests) verifying data integrity
+
+## Add content for additional services
+
+- Expanded services.json from 34 to 55 AWS services (+21 new services)
+- Added new "devtools" category for CI/CD services with blue gradient color
+- New services added with full descriptions and key points:
+  - Compute/Serverless: API Gateway, Step Functions, EKS
+  - Security: Cognito, Secrets Manager, WAF, Shield, GuardDuty, Inspector
+  - DevTools: CodePipeline, CodeBuild, CodeDeploy
+  - Database: ElastiCache, Redshift, Athena
+  - Messaging: EventBridge, Kinesis
+  - Networking: NAT Gateway, Direct Connect, VPN Gateway
+  - Management: X-Ray
+  - Storage: Storage Gateway, Snow Family
+- Expanded connections.json from 45 to 106 connections (+61 new connections)
+- All services include certification-relevant key points for:
+  - AWS Cloud Practitioner
+  - AWS Solutions Architect Associate
+  - AWS Developer Associate
+- Updated src/types.ts to include new 'devtools' category
+- Updated src/canvas/CanvasRenderer.ts with devtools category color
+- Updated src/data/services.test.ts to validate new category
+- All tests passing (56 tests)

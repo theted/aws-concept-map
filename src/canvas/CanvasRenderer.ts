@@ -22,6 +22,7 @@ const CATEGORY_COLORS: Record<string, { start: string; end: string }> = {
   cost: { start: '#F59E0B', end: '#D97706' },
   messaging: { start: '#EC4899', end: '#BE185D' },
   cdn: { start: '#14B8A6', end: '#0D9488' },
+  devtools: { start: '#3B82F6', end: '#1D4ED8' },
 };
 
 const NODE_DIMENSIONS: NodeDimensions = {

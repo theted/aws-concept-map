@@ -39,6 +39,7 @@ describe('services data', () => {
       'cost',
       'messaging',
       'cdn',
+      'devtools',
     ];
 
     Object.entries(services).forEach(([key, service]) => {

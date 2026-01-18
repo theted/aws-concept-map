@@ -7,7 +7,8 @@ export type ServiceCategory =
   | 'management'
   | 'cost'
   | 'messaging'
-  | 'cdn';
+  | 'cdn'
+  | 'devtools';
 
 export interface Service {
   name: string;
