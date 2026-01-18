@@ -118,6 +118,82 @@ body {
     margin-bottom: 6px;
 }
 
+.info-panel .learn-more-btn {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.info-panel .learn-more-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.info-panel .learn-more-btn:active {
+    transform: translateY(0);
+}
+
+.info-panel .extended-content {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.info-panel .extended-description {
+    margin-bottom: 15px;
+}
+
+.info-panel .extended-description h3,
+.info-panel .resources h3 {
+    font-size: 14px;
+    color: #8B5CF6;
+    margin-bottom: 8px;
+}
+
+.info-panel .extended-description p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.info-panel .resources ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-panel .resources li {
+    margin-bottom: 8px;
+}
+
+.info-panel .resources a {
+    color: #A78BFA;
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+}
+
+.info-panel .resources a:hover {
+    color: #C4B5FD;
+    text-decoration: underline;
+}
+
+.info-panel .resources a::after {
+    content: '↗';
+    font-size: 12px;
+}
+
 .legend {
     position: fixed;
     bottom: 20px;

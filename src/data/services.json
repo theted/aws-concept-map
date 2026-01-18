@@ -12,7 +12,13 @@
       "Can have public or private IP addresses"
     ],
     "x": 400,
-    "y": 350
+    "y": 350,
+    "extendedDescription": "Amazon EC2 is the foundational compute service in AWS. Instance types are organized into families optimized for different use cases: General Purpose (M, T), Compute Optimized (C), Memory Optimized (R, X), Storage Optimized (I, D), and Accelerated Computing (P, G) for GPU workloads. Pricing models include On-Demand (pay by the hour/second), Reserved Instances (1-3 year commitment for up to 72% discount), Spot Instances (bid on unused capacity for up to 90% discount but can be interrupted), and Savings Plans (flexible commitment-based pricing). EC2 instances can use Amazon Machine Images (AMIs) as templates, which can be AWS-provided, from the Marketplace, or custom-built. Instance metadata and user data scripts allow for dynamic configuration at launch time.",
+    "resources": [
+      {"title": "EC2 Documentation", "url": "https://docs.aws.amazon.com/ec2/"},
+      {"title": "EC2 Instance Types", "url": "https://aws.amazon.com/ec2/instance-types/"},
+      {"title": "EC2 Pricing", "url": "https://aws.amazon.com/ec2/pricing/"}
+    ]
   },
   "lambda": {
     "name": "Lambda",
@@ -27,7 +33,13 @@
       "Max 15 minute execution time"
     ],
     "x": 650,
-    "y": 350
+    "y": 350,
+    "extendedDescription": "Lambda functions can be triggered by over 200 AWS services and SaaS applications. Common triggers include API Gateway (HTTP requests), S3 (object events), DynamoDB Streams (table changes), SQS (message processing), EventBridge (scheduled events), and Kinesis (streaming data). Lambda supports multiple runtimes including Node.js, Python, Java, Go, .NET, and Ruby, plus custom runtimes via Lambda Layers. Memory can be configured from 128MB to 10GB, with CPU allocated proportionally. Lambda@Edge allows running functions at CloudFront edge locations for lower latency. Cold starts can be mitigated using Provisioned Concurrency. Lambda functions can be deployed as container images up to 10GB.",
+    "resources": [
+      {"title": "Lambda Documentation", "url": "https://docs.aws.amazon.com/lambda/"},
+      {"title": "Lambda Best Practices", "url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"},
+      {"title": "Lambda Pricing", "url": "https://aws.amazon.com/lambda/pricing/"}
+    ]
   },
   "ecs": {
     "name": "ECS",
@@ -132,7 +144,13 @@
       "Can enable versioning and encryption"
     ],
     "x": 950,
-    "y": 450
+    "y": 450,
+    "extendedDescription": "S3 storage classes include: S3 Standard (frequently accessed data), S3 Intelligent-Tiering (automatic cost optimization), S3 Standard-IA (infrequent access), S3 One Zone-IA (single AZ), S3 Glacier Instant Retrieval, S3 Glacier Flexible Retrieval, and S3 Glacier Deep Archive. Lifecycle policies can automatically transition objects between classes. S3 supports server-side encryption (SSE-S3, SSE-KMS, SSE-C) and client-side encryption. Access control is managed through bucket policies (resource-based), IAM policies (identity-based), and ACLs (legacy). S3 can host static websites and integrates with CloudFront for global distribution. S3 Transfer Acceleration speeds up uploads using edge locations.",
+    "resources": [
+      {"title": "S3 Documentation", "url": "https://docs.aws.amazon.com/s3/"},
+      {"title": "S3 Storage Classes", "url": "https://aws.amazon.com/s3/storage-classes/"},
+      {"title": "S3 Security Best Practices", "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html"}
+    ]
   },
   "ebs": {
     "name": "EBS",
@@ -191,7 +209,13 @@
       "Protected by Security Groups"
     ],
     "x": 700,
-    "y": 550
+    "y": 550,
+    "extendedDescription": "RDS supports six database engines: MySQL, PostgreSQL, MariaDB, Oracle, SQL Server, and Amazon Aurora. Multi-AZ deployments use synchronous replication for high availability with automatic failover. Read Replicas use asynchronous replication to scale read workloads and can be in different regions. Aurora features include: up to 15 Read Replicas, storage auto-scaling up to 128TB, Aurora Serverless for variable workloads, and Aurora Global Database for cross-region disaster recovery with sub-second replication. RDS Proxy helps manage database connections for serverless applications. Automated backups are retained 0-35 days; manual snapshots are kept until deleted.",
+    "resources": [
+      {"title": "RDS Documentation", "url": "https://docs.aws.amazon.com/rds/"},
+      {"title": "Aurora Documentation", "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/"},
+      {"title": "RDS Best Practices", "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.html"}
+    ]
   },
   "dynamodb": {
     "name": "DynamoDB",
@@ -206,7 +230,13 @@
       "Good for gaming, IoT, mobile apps"
     ],
     "x": 900,
-    "y": 550
+    "y": 550,
+    "extendedDescription": "DynamoDB tables have a primary key consisting of a partition key (required) and optional sort key. Capacity modes: On-Demand (pay per request, automatic scaling) or Provisioned (specify read/write capacity units). Global Tables provide multi-region, multi-active replication. DynamoDB Streams capture item-level changes for event-driven architectures (commonly triggers Lambda). DynamoDB Accelerator (DAX) is an in-memory cache for microsecond read latency. Secondary indexes (GSI and LSI) enable efficient queries on non-key attributes. Transactions support ACID operations across multiple items. Point-in-time recovery enables continuous backups with restoration to any second in the last 35 days.",
+    "resources": [
+      {"title": "DynamoDB Documentation", "url": "https://docs.aws.amazon.com/dynamodb/"},
+      {"title": "DynamoDB Best Practices", "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html"},
+      {"title": "DynamoDB Pricing", "url": "https://aws.amazon.com/dynamodb/pricing/"}
+    ]
   },
   "vpc": {
     "name": "VPC",
@@ -221,7 +251,13 @@
       "Foundation for network security"
     ],
     "x": 400,
-    "y": 50
+    "y": 50,
+    "extendedDescription": "VPCs span all Availability Zones in a region. Key components include: Subnets (public with route to Internet Gateway, private without), Route Tables (control traffic routing), Internet Gateway (enable internet access), NAT Gateway (allow private subnets outbound internet), VPC Peering (connect VPCs), Transit Gateway (hub for multiple VPCs), VPC Endpoints (private access to AWS services without internet), and Flow Logs (capture network traffic for analysis). Security is enforced at multiple layers: Security Groups (stateful, instance-level), Network ACLs (stateless, subnet-level). Default VPC is created automatically in each region with public subnets.",
+    "resources": [
+      {"title": "VPC Documentation", "url": "https://docs.aws.amazon.com/vpc/"},
+      {"title": "VPC Networking Components", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html"},
+      {"title": "VPC Security", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Security.html"}
+    ]
   },
   "subnet": {
     "name": "Subnet",
@@ -297,7 +333,13 @@
       "MFA for enhanced security"
     ],
     "x": 800,
-    "y": 50
+    "y": 50,
+    "extendedDescription": "IAM policies are JSON documents that define permissions. Policy types include: Identity-based (attached to users, groups, roles), Resource-based (attached to resources like S3 buckets), Permission boundaries (set maximum permissions), Organizations SCPs (account-level restrictions), and Session policies (temporary session limits). IAM Roles are crucial for cross-account access, service permissions (e.g., EC2 accessing S3), and federation (SAML, OIDC). Best practices: use groups for permissions, enable MFA, rotate credentials, use IAM Access Analyzer to identify unused permissions, and implement least privilege. IAM is free to use.",
+    "resources": [
+      {"title": "IAM Documentation", "url": "https://docs.aws.amazon.com/iam/"},
+      {"title": "IAM Best Practices", "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"},
+      {"title": "IAM Policy Reference", "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html"}
+    ]
   },
   "kms": {
     "name": "KMS",

@@ -123,3 +123,39 @@
 - Updated src/canvas/CanvasRenderer.ts with devtools category color
 - Updated src/data/services.test.ts to validate new category
 - All tests passing (56 tests)
+
+## Add extra description for each service with Learn More button
+
+- Updated src/types.ts with new optional fields:
+  - Added Resource interface with title and url properties
+  - Added extendedDescription (optional string) to Service interface
+  - Added resources (optional Resource[]) to Service interface
+- Updated src/data/services.json with extended content for 7 key services:
+  - EC2, Lambda, S3, VPC, IAM, RDS, DynamoDB
+  - Each includes detailed extendedDescription with certification-relevant information
+  - Each includes 3 resource links (Documentation, Best Practices/Pricing/Features)
+- Enhanced src/ui/InfoPanel.ts with Learn More functionality:
+  - Added isExpanded state to track toggle state
+  - Added isExtendedContentVisible() public method for testing
+  - Added toggleExpanded() public method to toggle state
+  - Added hasExtendedContent() private method to check for extended content
+  - Updated render() to show "Learn more" / "Show less" button when extended content exists
+  - Extended content section shows extendedDescription and resources when expanded
+  - Resources rendered as links with target="_blank" and rel="noopener noreferrer"
+  - Button has aria-expanded attribute for accessibility
+  - All content properly escaped for XSS protection
+- Updated src/style.css with styles for the new elements:
+  - .learn-more-btn with gradient background and hover effects
+  - .extended-content container with top border separator
+  - .extended-description section styling
+  - .resources section with styled links and external link indicator (↗)
+- Added comprehensive tests in src/ui/InfoPanel.test.ts:
+  - Tests for Learn More button visibility based on extended content
+  - Tests for expand/collapse toggle behavior
+  - Tests for aria-expanded accessibility attribute
+  - Tests for extended description rendering
+  - Tests for resources links rendering with correct attributes
+  - Tests for showing only description or only resources
+  - Tests for state reset when switching services or hiding panel
+  - Tests for XSS protection in extended content
+- All tests passing (73 tests: 7 data + 29 canvas + 37 info panel)

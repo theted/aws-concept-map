@@ -27,6 +27,43 @@ const testServiceNoKeyPoints: Service = {
   y: 100,
 };
 
+const testServiceWithExtended: Service = {
+  name: 'Lambda',
+  category: 'compute',
+  description: 'Serverless compute',
+  details: 'Run code without servers.',
+  keyPoints: ['No server management'],
+  x: 650,
+  y: 350,
+  extendedDescription: 'Lambda functions can be triggered by over 200 AWS services.',
+  resources: [
+    { title: 'Lambda Documentation', url: 'https://docs.aws.amazon.com/lambda/' },
+    { title: 'Lambda Pricing', url: 'https://aws.amazon.com/lambda/pricing/' },
+  ],
+};
+
+const testServiceWithOnlyDescription: Service = {
+  name: 'S3',
+  category: 'storage',
+  description: 'Object storage',
+  details: 'Store data as objects.',
+  keyPoints: [],
+  x: 950,
+  y: 450,
+  extendedDescription: 'S3 storage classes include Standard, IA, and Glacier.',
+};
+
+const testServiceWithOnlyResources: Service = {
+  name: 'VPC',
+  category: 'networking',
+  description: 'Virtual network',
+  details: 'Your private network in AWS.',
+  keyPoints: [],
+  x: 400,
+  y: 50,
+  resources: [{ title: 'VPC Documentation', url: 'https://docs.aws.amazon.com/vpc/' }],
+};
+
 describe('InfoPanel', () => {
   let element: HTMLElement;
   let infoPanel: InfoPanel;
@@ -191,6 +228,38 @@ describe('InfoPanel', () => {
       expect(li?.innerHTML).not.toContain('<a');
       expect(element.querySelector('.key-points a')).toBeNull();
     });
+
+    it('should escape HTML in extended description', () => {
+      const maliciousService: Service = {
+        ...testServiceWithExtended,
+        extendedDescription: '<script>alert("xss")</script>',
+      };
+      infoPanel.show('malicious', maliciousService);
+      infoPanel.toggleExpanded();
+      const extendedDesc = element.querySelector('.extended-description p');
+      expect(extendedDesc?.innerHTML).toContain('&lt;script&gt;');
+      expect(extendedDesc?.innerHTML).not.toContain('<script>');
+    });
+
+    it('should escape HTML in resource titles', () => {
+      const maliciousService: Service = {
+        ...testServiceWithExtended,
+        resources: [
+          {
+            title: '<script>alert("xss")</script>',
+            url: 'https://example.com?q=<script>',
+          },
+        ],
+      };
+      infoPanel.show('malicious', maliciousService);
+      infoPanel.toggleExpanded();
+      const link = element.querySelector('.resources a');
+      // Title should be escaped
+      expect(link?.innerHTML).toContain('&lt;script&gt;');
+      expect(link?.innerHTML).not.toContain('<script>');
+      // URL with HTML special characters should also be escaped
+      expect(link?.getAttribute('href')).toContain('&lt;script&gt;');
+    });
   });
 
   describe('service switching', () => {
@@ -201,6 +270,151 @@ describe('InfoPanel', () => {
       infoPanel.show('simple', testServiceNoKeyPoints);
       expect(element.querySelector('h2')?.textContent).toBe('Simple Service');
       expect(infoPanel.getCurrentServiceKey()).toBe('simple');
+    });
+  });
+
+  describe('Learn More functionality', () => {
+    it('should not show Learn More button when no extended content', () => {
+      infoPanel.show('ec2', testService);
+      const learnMoreBtn = element.querySelector('.learn-more-btn');
+      expect(learnMoreBtn).toBeNull();
+    });
+
+    it('should show Learn More button when service has extended description', () => {
+      infoPanel.show('s3', testServiceWithOnlyDescription);
+      const learnMoreBtn = element.querySelector('.learn-more-btn');
+      expect(learnMoreBtn).not.toBeNull();
+      expect(learnMoreBtn?.textContent).toBe('Learn more');
+    });
+
+    it('should show Learn More button when service has resources', () => {
+      infoPanel.show('vpc', testServiceWithOnlyResources);
+      const learnMoreBtn = element.querySelector('.learn-more-btn');
+      expect(learnMoreBtn).not.toBeNull();
+    });
+
+    it('should show Learn More button when service has both', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      const learnMoreBtn = element.querySelector('.learn-more-btn');
+      expect(learnMoreBtn).not.toBeNull();
+    });
+
+    it('should start with extended content hidden', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      expect(infoPanel.isExtendedContentVisible()).toBe(false);
+      const extendedContent = element.querySelector('.extended-content');
+      expect(extendedContent).toBeNull();
+    });
+
+    it('should show extended content when Learn More is clicked', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      const learnMoreBtn = element.querySelector('.learn-more-btn') as HTMLButtonElement;
+      learnMoreBtn.click();
+
+      expect(infoPanel.isExtendedContentVisible()).toBe(true);
+      const extendedContent = element.querySelector('.extended-content');
+      expect(extendedContent).not.toBeNull();
+    });
+
+    it('should change button text to "Show less" when expanded', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      const learnMoreBtn = element.querySelector('.learn-more-btn') as HTMLButtonElement;
+      learnMoreBtn.click();
+
+      const updatedBtn = element.querySelector('.learn-more-btn');
+      expect(updatedBtn?.textContent).toBe('Show less');
+    });
+
+    it('should set aria-expanded correctly', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      let learnMoreBtn = element.querySelector('.learn-more-btn');
+      expect(learnMoreBtn?.getAttribute('aria-expanded')).toBe('false');
+
+      (learnMoreBtn as HTMLButtonElement).click();
+
+      learnMoreBtn = element.querySelector('.learn-more-btn');
+      expect(learnMoreBtn?.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('should hide extended content when Show less is clicked', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      infoPanel.toggleExpanded(); // expand
+
+      const showLessBtn = element.querySelector('.learn-more-btn') as HTMLButtonElement;
+      showLessBtn.click(); // collapse
+
+      expect(infoPanel.isExtendedContentVisible()).toBe(false);
+      const extendedContent = element.querySelector('.extended-content');
+      expect(extendedContent).toBeNull();
+    });
+
+    it('should render extended description when expanded', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      infoPanel.toggleExpanded();
+
+      const extendedDesc = element.querySelector('.extended-description');
+      expect(extendedDesc).not.toBeNull();
+      expect(extendedDesc?.querySelector('h3')?.textContent).toBe('In-Depth Details:');
+      expect(extendedDesc?.querySelector('p')?.textContent).toContain('200 AWS services');
+    });
+
+    it('should render resources as links when expanded', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      infoPanel.toggleExpanded();
+
+      const resources = element.querySelector('.resources');
+      expect(resources).not.toBeNull();
+      expect(resources?.querySelector('h3')?.textContent).toBe('Learn More:');
+
+      const links = element.querySelectorAll('.resources a');
+      expect(links.length).toBe(2);
+
+      const firstLink = links[0];
+      expect(firstLink.textContent).toBe('Lambda Documentation');
+      expect(firstLink.getAttribute('href')).toBe('https://docs.aws.amazon.com/lambda/');
+      expect(firstLink.getAttribute('target')).toBe('_blank');
+      expect(firstLink.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+
+    it('should only show extended description when resources are not provided', () => {
+      infoPanel.show('s3', testServiceWithOnlyDescription);
+      infoPanel.toggleExpanded();
+
+      const extendedDesc = element.querySelector('.extended-description');
+      const resources = element.querySelector('.resources');
+
+      expect(extendedDesc).not.toBeNull();
+      expect(resources).toBeNull();
+    });
+
+    it('should only show resources when extended description is not provided', () => {
+      infoPanel.show('vpc', testServiceWithOnlyResources);
+      infoPanel.toggleExpanded();
+
+      const extendedDesc = element.querySelector('.extended-description');
+      const resources = element.querySelector('.resources');
+
+      expect(extendedDesc).toBeNull();
+      expect(resources).not.toBeNull();
+    });
+
+    it('should reset expanded state when showing a different service', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      infoPanel.toggleExpanded();
+      expect(infoPanel.isExtendedContentVisible()).toBe(true);
+
+      infoPanel.show('s3', testServiceWithOnlyDescription);
+      expect(infoPanel.isExtendedContentVisible()).toBe(false);
+    });
+
+    it('should reset expanded state when hiding', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
+      infoPanel.toggleExpanded();
+      expect(infoPanel.isExtendedContentVisible()).toBe(true);
+
+      infoPanel.hide();
+      infoPanel.show('lambda', testServiceWithExtended);
+      expect(infoPanel.isExtendedContentVisible()).toBe(false);
     });
   });
 });

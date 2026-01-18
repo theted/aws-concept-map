@@ -10,6 +10,11 @@ export type ServiceCategory =
   | 'cdn'
   | 'devtools';
 
+export interface Resource {
+  title: string;
+  url: string;
+}
+
 export interface Service {
   name: string;
   category: ServiceCategory;
@@ -18,6 +23,8 @@ export interface Service {
   keyPoints: string[];
   x: number;
   y: number;
+  extendedDescription?: string;
+  resources?: Resource[];
 }
 
 export type ServiceMap = Record<string, Service>;
