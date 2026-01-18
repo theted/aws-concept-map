@@ -46,7 +46,7 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Revise and polish design
 - [x] Prepare deployment documentation
 - [x] Revise graph layout - services should never overlap - maybe need to group services by category for a clearer layout? It's OK if relationship lines overlap, but the nodes should not.
-- [ ] Add detailed descriptions for all services
+- [x] Add detailed descriptions for all services
 - [ ] Ensure smooth animations, especially when zooming in/out
 - [ ] Add a "toggle legends" button which toggles service categories visibility
 - [ ] Add documentation in README

@@ -53,7 +53,13 @@
       "Good for microservices"
     ],
     "x": 500,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "ECS uses a cluster model where you define tasks (one or more containers) and services (desired count, load balancer config). Task Definitions are JSON blueprints specifying container images, CPU/memory, ports, and environment variables. Launch types: EC2 (you manage instances) or Fargate (serverless). ECS integrates with Application Load Balancer for dynamic port mapping and service discovery via Cloud Map. IAM roles can be assigned at the task level for fine-grained permissions. Container Insights provides monitoring. ECS Exec allows interactive shell access to running containers for debugging.",
+    "resources": [
+      {"title": "ECS Documentation", "url": "https://docs.aws.amazon.com/ecs/"},
+      {"title": "ECS Best Practices", "url": "https://docs.aws.amazon.com/AmazonECS/latest/bestpracticesguide/"},
+      {"title": "ECS vs EKS Comparison", "url": "https://aws.amazon.com/containers/"}
+    ]
   },
   "ecr": {
     "name": "ECR",
@@ -68,7 +74,13 @@
       "IAM-based access control"
     ],
     "x": 700,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "ECR supports both private and public repositories. Private repositories use IAM for authentication via 'aws ecr get-login-password'. Images are scanned for vulnerabilities using Amazon Inspector integration (basic scanning free, enhanced scanning with Inspector). Lifecycle policies automatically clean up old images based on rules (age, count). Cross-region and cross-account replication keeps images synchronized. ECR Public allows sharing images publicly like Docker Hub. Images can be signed using AWS Signer for supply chain security. Pull-through cache rules can proxy and cache images from upstream registries.",
+    "resources": [
+      {"title": "ECR Documentation", "url": "https://docs.aws.amazon.com/ecr/"},
+      {"title": "ECR Image Scanning", "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html"},
+      {"title": "ECR Pricing", "url": "https://aws.amazon.com/ecr/pricing/"}
+    ]
   },
   "fargate": {
     "name": "Fargate",
@@ -83,7 +95,13 @@
       "Good for apps with variable load"
     ],
     "x": 600,
-    "y": 150
+    "y": 150,
+    "extendedDescription": "Fargate abstracts server management entirely - no EC2 instances to provision, scale, or patch. You specify CPU and memory at the task level; Fargate handles the rest. Pricing is per vCPU and GB of memory per second. Fargate Spot offers up to 70% discount for fault-tolerant workloads (can be interrupted). Each task gets its own elastic network interface (ENI) with private IP in your VPC. Fargate supports EFS for persistent storage across tasks. Platform versions control Fargate runtime updates. Ideal for microservices, batch processing, and CI/CD workloads where you want to focus on applications, not infrastructure.",
+    "resources": [
+      {"title": "Fargate Documentation", "url": "https://docs.aws.amazon.com/AmazonECS/latest/userguide/AWS_Fargate.html"},
+      {"title": "Fargate Pricing", "url": "https://aws.amazon.com/fargate/pricing/"},
+      {"title": "Fargate Best Practices", "url": "https://docs.aws.amazon.com/AmazonECS/latest/bestpracticesguide/fargate.html"}
+    ]
   },
   "beanstalk": {
     "name": "Elastic Beanstalk",
@@ -98,7 +116,13 @@
       "Good for developers who want to focus on code"
     ],
     "x": 800,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "Beanstalk creates and manages AWS resources (EC2, ELB, Auto Scaling, RDS) for you. Environments can be Web Server (HTTP requests) or Worker (background processing via SQS). Deployment policies include All-at-once, Rolling, Rolling with additional batch, Immutable, and Traffic splitting (canary). Configuration files (.ebextensions) customize resources and settings. Saved configurations allow environment cloning. Managed platform updates automatically apply patches. You can SSH into EC2 instances when needed. Beanstalk integrates with CodePipeline for CI/CD. Blue/Green deployments swap environment URLs for zero-downtime releases.",
+    "resources": [
+      {"title": "Elastic Beanstalk Documentation", "url": "https://docs.aws.amazon.com/elasticbeanstalk/"},
+      {"title": "Beanstalk Concepts", "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.html"},
+      {"title": "Deployment Policies", "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.rolling-version-deploy.html"}
+    ]
   },
   "autoscaling": {
     "name": "Auto Scaling",
@@ -113,7 +137,13 @@
       "No additional charge (pay for EC2)"
     ],
     "x": 250,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "Auto Scaling Groups (ASGs) define minimum, maximum, and desired capacity. Launch Templates (preferred) or Launch Configurations specify instance settings. Scaling policies: Target Tracking (maintain metric at target value), Step Scaling (scale based on threshold breaches), Simple Scaling (single adjustment), and Scheduled Scaling (time-based). Predictive scaling uses ML to forecast demand. Health checks can use EC2 status, ELB health, or custom checks. Instance refresh updates instances gradually. Lifecycle hooks allow custom actions during scale-out/in. Warm pools pre-initialize instances for faster scaling. ASGs can span multiple AZs for high availability.",
+    "resources": [
+      {"title": "Auto Scaling Documentation", "url": "https://docs.aws.amazon.com/autoscaling/"},
+      {"title": "Scaling Policies", "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scale-based-on-demand.html"},
+      {"title": "Launch Templates", "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-templates.html"}
+    ]
   },
   "elb": {
     "name": "ELB",
@@ -129,7 +159,13 @@
       "Integrates with Auto Scaling"
     ],
     "x": 250,
-    "y": 350
+    "y": 350,
+    "extendedDescription": "Application Load Balancer (ALB) operates at Layer 7, supporting path-based routing, host-based routing, query string routing, and HTTP header routing. Target groups can be EC2 instances, IP addresses, Lambda functions, or other ALBs. NLB operates at Layer 4 with millions of requests/second and static IP support. Gateway Load Balancer (GWLB) routes traffic to virtual appliances (firewalls, IDS/IPS). ALB supports sticky sessions, authentication (Cognito, OIDC), and WebSockets. Connection draining delays deregistration. Cross-zone load balancing distributes traffic evenly. Access logs capture detailed request information in S3.",
+    "resources": [
+      {"title": "ELB Documentation", "url": "https://docs.aws.amazon.com/elasticloadbalancing/"},
+      {"title": "ALB vs NLB", "url": "https://aws.amazon.com/elasticloadbalancing/features/"},
+      {"title": "Target Groups", "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"}
+    ]
   },
   "s3": {
     "name": "S3",
@@ -164,7 +200,13 @@
       "Different volume types (SSD, HDD)"
     ],
     "x": 350,
-    "y": 500
+    "y": 500,
+    "extendedDescription": "EBS volume types: gp3/gp2 (General Purpose SSD, balanced price/performance), io2/io1 (Provisioned IOPS SSD, high performance databases), st1 (Throughput Optimized HDD, big data), sc1 (Cold HDD, infrequent access). gp3 is the recommended default with baseline 3,000 IOPS. Volumes are AZ-locked but snapshots are regional and can be copied cross-region. Snapshots are incremental and stored in S3. EBS Multi-Attach allows io1/io2 volumes to attach to multiple instances in the same AZ. Encryption uses KMS keys and encrypts data at rest, in transit, and snapshots. EBS-optimized instances provide dedicated bandwidth to EBS.",
+    "resources": [
+      {"title": "EBS Documentation", "url": "https://docs.aws.amazon.com/ebs/"},
+      {"title": "EBS Volume Types", "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"},
+      {"title": "EBS Snapshots", "url": "https://docs.aws.amazon.com/ebs/latest/userguide/EBSSnapshots.html"}
+    ]
   },
   "efs": {
     "name": "EFS",
@@ -179,7 +221,13 @@
       "Works across multiple AZs"
     ],
     "x": 500,
-    "y": 500
+    "y": 500,
+    "extendedDescription": "EFS uses NFSv4 protocol and is POSIX-compliant. Performance modes: General Purpose (latency-sensitive) and Max I/O (highly parallel). Throughput modes: Bursting (scales with size), Provisioned (specify throughput), and Elastic (automatically scales). Storage classes: Standard (frequently accessed), Infrequent Access (IA), and Archive. Lifecycle management moves files between classes. EFS can be accessed across AZs in a region, across VPCs via VPC Peering, from on-premises via Direct Connect or VPN. Mount targets are created per AZ. EFS integrates with Lambda for serverless file processing. Encryption at rest uses KMS.",
+    "resources": [
+      {"title": "EFS Documentation", "url": "https://docs.aws.amazon.com/efs/"},
+      {"title": "EFS Performance", "url": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"},
+      {"title": "EFS Pricing", "url": "https://aws.amazon.com/efs/pricing/"}
+    ]
   },
   "glacier": {
     "name": "Glacier",
@@ -194,7 +242,13 @@
       "Deep Archive cheapest (~$1/TB/month)"
     ],
     "x": 1100,
-    "y": 450
+    "y": 450,
+    "extendedDescription": "S3 Glacier tiers: Glacier Instant Retrieval (milliseconds, ~$4/TB/month), Glacier Flexible Retrieval (1-5 minutes to 5-12 hours, ~$3.6/TB/month), Glacier Deep Archive (12-48 hours, ~$1/TB/month). Retrieval options for Flexible: Expedited (1-5 min), Standard (3-5 hours), Bulk (5-12 hours). Vault Lock enforces compliance controls with WORM (Write Once Read Many). S3 Object Lock provides similar protection at the object level. Minimum storage duration: Instant (90 days), Flexible (90 days), Deep Archive (180 days). S3 Lifecycle policies automate archival. Glacier is ideal for compliance archives, medical records, and digital preservation.",
+    "resources": [
+      {"title": "S3 Glacier Documentation", "url": "https://docs.aws.amazon.com/amazonglacier/"},
+      {"title": "Storage Class Comparison", "url": "https://aws.amazon.com/s3/storage-classes/glacier/"},
+      {"title": "Glacier Retrieval Options", "url": "https://docs.aws.amazon.com/amazonglacier/latest/dev/downloading-an-archive-two-steps.html"}
+    ]
   },
   "rds": {
     "name": "RDS/Aurora",
@@ -272,7 +326,13 @@
       "Protected by Network ACLs"
     ],
     "x": 250,
-    "y": 150
+    "y": 150,
+    "extendedDescription": "Subnets are defined by CIDR blocks that must be subsets of the VPC CIDR. A subnet exists in exactly one AZ and cannot span AZs. Public subnets have a route table entry directing 0.0.0.0/0 to an Internet Gateway. Private subnets typically route 0.0.0.0/0 to a NAT Gateway for outbound internet access. Each subnet is associated with one route table (explicit or main). Auto-assign public IP can be enabled for public subnets. Reserved addresses in each subnet: network address, VPC router, DNS server, future use, and broadcast address (5 IPs total). Best practice: create subnets in at least 2 AZs for high availability.",
+    "resources": [
+      {"title": "VPC Subnets Documentation", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html"},
+      {"title": "Subnet Sizing", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html"},
+      {"title": "Public vs Private Subnets", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html"}
+    ]
   },
   "igw": {
     "name": "Internet Gateway",
@@ -286,7 +346,13 @@
       "No bandwidth constraints"
     ],
     "x": 100,
-    "y": 50
+    "y": 50,
+    "extendedDescription": "An Internet Gateway (IGW) serves two purposes: provide a target for internet-routable traffic in route tables, and perform NAT for instances with public IPv4 addresses. IGWs are horizontally scaled, redundant, and highly available by design - no single point of failure or bandwidth bottleneck. To enable internet access: attach IGW to VPC, add route (0.0.0.0/0 -> IGW) to subnet's route table, ensure instances have public IPs, and configure Security Groups to allow traffic. Egress-only Internet Gateway is used for IPv6 outbound traffic from private subnets. IGWs are free - you only pay for data transfer.",
+    "resources": [
+      {"title": "Internet Gateway Documentation", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html"},
+      {"title": "Connect to Internet", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway"},
+      {"title": "Egress-Only IGW", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html"}
+    ]
   },
   "securitygroup": {
     "name": "Security Groups",
@@ -302,7 +368,13 @@
       "Can reference other security groups"
     ],
     "x": 150,
-    "y": 400
+    "y": 400,
+    "extendedDescription": "Security Groups are stateful - if you allow inbound traffic, the response is automatically allowed outbound (and vice versa). Rules specify protocol, port range, and source/destination. Source can be CIDR block, another Security Group, or prefix list. Referencing Security Groups by ID enables dynamic membership (e.g., 'allow traffic from any instance in SG-web'). Security Groups are VPC-specific. Multiple Security Groups can be applied to one resource (rules are aggregated). Default SG allows all outbound and all inbound from same SG. Changes take effect immediately. Best practice: use separate Security Groups for different application tiers.",
+    "resources": [
+      {"title": "Security Groups Documentation", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html"},
+      {"title": "Security Group Rules", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"},
+      {"title": "SG Best Practices", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html#security-group-best-practices"}
+    ]
   },
   "nacl": {
     "name": "Network ACL",
@@ -318,7 +390,13 @@
       "Custom NACLs deny all by default"
     ],
     "x": 50,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "NACLs are evaluated before Security Groups for inbound traffic and after for outbound. Rules are numbered (1-32766) and evaluated in order - first match wins. Ephemeral ports (1024-65535) must be allowed for return traffic since NACLs are stateless. Each subnet must be associated with exactly one NACL. The default NACL allows all traffic; custom NACLs deny all by default. NACLs are useful for blocking specific IPs or IP ranges (deny rules). Best practice: use Security Groups as primary defense (easier to manage), NACLs for additional subnet-level controls. Changes take effect immediately.",
+    "resources": [
+      {"title": "Network ACLs Documentation", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"},
+      {"title": "NACL Rules", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html#nacl-rules"},
+      {"title": "SG vs NACL Comparison", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Security.html#VPC_Security_Comparison"}
+    ]
   },
   "iam": {
     "name": "IAM",
@@ -354,7 +432,13 @@
       "Audit key usage with CloudTrail"
     ],
     "x": 950,
-    "y": 50
+    "y": 50,
+    "extendedDescription": "KMS key types: AWS managed keys (created automatically, free, can't manage), Customer managed keys (CMKs, full control, $1/month), and AWS owned keys (used by AWS services, free, no visibility). CMKs can be symmetric (AES-256) or asymmetric (RSA, ECC). Key rotation: automatic (every year) for AWS managed, optional annual rotation for CMKs. Envelope encryption: KMS encrypts data keys, which encrypt your data. Key policies control access (like S3 bucket policies). Grants provide temporary, granular permissions. Multi-Region keys replicate across regions for disaster recovery. CloudTrail logs all KMS API calls. KMS quotas limit API call rates.",
+    "resources": [
+      {"title": "KMS Documentation", "url": "https://docs.aws.amazon.com/kms/"},
+      {"title": "KMS Concepts", "url": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"},
+      {"title": "KMS Best Practices", "url": "https://docs.aws.amazon.com/kms/latest/developerguide/best-practices.html"}
+    ]
   },
   "cloudwatch": {
     "name": "CloudWatch",
@@ -368,7 +452,13 @@
       "Set up automated actions"
     ],
     "x": 950,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "CloudWatch Metrics: standard metrics (free, 5-min intervals), detailed monitoring (1-min, additional cost), custom metrics (up to 1-second resolution). Alarms can trigger SNS notifications, Auto Scaling actions, or EC2 actions. Composite alarms combine multiple alarms. Logs: collected via CloudWatch agent, Lambda, or API. Log Insights provides SQL-like queries. Metric filters extract metrics from logs. Logs can be exported to S3 or streamed to Kinesis. Dashboards visualize metrics across accounts/regions. Container Insights monitors ECS/EKS. Application Insights auto-detects problems. Synthetics creates canaries for endpoint monitoring. Contributor Insights analyzes high-cardinality data.",
+    "resources": [
+      {"title": "CloudWatch Documentation", "url": "https://docs.aws.amazon.com/cloudwatch/"},
+      {"title": "CloudWatch Metrics", "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/working_with_metrics.html"},
+      {"title": "CloudWatch Logs", "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/"}
+    ]
   },
   "cloudtrail": {
     "name": "CloudTrail",
@@ -384,7 +474,13 @@
       "Enabled by default (90 day history)"
     ],
     "x": 1050,
-    "y": 450
+    "y": 450,
+    "extendedDescription": "CloudTrail events: Management events (control plane operations like creating EC2), Data events (data plane operations like S3 GetObject, Lambda Invoke), and Insights events (unusual API activity). Event History provides 90-day free lookup without creating a trail. Trails deliver events to S3 bucket (and optionally CloudWatch Logs). Organization trails aggregate logs from all accounts. Trails can be single-region or all-regions (recommended). Log file integrity validation ensures logs haven't been tampered with. Lake provides SQL-based querying of events. CloudTrail integrates with EventBridge for real-time event processing.",
+    "resources": [
+      {"title": "CloudTrail Documentation", "url": "https://docs.aws.amazon.com/cloudtrail/"},
+      {"title": "CloudTrail Events", "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html#cloudtrail-concepts-events"},
+      {"title": "Creating a Trail", "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html"}
+    ]
   },
   "config": {
     "name": "AWS Config",
@@ -399,7 +495,13 @@
       "Useful for auditing and troubleshooting"
     ],
     "x": 950,
-    "y": 350
+    "y": 350,
+    "extendedDescription": "Config Rules evaluate resource configurations for compliance. Managed rules are pre-built (e.g., 's3-bucket-public-read-prohibited'). Custom rules use Lambda for custom logic. Conformance packs bundle rules for compliance standards (PCI-DSS, HIPAA). Configuration snapshots show point-in-time resource state. Configuration history shows changes over time. Config aggregator collects data from multiple accounts/regions. Remediation actions can automatically fix non-compliant resources using SSM Automation. Config integrates with Security Hub for centralized findings. Pricing: per configuration item recorded and rule evaluation.",
+    "resources": [
+      {"title": "AWS Config Documentation", "url": "https://docs.aws.amazon.com/config/"},
+      {"title": "Config Rules", "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html"},
+      {"title": "Managed Rules List", "url": "https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html"}
+    ]
   },
   "cloudformation": {
     "name": "CloudFormation",
@@ -413,7 +515,13 @@
       "No additional charge (pay for resources)"
     ],
     "x": 1200,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "Templates define resources in YAML or JSON with sections: AWSTemplateFormatVersion, Description, Parameters, Mappings, Conditions, Resources (required), and Outputs. Stacks are instantiated templates. Nested stacks enable modular templates. StackSets deploy stacks across multiple accounts/regions. Change sets preview updates before applying. Drift detection identifies manual changes. Rollback on failure is automatic by default. Intrinsic functions (!Ref, !GetAtt, !Join, etc.) enable dynamic templates. Custom resources extend CloudFormation with Lambda. Resource import adds existing resources to stacks. CloudFormation Registry supports third-party resources.",
+    "resources": [
+      {"title": "CloudFormation Documentation", "url": "https://docs.aws.amazon.com/cloudformation/"},
+      {"title": "Template Reference", "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-reference.html"},
+      {"title": "Intrinsic Functions", "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html"}
+    ]
   },
   "systemsmanager": {
     "name": "Systems Manager",
@@ -428,7 +536,13 @@
       "No additional charge for core features"
     ],
     "x": 1050,
-    "y": 350
+    "y": 350,
+    "extendedDescription": "SSM Agent enables Systems Manager features on instances. Key capabilities: Run Command (execute scripts remotely), Patch Manager (automate patching), State Manager (maintain desired state), Inventory (collect metadata), Session Manager (secure shell without SSH keys or bastion hosts), Parameter Store (store config and secrets - free tier and standard tier), Secrets rotation, Automation (runbooks for common tasks), and OpsCenter (aggregate operations issues). Patch Manager uses patch baselines and maintenance windows. Session Manager logs sessions to CloudTrail and S3. Hybrid Activations manage on-premises servers. AppConfig manages application configuration safely.",
+    "resources": [
+      {"title": "Systems Manager Documentation", "url": "https://docs.aws.amazon.com/systems-manager/"},
+      {"title": "Parameter Store", "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"},
+      {"title": "Session Manager", "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html"}
+    ]
   },
   "trustedadvisor": {
     "name": "Trusted Advisor",
@@ -443,7 +557,13 @@
       "Helps optimize AWS environment"
     ],
     "x": 1200,
-    "y": 150
+    "y": 150,
+    "extendedDescription": "All AWS accounts get 6 core checks free: S3 bucket permissions, Security Groups (unrestricted ports), IAM use, MFA on root, EBS public snapshots, and RDS public snapshots. Business/Enterprise Support unlocks 115+ checks across all categories. Cost Optimization identifies unused resources (idle EC2, unattached EBS). Performance checks find over-utilized instances. Security checks find overly permissive access. Fault Tolerance checks find single points of failure. Service Limits warns before hitting quotas. Trusted Advisor integrates with CloudWatch for automated alerting. Refresh interval: 24 hours for free, 5 minutes with Business/Enterprise. AWS Support API enables programmatic access.",
+    "resources": [
+      {"title": "Trusted Advisor Documentation", "url": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"},
+      {"title": "Trusted Advisor Checks", "url": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor-check-reference.html"},
+      {"title": "Trusted Advisor Best Practices", "url": "https://aws.amazon.com/premiumsupport/technology/trusted-advisor/"}
+    ]
   },
   "organizations": {
     "name": "AWS Organizations",
@@ -458,7 +578,13 @@
       "Volume discounts across all accounts"
     ],
     "x": 1350,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "Organizations features: consolidated billing (single payment method, combined usage for volume discounts), Organizational Units (hierarchical grouping), Service Control Policies (SCPs - permission guardrails that don't grant but restrict). SCPs affect all users/roles in member accounts including root. Tag policies enforce tagging standards. Backup policies centralize backup management. AI services opt-out policies manage data usage. Account factory (via Control Tower) standardizes new account creation. AWS Resource Access Manager (RAM) shares resources across accounts. Organizations is free; you pay for resources in member accounts. Management account is special - SCPs don't affect it.",
+    "resources": [
+      {"title": "Organizations Documentation", "url": "https://docs.aws.amazon.com/organizations/"},
+      {"title": "Service Control Policies", "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"},
+      {"title": "Organizations Best Practices", "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_best-practices.html"}
+    ]
   },
   "costexplorer": {
     "name": "Cost Explorer",
@@ -473,7 +599,13 @@
       "Free to use (no additional charge)"
     ],
     "x": 1350,
-    "y": 400
+    "y": 400,
+    "extendedDescription": "Cost Explorer provides granular filtering by service, account, tag, region, AZ, instance type, and more. Pre-built reports include monthly/daily costs, RI utilization, RI coverage, and Savings Plans reports. Custom reports can be saved and scheduled. Forecasting predicts up to 12 months ahead based on historical data. Rightsizing recommendations identify underutilized EC2 instances. Cost anomaly detection alerts on unusual spending. Cost categories organize costs into business-meaningful groups. Data granularity: hourly (for last 14 days), daily, or monthly. API access enables programmatic cost analysis. Cost Explorer must be enabled first (takes 24 hours for data).",
+    "resources": [
+      {"title": "Cost Explorer Documentation", "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"},
+      {"title": "Analyzing Costs", "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-exploring-data.html"},
+      {"title": "Cost Anomaly Detection", "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html"}
+    ]
   },
   "budgets": {
     "name": "AWS Budgets",
@@ -488,7 +620,13 @@
       "Can trigger automated actions"
     ],
     "x": 1350,
-    "y": 500
+    "y": 500,
+    "extendedDescription": "Budget types: Cost (spending), Usage (service usage), RI utilization, RI coverage, Savings Plans utilization, and Savings Plans coverage. Alert thresholds can be actual (already incurred) or forecasted (projected). Budget actions automate responses: apply IAM policies, apply SCPs, or stop EC2/RDS instances. Filters narrow budgets to specific services, accounts, tags, etc. Budget reports can be scheduled daily, weekly, or monthly via email. Cost allocation tags help track spending by project/team. Budgets integrates with AWS Chatbot for Slack/Chime notifications. Pricing: first 2 budgets free, then $0.02/budget/day. Use with Cost Explorer for comprehensive cost management.",
+    "resources": [
+      {"title": "AWS Budgets Documentation", "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"},
+      {"title": "Creating Budgets", "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-create.html"},
+      {"title": "Budget Actions", "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html"}
+    ]
   },
   "sqs": {
     "name": "SQS",
@@ -503,7 +641,13 @@
       "Scales automatically"
     ],
     "x": 800,
-    "y": 400
+    "y": 400,
+    "extendedDescription": "Standard queues: unlimited throughput, at-least-once delivery, best-effort ordering. FIFO queues: 300 msg/sec (3000 with batching), exactly-once processing, strict ordering within message groups. Visibility timeout (default 30s) prevents other consumers from processing a message being handled. Dead-letter queues (DLQ) capture messages that fail processing. Long polling (up to 20s) reduces empty responses and cost. Message size: up to 256KB (use S3 for larger). Delay queues postpone delivery up to 15 minutes. Server-side encryption with KMS. SQS triggers Lambda directly. Cost: per request, with first 1M requests/month free.",
+    "resources": [
+      {"title": "SQS Documentation", "url": "https://docs.aws.amazon.com/sqs/"},
+      {"title": "Standard vs FIFO Queues", "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-queue-types.html"},
+      {"title": "SQS Best Practices", "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-best-practices.html"}
+    ]
   },
   "sns": {
     "name": "SNS",
@@ -518,7 +662,13 @@
       "Real-time message delivery"
     ],
     "x": 800,
-    "y": 150
+    "y": 150,
+    "extendedDescription": "SNS topics receive messages that are pushed to all subscribers. Subscriber types: SQS (fan-out pattern), Lambda, HTTP/HTTPS endpoints, email, SMS, and mobile push. Message filtering allows subscribers to receive only relevant messages using filter policies. FIFO topics (with SQS FIFO) guarantee ordering and deduplication. Message attributes add metadata. Dead-letter queues capture failed deliveries. Server-side encryption with KMS. SNS can trigger cross-region delivery. Mobile push supports APNS, FCM, and more. SMS can be promotional or transactional. Pricing: per publish, per delivery, per SMS. Free tier: 1M publishes, 100K HTTP deliveries.",
+    "resources": [
+      {"title": "SNS Documentation", "url": "https://docs.aws.amazon.com/sns/"},
+      {"title": "SNS Message Filtering", "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html"},
+      {"title": "SNS + SQS Fan-out", "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html"}
+    ]
   },
   "cloudfront": {
     "name": "CloudFront",
@@ -533,7 +683,13 @@
       "Can serve both static and dynamic content"
     ],
     "x": 1100,
-    "y": 650
+    "y": 650,
+    "extendedDescription": "CloudFront distributions connect origins (S3, ELB, EC2, custom HTTP) to edge locations. Behaviors define how requests are handled based on path patterns. Cache policies control what's cached and for how long (TTL). Origin request policies determine what's forwarded to origin. Cache invalidations purge cached content. Origin Access Control (OAC) secures S3 access (replaces Origin Access Identity). Lambda@Edge runs code at edge locations for customization. CloudFront Functions handle lightweight customization (viewer request/response). Signed URLs/cookies restrict access. Field-level encryption protects sensitive data. Real-time logs stream to Kinesis. Price classes limit edge locations for cost control.",
+    "resources": [
+      {"title": "CloudFront Documentation", "url": "https://docs.aws.amazon.com/cloudfront/"},
+      {"title": "CloudFront Caching", "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-behavior-settings.html"},
+      {"title": "Lambda@Edge", "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-at-the-edge.html"}
+    ]
   },
   "route53": {
     "name": "Route 53",
@@ -548,7 +704,13 @@
       "Integrates with other AWS services"
     ],
     "x": 50,
-    "y": 500
+    "y": 500,
+    "extendedDescription": "Route 53 provides domain registration, DNS hosting, and health checking. Hosted zones contain DNS records for a domain. Record types: A, AAAA, CNAME, MX, TXT, NS, SOA, and alias records (AWS-specific, free queries for AWS endpoints). Routing policies: Simple (one record), Weighted (percentage-based distribution), Latency (lowest latency region), Failover (active-passive), Geolocation (by user location), Geoproximity (by distance with bias), and Multivalue (multiple healthy records). Health checks monitor endpoints and trigger failover. Traffic Flow visual editor builds complex routing. Route 53 Resolver handles hybrid DNS (VPC and on-premises). DNSSEC provides authentication.",
+    "resources": [
+      {"title": "Route 53 Documentation", "url": "https://docs.aws.amazon.com/route53/"},
+      {"title": "Routing Policies", "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"},
+      {"title": "Health Checks", "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-creating.html"}
+    ]
   },
   "apigateway": {
     "name": "API Gateway",
@@ -564,7 +726,13 @@
       "Pay per API call"
     ],
     "x": 650,
-    "y": 450
+    "y": 450,
+    "extendedDescription": "API types: REST API (full features), HTTP API (lower latency, lower cost, simpler), WebSocket API (bidirectional communication). REST API features: request validation, request/response transformation, API keys and usage plans, caching, custom domain names with TLS. Stages represent deployments (dev, prod). Stage variables enable configuration per stage. Integration types: Lambda, HTTP, Mock, AWS service, VPC Link. Canary deployments route percentage of traffic to new versions. Resource policies control access. X-Ray tracing provides request insights. CloudWatch metrics include latency, 4xx/5xx errors, and cache hit rate. API Gateway generates SDKs for client applications.",
+    "resources": [
+      {"title": "API Gateway Documentation", "url": "https://docs.aws.amazon.com/apigateway/"},
+      {"title": "REST vs HTTP APIs", "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html"},
+      {"title": "API Gateway Pricing", "url": "https://aws.amazon.com/api-gateway/pricing/"}
+    ]
   },
   "cognito": {
     "name": "Cognito",
@@ -580,7 +748,13 @@
       "MFA and password policies"
     ],
     "x": 1100,
-    "y": 50
+    "y": 50,
+    "extendedDescription": "User Pools are user directories with sign-up, sign-in, account recovery, and MFA. They issue JWT tokens (ID, access, refresh). Triggers (Lambda) customize auth flows. App clients configure which apps can authenticate. Hosted UI provides pre-built auth pages. Identity Pools (Federated Identities) exchange tokens for temporary AWS credentials, enabling direct AWS service access from apps. Identity Pools support User Pool tokens, social providers, SAML, OIDC, and developer-authenticated identities. IAM roles define permissions for authenticated and unauthenticated users. Advanced security detects compromised credentials and suspicious sign-ins. Free tier: 50,000 MAUs for User Pools.",
+    "resources": [
+      {"title": "Cognito Documentation", "url": "https://docs.aws.amazon.com/cognito/"},
+      {"title": "User Pools", "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html"},
+      {"title": "Identity Pools", "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html"}
+    ]
   },
   "stepfunctions": {
     "name": "Step Functions",
@@ -596,7 +770,13 @@
       "Pay per state transition"
     ],
     "x": 750,
-    "y": 500
+    "y": 500,
+    "extendedDescription": "Workflows are defined in Amazon States Language (ASL), a JSON-based spec. State types: Task (do work), Choice (branching), Parallel (concurrent execution), Wait (delay), Pass (pass data), Map (iterate over arrays), and Succeed/Fail (terminal states). Standard workflows: up to 1 year duration, exactly-once execution, priced per state transition. Express workflows: up to 5 minutes, at-least-once execution, priced per request and duration (high-volume use cases). Service integrations: optimized (SDK integration), AWS SDK (.request pattern), and Activity tasks (workers pull tasks). Error handling: Catch and Retry at state level. Execution history retained 90 days (Standard).",
+    "resources": [
+      {"title": "Step Functions Documentation", "url": "https://docs.aws.amazon.com/step-functions/"},
+      {"title": "Amazon States Language", "url": "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html"},
+      {"title": "Step Functions Best Practices", "url": "https://docs.aws.amazon.com/step-functions/latest/dg/sfn-best-practices.html"}
+    ]
   },
   "eventbridge": {
     "name": "EventBridge",
@@ -612,7 +792,13 @@
       "Schedule-based triggers"
     ],
     "x": 900,
-    "y": 150
+    "y": 150,
+    "extendedDescription": "EventBridge receives events from sources and routes them to targets based on rules. Event buses: default (AWS services), custom (your apps), and partner (SaaS integrations). Rules match events using patterns (JSON-based filtering on any event field). Targets include Lambda, Step Functions, SQS, SNS, Kinesis, ECS tasks, API Gateway, and 20+ more. Input transformers modify events before delivery. Dead-letter queues handle failed deliveries. Archive stores events for replay (useful for debugging, testing). Scheduler creates scheduled events (cron or rate expressions). Schema Registry discovers and stores event schemas. Pipes connect sources to targets with optional transformation. Global endpoints provide cross-region failover.",
+    "resources": [
+      {"title": "EventBridge Documentation", "url": "https://docs.aws.amazon.com/eventbridge/"},
+      {"title": "Event Patterns", "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html"},
+      {"title": "EventBridge Scheduler", "url": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html"}
+    ]
   },
   "secretsmanager": {
     "name": "Secrets Manager",
@@ -628,7 +814,13 @@
       "Different from Parameter Store (more features, higher cost)"
     ],
     "x": 1050,
-    "y": 150
+    "y": 150,
+    "extendedDescription": "Secrets Manager stores secrets as encrypted JSON (key-value pairs). Automatic rotation uses Lambda functions to update secrets on a schedule (30, 60, 90 days, or custom). Built-in rotation templates exist for RDS, Redshift, and DocumentDB. Custom rotation Lambda handles other secret types. Versioning tracks secret history (AWSCURRENT, AWSPREVIOUS labels). Resource policies enable cross-account access. Replica secrets sync across regions for disaster recovery. SDK integration (GetSecretValue) retrieves secrets programmatically. Caching libraries reduce API calls. Pricing: $0.40/secret/month + $0.05 per 10,000 API calls. Compare with Parameter Store SecureString (free tier available, fewer features).",
+    "resources": [
+      {"title": "Secrets Manager Documentation", "url": "https://docs.aws.amazon.com/secretsmanager/"},
+      {"title": "Rotating Secrets", "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html"},
+      {"title": "Secrets Manager vs Parameter Store", "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/integration-ps-secretsmanager.html"}
+    ]
   },
   "codepipeline": {
     "name": "CodePipeline",
@@ -644,7 +836,13 @@
       "Pay per active pipeline per month"
     ],
     "x": 1200,
-    "y": 50
+    "y": 50,
+    "extendedDescription": "Pipelines consist of stages (Source, Build, Test, Deploy, etc.) containing actions. Source actions: CodeCommit, S3, GitHub, Bitbucket, ECR. Build/Test actions: CodeBuild, Jenkins, third-party tools. Deploy actions: CodeDeploy, ECS, S3, CloudFormation, Elastic Beanstalk, Lambda. Manual approval actions gate deployments. Parallel actions run concurrently within a stage. Artifacts pass between stages via S3. Variables enable dynamic configuration. Triggers: event-based (webhook, EventBridge) or polling. Cross-account/cross-region deployment supported. Pipeline execution history tracks all runs. CloudWatch Events integration enables custom notifications. Pricing: $1/active pipeline/month (free tier: 1 pipeline).",
+    "resources": [
+      {"title": "CodePipeline Documentation", "url": "https://docs.aws.amazon.com/codepipeline/"},
+      {"title": "Pipeline Structure", "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html"},
+      {"title": "CodePipeline Tutorials", "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials.html"}
+    ]
   },
   "codebuild": {
     "name": "CodeBuild",
@@ -660,7 +858,13 @@
       "Build spec file (buildspec.yml) defines build commands"
     ],
     "x": 1300,
-    "y": 50
+    "y": 50,
+    "extendedDescription": "Buildspec.yml defines build phases: install, pre_build, build, post_build. Environment variables can be plaintext, Parameter Store references, or Secrets Manager references. Compute types: small, medium, large, 2xlarge (varying vCPU/memory). Custom Docker images can be used for specialized builds. VPC support enables access to private resources. Local caching speeds up builds by retaining dependencies. S3 caching shares cache across builds. Build badges show status in README. Reports integrate with test frameworks (JUnit, Cucumber, etc.). Batch builds run multiple builds from single trigger. Concurrent build limits can be configured. CloudWatch Logs and S3 store build logs. CodeBuild integrates with CodePipeline and can be triggered directly by webhooks.",
+    "resources": [
+      {"title": "CodeBuild Documentation", "url": "https://docs.aws.amazon.com/codebuild/"},
+      {"title": "Build Specification Reference", "url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html"},
+      {"title": "CodeBuild Pricing", "url": "https://aws.amazon.com/codebuild/pricing/"}
+    ]
   },
   "codedeploy": {
     "name": "CodeDeploy",
@@ -676,7 +880,13 @@
       "Free for EC2 and Lambda deployments"
     ],
     "x": 1400,
-    "y": 50
+    "y": 50,
+    "extendedDescription": "Deployment types: In-place (update existing instances), Blue/Green (provision new environment, shift traffic). EC2/On-premises: AppSpec.yml defines lifecycle hooks (BeforeInstall, AfterInstall, ApplicationStart, etc.) and file mappings. Lambda: AppSpec defines traffic shifting (Linear, Canary, AllAtOnce). ECS: AppSpec defines task definition and container/port mappings. Deployment configurations control rollout speed. CodeDeploy agent required on EC2/on-premises instances. Auto Scaling integration ensures new instances get deployments. Deployment groups organize instances by tags, Auto Scaling groups, or manually. Automatic rollback triggers on deployment failure, alarm thresholds, or manually. CloudWatch alarms can stop deployments. Logs available in CloudWatch Logs.",
+    "resources": [
+      {"title": "CodeDeploy Documentation", "url": "https://docs.aws.amazon.com/codedeploy/"},
+      {"title": "AppSpec Reference", "url": "https://docs.aws.amazon.com/codedeploy/latest/userguide/reference-appspec-file.html"},
+      {"title": "Deployment Configurations", "url": "https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html"}
+    ]
   },
   "elasticache": {
     "name": "ElastiCache",
@@ -692,7 +902,13 @@
       "Multi-AZ with automatic failover (Redis)"
     ],
     "x": 600,
-    "y": 650
+    "y": 650,
+    "extendedDescription": "Redis vs Memcached: Redis supports complex data types (lists, sets, sorted sets, hashes), persistence, replication, clustering, Lua scripting, and pub/sub. Memcached is simpler, multi-threaded, good for simple caching. ElastiCache for Redis: cluster mode disabled (single shard, up to 5 read replicas) or cluster mode enabled (up to 500 shards, automatic partitioning). Global Datastore enables cross-region replication. Multi-AZ with automatic failover for high availability. Backup and restore to S3. Encryption at rest and in transit. IAM authentication (Redis 6.0+). ElastiCache Serverless provides auto-scaling without capacity planning. Common patterns: database caching, session store, leaderboards, real-time analytics.",
+    "resources": [
+      {"title": "ElastiCache Documentation", "url": "https://docs.aws.amazon.com/elasticache/"},
+      {"title": "Redis vs Memcached", "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/SelectEngine.html"},
+      {"title": "Caching Strategies", "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html"}
+    ]
   },
   "redshift": {
     "name": "Redshift",
@@ -708,7 +924,13 @@
       "Reserved instances for cost savings"
     ],
     "x": 800,
-    "y": 650
+    "y": 650,
+    "extendedDescription": "Redshift uses columnar storage, massive parallel processing (MPP), and advanced compression for fast queries on large datasets. Cluster: leader node (query planning) and compute nodes (data storage, query execution). Node types: RA3 (managed storage, scale compute and storage independently) and DC2 (dense compute, local SSD). Redshift Spectrum queries data in S3 without loading it. Concurrency Scaling automatically adds cluster capacity for burst workloads. Materialized views cache complex query results. Workload Management (WLM) prioritizes queries. AQUA (Advanced Query Accelerator) caches data on compute nodes. Data sharing enables queries across Redshift clusters. Redshift Serverless auto-scales without cluster management.",
+    "resources": [
+      {"title": "Redshift Documentation", "url": "https://docs.aws.amazon.com/redshift/"},
+      {"title": "Redshift Best Practices", "url": "https://docs.aws.amazon.com/redshift/latest/dg/best-practices.html"},
+      {"title": "Redshift Spectrum", "url": "https://docs.aws.amazon.com/redshift/latest/dg/c-getting-started-using-spectrum.html"}
+    ]
   },
   "athena": {
     "name": "Athena",
@@ -724,7 +946,13 @@
       "Great for ad-hoc queries and log analysis"
     ],
     "x": 1000,
-    "y": 650
+    "y": 650,
+    "extendedDescription": "Athena uses Presto under the hood, supporting standard SQL (ANSI SQL). Data is queried in place from S3 - no loading required. Supported formats: CSV, JSON, ORC, Parquet, Avro. Columnar formats (ORC, Parquet) reduce costs by scanning less data. Partitioning by date/region further reduces scanned data. AWS Glue Data Catalog stores schema definitions (databases, tables). Glue crawlers automatically discover schemas. Workgroups separate users, control costs, and manage query history. Prepared statements prevent SQL injection. Federated queries access data in RDS, DynamoDB, and other sources via Lambda connectors. Results stored in S3. Athena integrates with QuickSight for visualization.",
+    "resources": [
+      {"title": "Athena Documentation", "url": "https://docs.aws.amazon.com/athena/"},
+      {"title": "Athena Performance Tuning", "url": "https://docs.aws.amazon.com/athena/latest/ug/performance-tuning.html"},
+      {"title": "Athena + Glue Integration", "url": "https://docs.aws.amazon.com/athena/latest/ug/glue-athena.html"}
+    ]
   },
   "waf": {
     "name": "WAF",
@@ -740,7 +968,13 @@
       "Custom rules using Web ACLs"
     ],
     "x": 1200,
-    "y": 550
+    "y": 550,
+    "extendedDescription": "WAF uses Web ACLs containing rules evaluated in priority order. Rule types: regular (match conditions), rate-based (request rate limits). Managed rule groups: AWS Managed Rules (free core set), AWS Marketplace (paid), and custom. AWS Managed Rules include: Core Rule Set (CRS), SQL injection, XSS, Known Bad Inputs, Amazon IP reputation, and Bot Control. Match conditions: IP sets, regex patterns, geo-location, size constraints, and request components (headers, body, URI). Actions: Allow, Block, Count (testing), CAPTCHA, Challenge. Labels enable complex rule logic. Logging to CloudWatch Logs, S3, or Kinesis Firehose. WAF Fraud Control protects against account takeover and fake account creation.",
+    "resources": [
+      {"title": "WAF Documentation", "url": "https://docs.aws.amazon.com/waf/"},
+      {"title": "AWS Managed Rules", "url": "https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-list.html"},
+      {"title": "WAF Best Practices", "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-managed-rule-groups-best-practices.html"}
+    ]
   },
   "shield": {
     "name": "Shield",
@@ -756,7 +990,13 @@
       "Advanced: real-time attack visibility"
     ],
     "x": 1300,
-    "y": 550
+    "y": 550,
+    "extendedDescription": "Shield Standard: automatically included for all AWS customers at no cost. Protects against common Layer 3/4 attacks (SYN floods, UDP reflection). Shield Advanced ($3,000/month + data transfer): enhanced detection and mitigation for larger, more sophisticated attacks. Advanced features: DDoS Response Team (DRT) 24/7 support, DDoS cost protection (credits for scaling charges during attacks), real-time attack visibility and metrics, health-based detection using Route 53 health checks, and AWS Firewall Manager integration. Advanced protects: CloudFront, Route 53, Global Accelerator, ELB, EC2, and Elastic IP. SRT can create WAF rules on your behalf during attacks. Attack diagnostics and post-attack analysis included.",
+    "resources": [
+      {"title": "Shield Documentation", "url": "https://docs.aws.amazon.com/shield/"},
+      {"title": "Shield Advanced Features", "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary.html"},
+      {"title": "DDoS Resilience", "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/aws-best-practices-ddos-resiliency.html"}
+    ]
   },
   "guardduty": {
     "name": "GuardDuty",
@@ -772,7 +1012,13 @@
       "30-day free trial, then pay per analyzed data"
     ],
     "x": 1200,
-    "y": 450
+    "y": 450,
+    "extendedDescription": "GuardDuty analyzes: CloudTrail management and data events, VPC Flow Logs, DNS query logs, and optionally S3 data events, EKS audit logs, and RDS login activity. Finding types: Backdoor (compromised resources), Behavior (unusual activity), Cryptocurrency (mining), PenTest (scanning tools), Persistence (maintaining access), Policy (risky configuration), PrivilegeEscalation, Recon (reconnaissance), Stealth (covering tracks), Trojan, and UnauthorizedAccess. Findings include severity (Low, Medium, High), affected resources, and recommended remediation. Suppression rules filter expected findings. Trusted IP lists whitelist known IPs. Threat lists add custom threat intelligence. Multi-account management via AWS Organizations. Malware Protection scans EBS for malware.",
+    "resources": [
+      {"title": "GuardDuty Documentation", "url": "https://docs.aws.amazon.com/guardduty/"},
+      {"title": "Finding Types", "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html"},
+      {"title": "GuardDuty Best Practices", "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_settingup.html#guardduty-best-practices"}
+    ]
   },
   "inspector": {
     "name": "Inspector",
@@ -788,7 +1034,13 @@
       "Continuous scanning capability"
     ],
     "x": 1100,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "Inspector v2 (current version) provides continuous, automated vulnerability scanning. Scan types: EC2 instances (OS vulnerabilities), ECR container images (package vulnerabilities), and Lambda functions (code and dependency vulnerabilities). EC2 scanning requires SSM Agent and managed instance status. Findings include: CVE ID, severity (based on CVSS), affected package, and remediation guidance. Software bill of materials (SBOM) export lists all packages. Risk scores combine vulnerability severity with network exposure. Suppression rules filter accepted risks. Integration with EventBridge enables automated remediation. Findings aggregate in Security Hub. Pricing: per instance-month, per image scan, per Lambda scan. Free tier: 15 days trial.",
+    "resources": [
+      {"title": "Inspector Documentation", "url": "https://docs.aws.amazon.com/inspector/"},
+      {"title": "Supported Operating Systems", "url": "https://docs.aws.amazon.com/inspector/latest/user/supported.html"},
+      {"title": "Inspector Findings", "url": "https://docs.aws.amazon.com/inspector/latest/user/findings-understanding.html"}
+    ]
   },
   "natgateway": {
     "name": "NAT Gateway",
@@ -804,7 +1056,13 @@
       "Pay per hour and per GB processed"
     ],
     "x": 150,
-    "y": 150
+    "y": 150,
+    "extendedDescription": "NAT Gateway performs Network Address Translation (NAT) for private subnet traffic. Setup: create in public subnet, allocate Elastic IP, add route (0.0.0.0/0 -> NAT GW) in private subnet route table. NAT Gateway is highly available within single AZ but not across AZs - deploy one per AZ for redundancy. Supports 5 Gbps bandwidth, scaling to 100 Gbps. Connection tracking: up to 55,000 simultaneous connections per destination. NAT Gateway vs NAT Instance: NAT Gateway is managed, scales automatically, higher availability; NAT Instance is EC2-based, cheaper for low bandwidth, can be bastion host. Private NAT Gateway enables VPC-to-VPC communication without public IPs. Pricing: $0.045/hour + $0.045/GB processed.",
+    "resources": [
+      {"title": "NAT Gateway Documentation", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"},
+      {"title": "NAT Gateway vs NAT Instance", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html"},
+      {"title": "NAT Gateway Pricing", "url": "https://aws.amazon.com/vpc/pricing/"}
+    ]
   },
   "eks": {
     "name": "EKS",
@@ -820,7 +1078,13 @@
       "Pay for control plane + worker nodes"
     ],
     "x": 450,
-    "y": 150
+    "y": 150,
+    "extendedDescription": "EKS runs Kubernetes control plane across multiple AZs (etcd, API server). Node types: Managed node groups (AWS manages scaling, updates), Self-managed nodes (you manage EC2), and Fargate (serverless pods). EKS add-ons: CoreDNS, kube-proxy, VPC CNI, EBS CSI driver, and more. IAM Roles for Service Accounts (IRSA) provides pod-level AWS permissions. AWS Load Balancer Controller creates ALB/NLB for Services and Ingress. Amazon VPC CNI assigns VPC IPs to pods. EKS Anywhere extends EKS to on-premises. Kubernetes version support: three versions concurrently, end-of-support after 14 months. Logging to CloudWatch for control plane. Pricing: $0.10/hour per cluster + node/Fargate costs.",
+    "resources": [
+      {"title": "EKS Documentation", "url": "https://docs.aws.amazon.com/eks/"},
+      {"title": "EKS Best Practices", "url": "https://aws.github.io/aws-eks-best-practices/"},
+      {"title": "EKS vs ECS", "url": "https://aws.amazon.com/containers/"}
+    ]
   },
   "kinesis": {
     "name": "Kinesis",
@@ -836,7 +1100,13 @@
       "Scales to GBs/second"
     ],
     "x": 900,
-    "y": 250
+    "y": 250,
+    "extendedDescription": "Kinesis Data Streams: shards determine throughput (1 MB/s in, 2 MB/s out per shard). Producers: Kinesis Producer Library (KPL), SDK, agents. Consumers: Kinesis Client Library (KCL), Lambda, SDK. Enhanced fan-out provides dedicated 2 MB/s per consumer. Kinesis Data Firehose: managed delivery to S3, Redshift, OpenSearch, Splunk, HTTP endpoints. Firehose buffers data (60-900s or 1-128 MB) and can transform with Lambda. Kinesis Data Analytics: SQL or Apache Flink on streaming data. Kinesis Video Streams: ingest video from cameras, process with ML. Common patterns: log aggregation, metrics collection, IoT data, clickstream analysis. Comparison: Kinesis Data Streams (real-time, replay), Firehose (near real-time, fully managed), SQS (message queue, no ordering).",
+    "resources": [
+      {"title": "Kinesis Documentation", "url": "https://docs.aws.amazon.com/kinesis/"},
+      {"title": "Data Streams", "url": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"},
+      {"title": "Data Firehose", "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"}
+    ]
   },
   "xray": {
     "name": "X-Ray",
@@ -852,7 +1122,13 @@
       "Trace annotations and metadata"
     ],
     "x": 1100,
-    "y": 350
+    "y": 350,
+    "extendedDescription": "X-Ray traces requests across services, creating a service map and trace timeline. Segments represent work done by a service. Subsegments show downstream calls. X-Ray SDK instruments applications (auto for AWS SDK calls, manual for custom). X-Ray daemon (sidecar) sends trace data to AWS. Lambda and API Gateway have built-in X-Ray integration. Sampling rules control which requests are traced (default: first request/second + 5% after). Annotations are indexed key-value pairs for filtering. Metadata is non-indexed additional data. Groups filter traces using filter expressions. Insights auto-detects performance anomalies. X-Ray integrates with CloudWatch ServiceLens for unified observability. Pricing: traces recorded, traces scanned, traces retrieved.",
+    "resources": [
+      {"title": "X-Ray Documentation", "url": "https://docs.aws.amazon.com/xray/"},
+      {"title": "X-Ray Concepts", "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html"},
+      {"title": "X-Ray SDK", "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk.html"}
+    ]
   },
   "directconnect": {
     "name": "Direct Connect",
@@ -868,7 +1144,13 @@
       "Takes weeks to establish"
     ],
     "x": 0,
-    "y": 150
+    "y": 150,
+    "extendedDescription": "Direct Connect provides dedicated network connections at Direct Connect locations (colocation facilities). Connection speeds: 50 Mbps to 100 Gbps. Virtual Interfaces (VIFs): Private VIF (VPC access via Virtual Private Gateway), Public VIF (AWS public services like S3), Transit VIF (via Transit Gateway). Direct Connect Gateway connects to multiple VPCs across regions. Link Aggregation Groups (LAGs) bundle multiple connections for increased bandwidth. Hosted connections from partners offer sub-1Gbps options. Resiliency: maximum resiliency (separate devices at separate locations), high resiliency (separate devices at same location), or development/test (single connection). Setup takes weeks (physical installation). MACsec encryption for 10/100 Gbps. Failover to VPN as backup.",
+    "resources": [
+      {"title": "Direct Connect Documentation", "url": "https://docs.aws.amazon.com/directconnect/"},
+      {"title": "Direct Connect Resiliency", "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/resiliency_toolkit.html"},
+      {"title": "Direct Connect Pricing", "url": "https://aws.amazon.com/directconnect/pricing/"}
+    ]
   },
   "vpngateway": {
     "name": "VPN Gateway",
@@ -884,7 +1166,13 @@
       "Pay per VPN connection hour"
     ],
     "x": 0,
-    "y": 350
+    "y": 350,
+    "extendedDescription": "Site-to-Site VPN: Virtual Private Gateway (VGW) on AWS side, Customer Gateway (CGW) representing your device. Each VPN connection has two tunnels to different AZs for redundancy. Supports static routing or dynamic (BGP). Accelerated VPN uses AWS Global Accelerator for improved performance. AWS VPN CloudHub connects multiple sites in hub-and-spoke model. Client VPN: managed OpenVPN-based service for remote user access to VPC. Client authentication: Active Directory, mutual TLS, or SAML 2.0. VPN connections can be terminated on Transit Gateway for multi-VPC access. Bandwidth: up to 1.25 Gbps per tunnel. Common pattern: Direct Connect primary, VPN backup. Pricing: $0.05/hour per VPN connection + data transfer.",
+    "resources": [
+      {"title": "Site-to-Site VPN Documentation", "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/"},
+      {"title": "Client VPN Documentation", "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/"},
+      {"title": "VPN Troubleshooting", "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/Troubleshooting.html"}
+    ]
   },
   "storagegateway": {
     "name": "Storage Gateway",
@@ -900,7 +1188,13 @@
       "Good for backup, disaster recovery, migration"
     ],
     "x": 1200,
-    "y": 650
+    "y": 650,
+    "extendedDescription": "Storage Gateway deploys as VM on-premises (VMware, Hyper-V, KVM) or as EC2 instance. S3 File Gateway: NFS/SMB access to S3 objects, local cache for low latency, integrates with AD for SMB. FSx File Gateway: SMB access to FSx for Windows File Server. Volume Gateway: Stored (full data on-premises, async backup to S3) or Cached (primary data in S3, cache on-premises). Volume snapshots create EBS snapshots for EC2 migration. Tape Gateway: virtual tape library for backup applications, tapes archived to S3 Glacier. Hardware appliance available for locations without virtualization. CloudWatch monitoring included. Bandwidth throttling controls upload speed. Refresh cache synchronizes with S3 changes.",
+    "resources": [
+      {"title": "Storage Gateway Documentation", "url": "https://docs.aws.amazon.com/storagegateway/"},
+      {"title": "File Gateway", "url": "https://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html#file-gateway-concepts"},
+      {"title": "Storage Gateway Pricing", "url": "https://aws.amazon.com/storagegateway/pricing/"}
+    ]
   },
   "snowfamily": {
     "name": "Snow Family",
@@ -916,6 +1210,12 @@
       "Offline data transfer when network is impractical"
     ],
     "x": 1350,
-    "y": 650
+    "y": 650,
+    "extendedDescription": "Snowcone: smallest device (8TB HDD or 14TB SSD), battery-powered option, can run EC2 instances, DataSync agent for online transfer. Snowball Edge: Storage Optimized (80TB), Compute Optimized (42TB + GPU optional). Supports EC2 instances, Lambda functions, and S3-compatible storage. Clustering up to 16 devices for larger workloads. OpsHub management GUI. Snowmobile: 100PB capacity, 45-foot shipping container, GPS tracking, 24/7 security. Use cases: datacenter migration (> 10TB often faster than network), edge computing, content distribution, disaster recovery. Data is encrypted with KMS keys, never leaves devices unencrypted. AWS transfers data to S3 upon return. Job management via Console, CLI, or SDK.",
+    "resources": [
+      {"title": "Snow Family Documentation", "url": "https://docs.aws.amazon.com/snowball/"},
+      {"title": "Choosing Snow Device", "url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/device-differences.html"},
+      {"title": "Snow Family Pricing", "url": "https://aws.amazon.com/snow/pricing/"}
+    ]
   }
 }

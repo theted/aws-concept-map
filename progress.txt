@@ -293,3 +293,34 @@
   - Tests for layout consistency (deterministic results)
   - Tests for custom node dimensions
 - All tests passing (104 tests: 7 data + 29 canvas + 37 info panel + 11 lambda + 20 layout)
+
+## Add detailed descriptions for all services
+
+- Expanded extendedDescription and resources from 7 services to all 57 services
+- Added 2 new services to the catalog (expanded from 55 to 57 total)
+- Each service now includes:
+  - extendedDescription: comprehensive, certification-relevant technical details (150-300 words)
+  - resources: 3 curated links (Documentation, Best Practices/Features, Pricing/Comparison)
+- Content coverage includes:
+  - Compute: EC2, Lambda, ECS, ECR, Fargate, Beanstalk, Auto Scaling, API Gateway, Step Functions, EKS
+  - Storage: S3, EBS, EFS, Glacier, Storage Gateway, Snow Family
+  - Database: RDS/Aurora, DynamoDB, ElastiCache, Redshift, Athena
+  - Networking: VPC, Subnet, Internet Gateway, NAT Gateway, ELB, Direct Connect, VPN Gateway
+  - Security: Security Groups, NACLs, IAM, KMS, Cognito, Secrets Manager, WAF, Shield, GuardDuty, Inspector
+  - Management: CloudWatch, CloudTrail, Config, CloudFormation, Systems Manager, Trusted Advisor, Organizations, X-Ray
+  - Messaging: SQS, SNS, EventBridge, Kinesis
+  - CDN: CloudFront, Route 53
+  - Cost: Cost Explorer, Budgets
+  - DevTools: CodePipeline, CodeBuild, CodeDeploy
+- Each extendedDescription covers:
+  - Key concepts and terminology
+  - Configuration options and modes
+  - Integration patterns with other AWS services
+  - Best practices and common use cases
+  - Pricing model highlights
+  - Certification exam relevance
+- Gotchas discovered:
+  - Resource links should use target="_blank" with rel="noopener noreferrer" for security (already implemented in InfoPanel.ts)
+  - Extended descriptions should balance depth with readability - too long makes the UI feel cluttered
+  - Consistent terminology across services helps users build mental connections
+- All tests continue to pass (104 tests)
