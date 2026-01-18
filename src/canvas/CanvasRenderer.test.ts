@@ -33,8 +33,13 @@ function createMockContext(): CanvasRenderingContext2D {
   } as unknown as CanvasRenderingContext2D;
 }
 
+// Type for mock canvas with event trigger helper
+type MockCanvas = HTMLCanvasElement & {
+  __triggerEvent: (event: string, eventData: Event) => void;
+};
+
 // Mock canvas element
-function createMockCanvas(ctx: CanvasRenderingContext2D): HTMLCanvasElement {
+function createMockCanvas(ctx: CanvasRenderingContext2D): MockCanvas {
   const eventListeners: Record<string, EventListener[]> = {};
 
   return {
@@ -62,13 +67,14 @@ function createMockCanvas(ctx: CanvasRenderingContext2D): HTMLCanvasElement {
       eventListeners[event].push(listener);
     }),
     removeEventListener: vi.fn(),
+    setAttribute: vi.fn(),
     // Helper to trigger events in tests
     __triggerEvent: (event: string, eventData: Event) => {
       if (eventListeners[event]) {
         eventListeners[event].forEach((listener) => listener(eventData));
       }
     },
-  } as unknown as HTMLCanvasElement & { __triggerEvent: (event: string, eventData: Event) => void };
+  } as unknown as MockCanvas;
 }
 
 // Sample test data
@@ -109,7 +115,7 @@ const testConnections: Connection[] = [
 
 describe('CanvasRenderer', () => {
   let mockCtx: CanvasRenderingContext2D;
-  let mockCanvas: HTMLCanvasElement & { __triggerEvent: (event: string, eventData: Event) => void };
+  let mockCanvas: MockCanvas;
   let renderer: CanvasRenderer;
 
   beforeEach(() => {
@@ -125,43 +131,85 @@ describe('CanvasRenderer', () => {
   });
 
   describe('initialization', () => {
-    it('should create a renderer with initial state', () => {
+    it('should create a renderer with centered initial state', () => {
       const state = renderer.getState();
-      expect(state.scale).toBe(1);
-      expect(state.translateX).toBe(0);
-      expect(state.translateY).toBe(0);
+      // Initial state should be centered on content, not (0,0)
+      // Scale should be within valid bounds
+      expect(state.scale).toBeGreaterThanOrEqual(0.3);
+      expect(state.scale).toBeLessThanOrEqual(3);
+      // Translation should be set to center content
+      expect(typeof state.translateX).toBe('number');
+      expect(typeof state.translateY).toBe('number');
     });
 
     it('should get 2D context from canvas', () => {
       expect(mockCanvas.getContext).toHaveBeenCalledWith('2d');
     });
 
-    it('should set up event listeners', () => {
+    it('should set up mouse event listeners', () => {
       expect(mockCanvas.addEventListener).toHaveBeenCalledWith('mousedown', expect.any(Function));
       expect(mockCanvas.addEventListener).toHaveBeenCalledWith('mousemove', expect.any(Function));
       expect(mockCanvas.addEventListener).toHaveBeenCalledWith('mouseup', expect.any(Function));
       expect(mockCanvas.addEventListener).toHaveBeenCalledWith('mouseleave', expect.any(Function));
-      expect(mockCanvas.addEventListener).toHaveBeenCalledWith('wheel', expect.any(Function));
+      expect(mockCanvas.addEventListener).toHaveBeenCalledWith('wheel', expect.any(Function), { passive: false });
       expect(mockCanvas.addEventListener).toHaveBeenCalledWith('click', expect.any(Function));
+    });
+
+    it('should set up touch event listeners for mobile support', () => {
+      expect(mockCanvas.addEventListener).toHaveBeenCalledWith('touchstart', expect.any(Function), { passive: false });
+      expect(mockCanvas.addEventListener).toHaveBeenCalledWith('touchmove', expect.any(Function), { passive: false });
+      expect(mockCanvas.addEventListener).toHaveBeenCalledWith('touchend', expect.any(Function));
+    });
+
+    it('should set up keyboard event listener for accessibility', () => {
+      expect(mockCanvas.addEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
+      expect(mockCanvas.setAttribute).toHaveBeenCalledWith('tabindex', '0');
+    });
+
+    it('should center view on content during initialization', () => {
+      // The view should be centered on the test services
+      const state = renderer.getState();
+      // Services are at: ec2(400,350), s3(600,350), vpc(400,100)
+      // Bounding box: minX=340, maxX=660, minY=80, maxY=370
+      // Center: x=500, y=225
+      // State should reflect centering (not 0,0)
+      expect(state.translateX).not.toBe(0);
+      expect(state.translateY).not.toBe(0);
     });
   });
 
   describe('state management', () => {
     it('should update state via setState', () => {
+      const initialState = renderer.getState();
       renderer.setState({ scale: 1.5, translateX: 100 });
       const state = renderer.getState();
       expect(state.scale).toBe(1.5);
       expect(state.translateX).toBe(100);
-      expect(state.translateY).toBe(0); // unchanged
+      expect(state.translateY).toBe(initialState.translateY); // unchanged from initial centered state
     });
 
-    it('should reset view to initial state', () => {
+    it('should reset view by centering on content', () => {
       renderer.setState({ scale: 2, translateX: 200, translateY: 150 });
+      const stateBefore = renderer.getState();
       renderer.resetView();
+      const stateAfter = renderer.getState();
+      // resetView should change the state (centering on content)
+      expect(stateAfter.scale).not.toBe(stateBefore.scale);
+      expect(stateAfter.translateX).not.toBe(stateBefore.translateX);
+    });
+  });
+
+  describe('centerViewOnContent', () => {
+    it('should center view on all services', () => {
+      renderer.setState({ scale: 0.5, translateX: 1000, translateY: 1000 });
+      renderer.centerViewOnContent();
       const state = renderer.getState();
-      expect(state.scale).toBe(1);
-      expect(state.translateX).toBe(0);
-      expect(state.translateY).toBe(0);
+      // Should be centered on the content (not at 1000, 1000)
+      expect(state.translateX).not.toBe(1000);
+      expect(state.translateY).not.toBe(1000);
+      // Scale should be within valid range
+      expect(state.scale).toBeGreaterThanOrEqual(0.3);
+      expect(state.scale).toBeLessThanOrEqual(3);
     });
   });
 
@@ -241,8 +289,11 @@ describe('CanvasRenderer', () => {
       const callback = vi.fn();
       renderer.setOnServiceClick(callback);
 
+      // Set a known transform state for predictable click testing
+      // With scale=1 and no translation, clicking at (400, 350) hits EC2
+      renderer.setState({ scale: 1, translateX: 0, translateY: 0 });
+
       // Simulate click on EC2 (at x:400, y:350 with node size 120x40)
-      // Screen position for EC2 with no transforms: 400, 350
       const clickEvent = new MouseEvent('click', {
         clientX: 400,
         clientY: 350,
@@ -255,6 +306,9 @@ describe('CanvasRenderer', () => {
     it('should call callback with empty values when clicking empty space', () => {
       const callback = vi.fn();
       renderer.setOnServiceClick(callback);
+
+      // Set a known transform state
+      renderer.setState({ scale: 1, translateX: 0, translateY: 0 });
 
       // Click in empty space (far from any node)
       const clickEvent = new MouseEvent('click', {
@@ -274,11 +328,95 @@ describe('CanvasRenderer error handling', () => {
       getContext: vi.fn(() => null),
       getBoundingClientRect: vi.fn(() => ({ width: 800, height: 600, left: 0, top: 0 })),
       addEventListener: vi.fn(),
+      setAttribute: vi.fn(),
       style: {},
     } as unknown as HTMLCanvasElement;
 
     expect(() => new CanvasRenderer(badCanvas, testServices, testConnections)).toThrow(
       'Could not get 2D context from canvas'
     );
+  });
+});
+
+describe('CanvasRenderer keyboard navigation', () => {
+  let mockCtx: CanvasRenderingContext2D;
+  let mockCanvas: MockCanvas;
+  let renderer: CanvasRenderer;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'devicePixelRatio', { value: 1, writable: true });
+    vi.spyOn(window, 'addEventListener').mockImplementation(() => {});
+    mockCtx = createMockContext();
+    mockCanvas = createMockCanvas(mockCtx);
+    renderer = new CanvasRenderer(mockCanvas, testServices, testConnections);
+  });
+
+  it('should pan up with ArrowUp key', () => {
+    const initialState = renderer.getState();
+    const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
+    mockCanvas.__triggerEvent('keydown', keyEvent);
+    const newState = renderer.getState();
+    expect(newState.translateY).toBe(initialState.translateY + 50);
+  });
+
+  it('should pan down with ArrowDown key', () => {
+    const initialState = renderer.getState();
+    const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
+    mockCanvas.__triggerEvent('keydown', keyEvent);
+    const newState = renderer.getState();
+    expect(newState.translateY).toBe(initialState.translateY - 50);
+  });
+
+  it('should pan left with ArrowLeft key', () => {
+    const initialState = renderer.getState();
+    const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
+    mockCanvas.__triggerEvent('keydown', keyEvent);
+    const newState = renderer.getState();
+    expect(newState.translateX).toBe(initialState.translateX + 50);
+  });
+
+  it('should pan right with ArrowRight key', () => {
+    const initialState = renderer.getState();
+    const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+    mockCanvas.__triggerEvent('keydown', keyEvent);
+    const newState = renderer.getState();
+    expect(newState.translateX).toBe(initialState.translateX - 50);
+  });
+
+  it('should zoom in with + key', () => {
+    const initialState = renderer.getState();
+    const keyEvent = new KeyboardEvent('keydown', { key: '+' });
+    mockCanvas.__triggerEvent('keydown', keyEvent);
+    const newState = renderer.getState();
+    expect(newState.scale).toBeGreaterThan(initialState.scale);
+  });
+
+  it('should zoom out with - key', () => {
+    const initialState = renderer.getState();
+    const keyEvent = new KeyboardEvent('keydown', { key: '-' });
+    mockCanvas.__triggerEvent('keydown', keyEvent);
+    const newState = renderer.getState();
+    expect(newState.scale).toBeLessThan(initialState.scale);
+  });
+
+  it('should reset view with 0 key', () => {
+    renderer.setState({ scale: 2.5, translateX: 500, translateY: 500 });
+    const keyEvent = new KeyboardEvent('keydown', { key: '0' });
+    mockCanvas.__triggerEvent('keydown', keyEvent);
+    const newState = renderer.getState();
+    // Should have reset (not at the manually set values)
+    expect(newState.scale).not.toBe(2.5);
+    expect(newState.translateX).not.toBe(500);
+  });
+
+  it('should deselect service with Escape key', () => {
+    const callback = vi.fn();
+    renderer.setOnServiceClick(callback);
+    renderer.selectService('ec2');
+
+    const keyEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+    mockCanvas.__triggerEvent('keydown', keyEvent);
+
+    expect(callback).toHaveBeenCalledWith('', expect.any(Object));
   });
 });

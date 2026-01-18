@@ -41,7 +41,12 @@ export class CanvasRenderer {
   private isDragging = false;
   private dragStartX = 0;
   private dragStartY = 0;
+  private dragDistance = 0; // Track total drag distance to distinguish click from drag
   private onServiceClick: ((key: string, service: Service) => void) | null = null;
+
+  // Touch gesture tracking
+  private lastTouchDistance = 0;
+  private isTouching = false;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -69,6 +74,8 @@ export class CanvasRenderer {
   private setupCanvas(): void {
     this.resizeCanvas();
     window.addEventListener('resize', () => this.resizeCanvas());
+    // Center view on content after initial setup
+    this.centerViewOnContent();
   }
 
   private resizeCanvas(): void {
@@ -81,16 +88,27 @@ export class CanvasRenderer {
   }
 
   private setupEventListeners(): void {
+    // Mouse events
     this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
     this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
     this.canvas.addEventListener('mouseup', () => this.handleMouseUp());
     this.canvas.addEventListener('mouseleave', () => this.handleMouseUp());
-    this.canvas.addEventListener('wheel', (e) => this.handleWheel(e));
+    this.canvas.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
     this.canvas.addEventListener('click', (e) => this.handleClick(e));
+
+    // Touch events for mobile support
+    this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+    this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+    this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+
+    // Keyboard events for accessibility
+    this.canvas.setAttribute('tabindex', '0'); // Make canvas focusable
+    this.canvas.addEventListener('keydown', (e) => this.handleKeyDown(e));
   }
 
   private handleMouseDown(e: MouseEvent): void {
     this.isDragging = true;
+    this.dragDistance = 0; // Reset drag distance on new drag
     this.dragStartX = e.clientX - this.state.translateX;
     this.dragStartY = e.clientY - this.state.translateY;
     this.canvas.style.cursor = 'grabbing';
@@ -102,8 +120,13 @@ export class CanvasRenderer {
     const mouseY = e.clientY - rect.top;
 
     if (this.isDragging) {
-      this.state.translateX = e.clientX - this.dragStartX;
-      this.state.translateY = e.clientY - this.dragStartY;
+      const newTranslateX = e.clientX - this.dragStartX;
+      const newTranslateY = e.clientY - this.dragStartY;
+      // Track total distance moved during drag
+      this.dragDistance += Math.abs(newTranslateX - this.state.translateX) +
+                          Math.abs(newTranslateY - this.state.translateY);
+      this.state.translateX = newTranslateX;
+      this.state.translateY = newTranslateY;
       this.render();
     } else {
       // Check for hover
@@ -142,7 +165,9 @@ export class CanvasRenderer {
   }
 
   private handleClick(e: MouseEvent): void {
-    if (this.isDragging) return;
+    // Ignore clicks that were actually drags (moved more than 5 pixels)
+    const DRAG_THRESHOLD = 5;
+    if (this.dragDistance > DRAG_THRESHOLD) return;
 
     const rect = this.canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -161,6 +186,173 @@ export class CanvasRenderer {
         this.onServiceClick('', {} as Service);
       }
     }
+    this.render();
+  }
+
+  // Touch event handlers for mobile support
+  private handleTouchStart(e: TouchEvent): void {
+    e.preventDefault();
+    this.isTouching = true;
+    this.dragDistance = 0;
+
+    if (e.touches.length === 1) {
+      // Single touch - pan
+      const touch = e.touches[0];
+      this.dragStartX = touch.clientX - this.state.translateX;
+      this.dragStartY = touch.clientY - this.state.translateY;
+    } else if (e.touches.length === 2) {
+      // Two finger touch - prepare for pinch zoom
+      this.lastTouchDistance = this.getTouchDistance(e.touches);
+    }
+  }
+
+  private handleTouchMove(e: TouchEvent): void {
+    e.preventDefault();
+    if (!this.isTouching) return;
+
+    if (e.touches.length === 1) {
+      // Single touch - pan
+      const touch = e.touches[0];
+      const newTranslateX = touch.clientX - this.dragStartX;
+      const newTranslateY = touch.clientY - this.dragStartY;
+      this.dragDistance += Math.abs(newTranslateX - this.state.translateX) +
+                          Math.abs(newTranslateY - this.state.translateY);
+      this.state.translateX = newTranslateX;
+      this.state.translateY = newTranslateY;
+      this.render();
+    } else if (e.touches.length === 2) {
+      // Two finger touch - pinch zoom
+      const distance = this.getTouchDistance(e.touches);
+      const center = this.getTouchCenter(e.touches);
+      const rect = this.canvas.getBoundingClientRect();
+
+      // Calculate zoom
+      const delta = distance / this.lastTouchDistance;
+      const newScale = Math.max(0.3, Math.min(3, this.state.scale * delta));
+
+      // Zoom towards touch center
+      const centerX = center.x - rect.left;
+      const centerY = center.y - rect.top;
+      const worldX = (centerX - this.state.translateX) / this.state.scale;
+      const worldY = (centerY - this.state.translateY) / this.state.scale;
+
+      this.state.scale = newScale;
+      this.state.translateX = centerX - worldX * newScale;
+      this.state.translateY = centerY - worldY * newScale;
+
+      this.lastTouchDistance = distance;
+      this.render();
+    }
+  }
+
+  private handleTouchEnd(e: TouchEvent): void {
+    // Check if this was a tap (not a drag)
+    const DRAG_THRESHOLD = 5;
+    if (this.isTouching && this.dragDistance < DRAG_THRESHOLD && e.changedTouches.length === 1) {
+      const touch = e.changedTouches[0];
+      const rect = this.canvas.getBoundingClientRect();
+      const touchX = touch.clientX - rect.left;
+      const touchY = touch.clientY - rect.top;
+
+      const clickedKey = this.getServiceAtPosition(touchX, touchY);
+      if (clickedKey) {
+        this.selectedService = clickedKey;
+        if (this.onServiceClick) {
+          this.onServiceClick(clickedKey, this.services[clickedKey]);
+        }
+      } else {
+        this.selectedService = null;
+        if (this.onServiceClick) {
+          this.onServiceClick('', {} as Service);
+        }
+      }
+      this.render();
+    }
+
+    if (e.touches.length === 0) {
+      this.isTouching = false;
+    } else if (e.touches.length === 1) {
+      // Continuing with single touch after pinch
+      const touch = e.touches[0];
+      this.dragStartX = touch.clientX - this.state.translateX;
+      this.dragStartY = touch.clientY - this.state.translateY;
+    }
+  }
+
+  private getTouchDistance(touches: TouchList): number {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  private getTouchCenter(touches: TouchList): { x: number; y: number } {
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2,
+    };
+  }
+
+  // Keyboard event handler for accessibility
+  private handleKeyDown(e: KeyboardEvent): void {
+    const PAN_STEP = 50;
+    const ZOOM_STEP = 0.1;
+
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault();
+        this.state.translateY += PAN_STEP;
+        this.render();
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        this.state.translateY -= PAN_STEP;
+        this.render();
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        this.state.translateX += PAN_STEP;
+        this.render();
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        this.state.translateX -= PAN_STEP;
+        this.render();
+        break;
+      case '+':
+      case '=':
+        e.preventDefault();
+        this.zoomAtCenter(1 + ZOOM_STEP);
+        break;
+      case '-':
+        e.preventDefault();
+        this.zoomAtCenter(1 - ZOOM_STEP);
+        break;
+      case '0':
+        e.preventDefault();
+        this.centerViewOnContent();
+        break;
+      case 'Escape':
+        this.selectedService = null;
+        if (this.onServiceClick) {
+          this.onServiceClick('', {} as Service);
+        }
+        this.render();
+        break;
+    }
+  }
+
+  private zoomAtCenter(factor: number): void {
+    const rect = this.canvas.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const newScale = Math.max(0.3, Math.min(3, this.state.scale * factor));
+    const worldX = (centerX - this.state.translateX) / this.state.scale;
+    const worldY = (centerY - this.state.translateY) / this.state.scale;
+
+    this.state.scale = newScale;
+    this.state.translateX = centerX - worldX * newScale;
+    this.state.translateY = centerY - worldY * newScale;
     this.render();
   }
 
@@ -299,9 +491,50 @@ export class CanvasRenderer {
   }
 
   public resetView(): void {
-    this.state.scale = 1;
-    this.state.translateX = 0;
-    this.state.translateY = 0;
+    this.centerViewOnContent();
+  }
+
+  /**
+   * Centers the view on the content, fitting all services within the canvas
+   * with appropriate padding
+   */
+  public centerViewOnContent(): void {
+    const serviceList = Object.values(this.services);
+    if (serviceList.length === 0) {
+      this.state.scale = 1;
+      this.state.translateX = 0;
+      this.state.translateY = 0;
+      this.render();
+      return;
+    }
+
+    // Calculate bounding box of all services
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    for (const service of serviceList) {
+      minX = Math.min(minX, service.x - NODE_DIMENSIONS.width / 2);
+      maxX = Math.max(maxX, service.x + NODE_DIMENSIONS.width / 2);
+      minY = Math.min(minY, service.y - NODE_DIMENSIONS.height / 2);
+      maxY = Math.max(maxY, service.y + NODE_DIMENSIONS.height / 2);
+    }
+
+    const contentWidth = maxX - minX;
+    const contentHeight = maxY - minY;
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+
+    const rect = this.canvas.getBoundingClientRect();
+    const padding = 80; // Padding around content
+
+    // Calculate scale to fit content with padding
+    const scaleX = (rect.width - padding * 2) / contentWidth;
+    const scaleY = (rect.height - padding * 2) / contentHeight;
+    const scale = Math.min(Math.max(0.3, Math.min(scaleX, scaleY, 1.5)), 3);
+
+    this.state.scale = scale;
+    this.state.translateX = rect.width / 2 - centerX * scale;
+    this.state.translateY = rect.height / 2 - centerY * scale;
     this.render();
   }
 

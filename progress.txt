@@ -37,3 +37,28 @@
 - Added happy-dom as dev dependency for DOM testing environment
 - Updated vite.config.ts with happy-dom test environment
 - All tests passing (24 tests: 7 data + 17 canvas)
+
+## Ensure canvas navigation works as expected
+
+- Fixed drag/click conflict by tracking total drag distance and using a 5px threshold to distinguish clicks from drags
+- Added touch event support for mobile devices:
+  - Single-finger pan (drag to move the view)
+  - Two-finger pinch-to-zoom with zoom toward pinch center
+  - Tap-to-select services on touch devices
+- Added keyboard navigation for accessibility:
+  - Arrow keys for panning (50px per keypress)
+  - +/- keys for zooming in/out
+  - 0 key to reset view (center on content)
+  - Escape key to deselect current service
+  - Canvas is now focusable (tabindex="0")
+- Added automatic view centering on content:
+  - Initial view centers and scales to fit all services with padding
+  - Reset view now centers on content instead of returning to (0,0)
+  - New public `centerViewOnContent()` method calculates bounding box and fits view
+- Updated tests in src/canvas/CanvasRenderer.test.ts:
+  - Added tests for touch event listener setup
+  - Added tests for keyboard event listener setup
+  - Added tests for keyboard navigation (all arrow keys, zoom keys, reset, escape)
+  - Added tests for centerViewOnContent behavior
+  - Updated existing tests to account for auto-centered initial state
+- All tests passing (36 tests: 7 data + 29 canvas)
