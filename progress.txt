@@ -361,3 +361,28 @@
   - Wheel zoom needs to read from targetState (if animating) to accumulate rapid scroll events
   - Initial view setup should skip animation (animate=false) to avoid jarring load experience
 - All tests pass (111 tests: 7 data + 36 canvas + 37 info panel + 11 lambda + 20 layout)
+
+## Add a "toggle legends" button which toggles service categories visibility
+
+- Added "Toggle Legend" button to the controls panel in index.html
+- Added id="legend" to the legend element for JavaScript targeting
+- Updated src/style.css with legend visibility transition:
+  - Added transition properties (opacity, visibility, transform) to .legend
+  - Created .legend.hidden class with slide-out animation (translateX(-20px))
+  - Uses existing CSS variables (--transition-normal) for consistent timing
+- Updated src/main.ts with toggle functionality:
+  - Added references to toggleLegendBtn and legendElement
+  - Created toggleLegend() function that uses classList.toggle('hidden')
+  - Added event listener in setupControlListeners()
+- Created comprehensive tests in src/ui/LegendToggle.test.ts:
+  - Tests for default visible state (no hidden class)
+  - Tests for toggle adding hidden class on first click
+  - Tests for toggle removing hidden class on second click
+  - Tests for multiple toggle cycles
+  - Tests for preserving other classes during toggle
+- Gotchas discovered:
+  - The CSS visibility + opacity + transform pattern provides smooth hide/show animations
+  - classList.toggle() is cleaner than manually checking and adding/removing classes
+  - Testing DOM manipulation in Vitest with happy-dom is straightforward - just create elements and simulate clicks
+  - The legend is already hidden on small screens (480px) via media query, so the toggle button provides desktop users with the same capability
+- All tests pass (117 tests: 7 data + 36 canvas + 37 info panel + 11 lambda + 20 layout + 6 legend toggle)

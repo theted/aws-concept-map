@@ -347,6 +347,23 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* Legend visibility transition */
+.legend {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition: opacity var(--transition-normal),
+                visibility var(--transition-normal),
+                transform var(--transition-normal),
+                box-shadow var(--transition-normal);
+}
+
+.legend.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-20px);
+}
+
 /* Controls Panel */
 .controls {
     position: fixed;

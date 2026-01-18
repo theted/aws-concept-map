@@ -9,6 +9,8 @@ const canvasElement = document.getElementById('canvas') as HTMLCanvasElement;
 const infoPanelElement = document.getElementById('infoPanel')!;
 const resetBtn = document.getElementById('resetBtn')!;
 const focusBtn = document.getElementById('focusBtn')!;
+const toggleLegendBtn = document.getElementById('toggleLegendBtn')!;
+const legendElement = document.getElementById('legend')!;
 
 // Canvas renderer and info panel
 let renderer: CanvasRenderer;
@@ -57,10 +59,16 @@ function focusNetworking(): void {
   infoPanel.show('vpc', layoutServices.vpc);
 }
 
+// Toggle legend visibility
+function toggleLegend(): void {
+  legendElement.classList.toggle('hidden');
+}
+
 // Set up control button listeners
 function setupControlListeners(): void {
   resetBtn.addEventListener('click', resetView);
   focusBtn.addEventListener('click', focusNetworking);
+  toggleLegendBtn.addEventListener('click', toggleLegend);
 }
 
 // Start the application
