@@ -36,7 +36,7 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Accept PRD
 - [x] Initial proof of concept implementation
 - [x] Setup project structure and dependencies according to spec
-- [ ] Initial implementation of network visualization using canvas element
+- [x] Initial implementation of network visualization using canvas element
 - [ ] Ensure canvas navigation works as expected - users can both navigate through and zoom in the canvas element.
 - [ ] Add support for showing detailed descriptions of services when clicked
 - [ ] Move content to json file(s)

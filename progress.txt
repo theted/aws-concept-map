@@ -13,3 +13,27 @@
 - Updated .gitignore to include dist/
 - All tests passing (7 tests)
 - Build produces production-ready output in dist/
+
+## Initial implementation of network visualization using canvas element
+
+- Created src/canvas/CanvasRenderer.ts - a modular canvas rendering class that handles:
+  - Drawing AWS service nodes with category-specific gradient colors
+  - Drawing connection lines between related services
+  - Mouse-based pan (drag) and zoom (wheel) navigation
+  - Zoom towards mouse position for intuitive zooming
+  - Hit detection for clicking on service nodes
+  - Hover state detection with cursor changes
+  - Selection state highlighting
+  - HiDPI/Retina display support via devicePixelRatio
+- Updated src/main.ts to use CanvasRenderer instead of DOM-based rendering
+- Updated index.html to use a canvas element instead of a div
+- Simplified src/style.css by removing DOM node/connection styles (now drawn on canvas)
+- Added comprehensive tests in src/canvas/CanvasRenderer.test.ts:
+  - Tests for initialization and state management
+  - Tests for view reset and focus on service
+  - Tests for render method (context calls verification)
+  - Tests for service click callbacks
+  - Tests for error handling (null context)
+- Added happy-dom as dev dependency for DOM testing environment
+- Updated vite.config.ts with happy-dom test environment
+- All tests passing (24 tests: 7 data + 17 canvas)
