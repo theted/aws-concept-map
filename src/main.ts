@@ -1,19 +1,27 @@
 import { services, connections } from './data/services';
 import { CanvasRenderer } from './canvas/CanvasRenderer';
+import { InfoPanel } from './ui/InfoPanel';
 import type { Service } from './types';
 
 // DOM elements
 const canvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-const infoPanel = document.getElementById('infoPanel')!;
+const infoPanelElement = document.getElementById('infoPanel')!;
 const resetBtn = document.getElementById('resetBtn')!;
 const focusBtn = document.getElementById('focusBtn')!;
 
-// Canvas renderer
+// Canvas renderer and info panel
 let renderer: CanvasRenderer;
+let infoPanel: InfoPanel;
 
 // Initialize the application
 function init(): void {
   renderer = new CanvasRenderer(canvasElement, services, connections);
+
+  // Create info panel with close callback to deselect service in canvas
+  infoPanel = new InfoPanel(infoPanelElement, {
+    onClose: () => renderer.selectService(null),
+  });
+
   renderer.setOnServiceClick(handleServiceClick);
   setupControlListeners();
 }
@@ -21,53 +29,25 @@ function init(): void {
 // Handle service click from canvas
 function handleServiceClick(key: string, service: Service): void {
   if (key && service.name) {
-    showInfo(key, service);
+    infoPanel.show(key, service);
+    renderer.selectService(key);
   } else {
-    hideInfo();
+    infoPanel.hide();
+    renderer.selectService(null);
   }
-}
-
-// Display service information in the info panel
-function showInfo(serviceKey: string, service: Service): void {
-  let html = `
-    <h2>${service.name}</h2>
-    <div class="category ${service.category}">${service.category.toUpperCase()}</div>
-    <p><strong>${service.description}</strong></p>
-    <p>${service.details}</p>
-  `;
-
-  if (service.keyPoints.length > 0) {
-    html += `
-      <div class="key-points">
-        <h3>Key Points for Exam:</h3>
-        <ul>
-          ${service.keyPoints.map((point) => `<li>${point}</li>`).join('')}
-        </ul>
-      </div>
-    `;
-  }
-
-  infoPanel.innerHTML = html;
-  infoPanel.classList.add('visible');
-  renderer.selectService(serviceKey);
-}
-
-// Hide the info panel
-function hideInfo(): void {
-  infoPanel.classList.remove('visible');
-  renderer.selectService(null);
 }
 
 // Reset view to initial state
 function resetView(): void {
   renderer.resetView();
-  hideInfo();
+  infoPanel.hide();
+  renderer.selectService(null);
 }
 
 // Focus on networking/security area (VPC)
 function focusNetworking(): void {
   renderer.focusOnService('vpc');
-  showInfo('vpc', services.vpc);
+  infoPanel.show('vpc', services.vpc);
 }
 
 // Set up control button listeners

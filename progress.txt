@@ -62,3 +62,27 @@
   - Added tests for centerViewOnContent behavior
   - Updated existing tests to account for auto-centered initial state
 - All tests passing (36 tests: 7 data + 29 canvas)
+
+## Add support for showing detailed descriptions of services when clicked
+
+- Created src/ui/InfoPanel.ts - a modular info panel component that handles:
+  - Displaying service details (name, category, description, details, key points)
+  - Close button with proper event handling
+  - XSS protection via HTML escaping for all user-provided content
+  - Show/hide functionality with CSS class toggling
+  - Callback support for close events
+- Updated src/main.ts to use the new InfoPanel class:
+  - Refactored from inline DOM manipulation to modular component
+  - Integrated close callback with canvas renderer for proper state sync
+- Enhanced src/style.css with close button styling:
+  - Positioned absolutely in top-right corner
+  - Hover effects with color transitions
+  - Proper padding on h2 to avoid overlap
+- Added comprehensive tests in src/ui/InfoPanel.test.ts:
+  - Tests for initialization and visibility state
+  - Tests for show/hide functionality
+  - Tests for service content rendering (name, category, description, details, key points)
+  - Tests for close button behavior and callback
+  - Tests for XSS protection (HTML escaping verification)
+  - Tests for service switching
+- All tests passing (56 tests: 7 data + 29 canvas + 20 info panel)
