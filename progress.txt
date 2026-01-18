@@ -207,3 +207,37 @@
   - Tests for cache header configuration
   - Tests for error handling (500 responses)
 - All tests passing (84 tests: 7 data + 29 canvas + 37 info panel + 11 lambda handler)
+
+## Revise and polish design
+
+- Added missing devtools category to legend in index.html
+- Introduced CSS custom properties (variables) in :root for consistent theming:
+  - Color palette: --color-primary, --color-primary-light, --color-primary-dark
+  - UI tokens: --color-bg-dark, --color-text, --color-text-muted
+  - Spacing/effects: --border-radius, --shadow, --shadow-hover
+  - Timing: --transition-fast (0.15s), --transition-normal (0.25s)
+- Added glassmorphism effect to all panels with backdrop-filter: blur(12px)
+- Improved info panel:
+  - Smooth slide-in animation using opacity, visibility, and transform
+  - Custom scrollbar styling for Webkit browsers (purple-tinted)
+  - Better visual hierarchy with improved typography and spacing
+  - Close button redesigned with subtle border and scale animations
+  - Category badges with rounded pill design and uppercase text
+  - Description/details now have distinct styles for better readability
+  - Key points section with colored bullet markers
+  - Extended content section with fade-in animation
+- Improved controls panel:
+  - Buttons use translucent background with subtle border
+  - Hover states include transform and color transitions
+  - Active states provide tactile feedback
+- Improved legend panel:
+  - Hover states on legend items for interactivity
+  - Legend color swatches have subtle shadow
+- Added responsive design improvements:
+  - Mobile breakpoint (768px): Info panel slides up from bottom
+  - Small screens (480px): Legend hidden to save space
+  - Adjusted padding, font sizes, and spacing for touch devices
+- Added focus-visible states for keyboard accessibility on all interactive elements
+- Updated body font stack to include system fonts for cross-platform consistency
+- Added devtools category color (.devtools gradient class)
+- All tests continue to pass (84 tests)
