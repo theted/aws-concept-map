@@ -45,7 +45,7 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Prepare CI/CD pipeline for deploymenet to AWS Lambda. Credentials can be expected to be stored as github secrets, and specified locally in .env for local development.
 - [x] Revise and polish design
 - [x] Prepare deployment documentation
-- [ ] Revise graph layout - services should never overlap - maybe need to group services by category for a clearer layout? It's OK if relationship lines overlap, but the nodes should not.
+- [x] Revise graph layout - services should never overlap - maybe need to group services by category for a clearer layout? It's OK if relationship lines overlap, but the nodes should not.
 - [ ] Add detailed descriptions for all services
 - [ ] Ensure smooth animations, especially when zooming in/out
 - [ ] Add a "toggle legends" button which toggles service categories visibility

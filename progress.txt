@@ -264,3 +264,32 @@
     - Deployment workflow failures
   - Estimated AWS costs (< $1/month for low-traffic)
 - Updated PRD.md marking deployment documentation as complete
+
+## Revise graph layout - non-overlapping nodes with category grouping
+
+- Created src/layout/LayoutEngine.ts - a layout algorithm that:
+  - Groups services by category (compute, storage, database, networking, security, etc.)
+  - Arranges categories in a 4-column grid pattern with configurable spacing
+  - Places services within each category in a grid to prevent overlaps
+  - Configurable via LayoutConfig: nodeWidth, nodeHeight, nodePadding, categoryPadding, categoryColumns
+  - Provides nodesOverlap() method for collision detection between two nodes
+  - Provides validateNoOverlaps() method to verify entire layout has no collisions
+  - Computes layout bounds (minX, maxX, minY, maxY) for view centering
+- Updated src/main.ts to apply layout algorithm on initialization:
+  - LayoutEngine.computeLayout() called before creating CanvasRenderer
+  - Services receive new x/y coordinates that guarantee no overlaps
+  - Original service data (name, description, keyPoints, etc.) preserved
+- Added comprehensive tests in src/layout/LayoutEngine.test.ts:
+  - Tests for constructor and custom configuration
+  - Tests for computeLayout with empty, single, and multiple services
+  - Tests for service property preservation
+  - Tests for category grouping behavior
+  - Tests for bounds calculation
+  - Tests for nodesOverlap collision detection (overlapping, distant, touching edges)
+  - Tests for validateNoOverlaps validation method
+  - Tests for layout with 10+ services in same category
+  - Tests for layout with services across 5 different categories
+  - Tests for layout with real production services data (55 services)
+  - Tests for layout consistency (deterministic results)
+  - Tests for custom node dimensions
+- All tests passing (104 tests: 7 data + 29 canvas + 37 info panel + 11 lambda + 20 layout)
