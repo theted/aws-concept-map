@@ -49,6 +49,13 @@ export class CanvasRenderer {
   private lastTouchDistance = 0;
   private isTouching = false;
 
+  // Animation state
+  private targetState: CanvasState | null = null;
+  private animationStartState: CanvasState | null = null;
+  private animationStartTime: number = 0;
+  private animationDuration: number = 300;
+  private animationFrameId: number | null = null;
+
   constructor(
     canvas: HTMLCanvasElement,
     services: ServiceMap,
@@ -75,8 +82,8 @@ export class CanvasRenderer {
   private setupCanvas(): void {
     this.resizeCanvas();
     window.addEventListener('resize', () => this.resizeCanvas());
-    // Center view on content after initial setup
-    this.centerViewOnContent();
+    // Center view on content after initial setup (no animation on initial load)
+    this.centerViewOnContent(false);
   }
 
   private resizeCanvas(): void {
@@ -108,6 +115,8 @@ export class CanvasRenderer {
   }
 
   private handleMouseDown(e: MouseEvent): void {
+    // Cancel any running animation when user starts dragging
+    this.cancelAnimation();
     this.isDragging = true;
     this.dragDistance = 0; // Reset drag distance on new drag
     this.dragStartX = e.clientX - this.state.translateX;
@@ -151,18 +160,25 @@ export class CanvasRenderer {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    // Get current scale (from target if animating, otherwise from state)
+    const currentScale = this.targetState?.scale ?? this.state.scale;
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    const newScale = Math.max(0.3, Math.min(3, this.state.scale * delta));
+    const newScale = Math.max(0.3, Math.min(3, currentScale * delta));
 
-    // Zoom towards mouse position
+    // Calculate world position under mouse using current state (for smooth feel)
     const worldX = (mouseX - this.state.translateX) / this.state.scale;
     const worldY = (mouseY - this.state.translateY) / this.state.scale;
 
-    this.state.scale = newScale;
-    this.state.translateX = mouseX - worldX * newScale;
-    this.state.translateY = mouseY - worldY * newScale;
+    // Calculate target translate for zoom towards mouse position
+    const targetTranslateX = mouseX - worldX * newScale;
+    const targetTranslateY = mouseY - worldY * newScale;
 
-    this.render();
+    // Use short animation for responsive feel
+    this.animateTo({
+      scale: newScale,
+      translateX: targetTranslateX,
+      translateY: targetTranslateY,
+    }, 120);
   }
 
   private handleClick(e: MouseEvent): void {
@@ -193,6 +209,8 @@ export class CanvasRenderer {
   // Touch event handlers for mobile support
   private handleTouchStart(e: TouchEvent): void {
     e.preventDefault();
+    // Cancel any running animation when user starts touching
+    this.cancelAnimation();
     this.isTouching = true;
     this.dragDistance = 0;
 
@@ -351,10 +369,87 @@ export class CanvasRenderer {
     const worldX = (centerX - this.state.translateX) / this.state.scale;
     const worldY = (centerY - this.state.translateY) / this.state.scale;
 
-    this.state.scale = newScale;
-    this.state.translateX = centerX - worldX * newScale;
-    this.state.translateY = centerY - worldY * newScale;
+    const targetTranslateX = centerX - worldX * newScale;
+    const targetTranslateY = centerY - worldY * newScale;
+
+    this.animateTo({
+      scale: newScale,
+      translateX: targetTranslateX,
+      translateY: targetTranslateY,
+    }, 150);
+  }
+
+  /**
+   * Easing function for smooth deceleration (ease-out cubic)
+   */
+  private easeOutCubic(t: number): number {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  /**
+   * Start a smooth animation to the target state
+   */
+  private animateTo(targetState: Partial<CanvasState>, duration: number = 300): void {
+    // Cancel any existing animation
+    this.cancelAnimation();
+
+    this.animationStartState = { ...this.state };
+    this.targetState = { ...this.state, ...targetState };
+    this.animationStartTime = performance.now();
+    this.animationDuration = duration;
+
+    this.animationFrameId = requestAnimationFrame(() => this.animationLoop());
+  }
+
+  /**
+   * The main animation loop that interpolates between states
+   */
+  private animationLoop(): void {
+    if (!this.targetState || !this.animationStartState) {
+      this.animationFrameId = null;
+      return;
+    }
+
+    const elapsed = performance.now() - this.animationStartTime;
+    const progress = Math.min(elapsed / this.animationDuration, 1);
+    const eased = this.easeOutCubic(progress);
+
+    // Interpolate state
+    this.state.scale = this.animationStartState.scale +
+      (this.targetState.scale - this.animationStartState.scale) * eased;
+    this.state.translateX = this.animationStartState.translateX +
+      (this.targetState.translateX - this.animationStartState.translateX) * eased;
+    this.state.translateY = this.animationStartState.translateY +
+      (this.targetState.translateY - this.animationStartState.translateY) * eased;
+
     this.render();
+
+    if (progress < 1) {
+      this.animationFrameId = requestAnimationFrame(() => this.animationLoop());
+    } else {
+      this.animationFrameId = null;
+      this.targetState = null;
+      this.animationStartState = null;
+    }
+  }
+
+  /**
+   * Cancel any running animation
+   */
+  private cancelAnimation(): void {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+    this.targetState = null;
+    this.animationStartState = null;
+  }
+
+  /**
+   * Check if an animation is currently running
+   */
+  public isAnimating(): boolean {
+    return this.animationFrameId !== null;
   }
 
   private getServiceAtPosition(screenX: number, screenY: number): string | null {
@@ -498,8 +593,9 @@ export class CanvasRenderer {
   /**
    * Centers the view on the content, fitting all services within the canvas
    * with appropriate padding
+   * @param animate Whether to animate the transition (default: true)
    */
-  public centerViewOnContent(): void {
+  public centerViewOnContent(animate: boolean = true): void {
     const serviceList = Object.values(this.services);
     if (serviceList.length === 0) {
       this.state.scale = 1;
@@ -533,22 +629,51 @@ export class CanvasRenderer {
     const scaleY = (rect.height - padding * 2) / contentHeight;
     const scale = Math.min(Math.max(0.3, Math.min(scaleX, scaleY, 1.5)), 3);
 
-    this.state.scale = scale;
-    this.state.translateX = rect.width / 2 - centerX * scale;
-    this.state.translateY = rect.height / 2 - centerY * scale;
-    this.render();
+    const targetTranslateX = rect.width / 2 - centerX * scale;
+    const targetTranslateY = rect.height / 2 - centerY * scale;
+
+    if (animate) {
+      this.animateTo({
+        scale,
+        translateX: targetTranslateX,
+        translateY: targetTranslateY,
+      }, 400);
+    } else {
+      this.state.scale = scale;
+      this.state.translateX = targetTranslateX;
+      this.state.translateY = targetTranslateY;
+      this.render();
+    }
   }
 
-  public focusOnService(key: string): void {
+  /**
+   * Focus and zoom on a specific service
+   * @param key The service key to focus on
+   * @param animate Whether to animate the transition (default: true)
+   */
+  public focusOnService(key: string, animate: boolean = true): void {
     const service = this.services[key];
     if (!service) return;
 
     const rect = this.canvas.getBoundingClientRect();
-    this.state.scale = 1.3;
-    this.state.translateX = rect.width / 2 - service.x * this.state.scale;
-    this.state.translateY = rect.height / 2 - service.y * this.state.scale;
+    const targetScale = 1.3;
+    const targetTranslateX = rect.width / 2 - service.x * targetScale;
+    const targetTranslateY = rect.height / 2 - service.y * targetScale;
+
     this.selectedService = key;
-    this.render();
+
+    if (animate) {
+      this.animateTo({
+        scale: targetScale,
+        translateX: targetTranslateX,
+        translateY: targetTranslateY,
+      }, 400);
+    } else {
+      this.state.scale = targetScale;
+      this.state.translateX = targetTranslateX;
+      this.state.translateY = targetTranslateY;
+      this.render();
+    }
   }
 
   public selectService(key: string | null): void {

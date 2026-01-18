@@ -324,3 +324,40 @@
   - Extended descriptions should balance depth with readability - too long makes the UI feel cluttered
   - Consistent terminology across services helps users build mental connections
 - All tests continue to pass (104 tests)
+
+## Ensure smooth animations, especially when zooming in/out
+
+- Enhanced src/canvas/CanvasRenderer.ts with animation system:
+  - Added animation state properties: targetState, animationStartState, animationStartTime, animationDuration, animationFrameId
+  - Implemented easeOutCubic() easing function for smooth deceleration (ease-out cubic: 1 - (1-t)^3)
+  - Added animateTo() method to start smooth transitions to target state with configurable duration
+  - Added animationLoop() using requestAnimationFrame for 60fps smooth interpolation
+  - Added cancelAnimation() to interrupt animations (e.g., when user starts dragging)
+  - Added public isAnimating() method to check animation state
+- Applied smooth animations to zoom operations:
+  - handleWheel() now animates zoom with 120ms duration for responsive wheel zoom
+  - zoomAtCenter() (keyboard +/-) now animates with 150ms duration
+  - centerViewOnContent() now animates with 400ms duration (optional animate=false parameter for initial load)
+  - focusOnService() now animates with 400ms duration (optional animate=false parameter)
+- User interactions properly interrupt animations:
+  - handleMouseDown() cancels animation when drag starts
+  - handleTouchStart() cancels animation when touch starts
+  - Wheel events during animation accumulate zoom (reads from targetState if animating)
+- Updated tests in src/canvas/CanvasRenderer.test.ts:
+  - Added manual requestAnimationFrame mock (setupRAFMock) for reliable animation testing
+  - Created flushAnimationFrames() helper to advance mock time and execute RAF callbacks
+  - Created advanceMockTime() helper for partial animation testing
+  - Added 7 new animation-specific tests:
+    - Tests for isAnimating() state reporting
+    - Tests for animation cancellation on drag
+    - Tests for state interpolation during animation
+    - Tests for ease-out easing behavior
+    - Tests for zoom accumulation during animation
+  - Updated existing tests to use animation helpers and animate=false parameter where appropriate
+- Gotchas discovered:
+  - Vitest's vi.useFakeTimers() doesn't reliably mock requestAnimationFrame in happy-dom environment
+  - Manual RAF mocking with custom callback queue provides more predictable test behavior
+  - performance.now() must also be mocked for animation timing to work correctly in tests
+  - Wheel zoom needs to read from targetState (if animating) to accumulate rapid scroll events
+  - Initial view setup should skip animation (animate=false) to avoid jarring load experience
+- All tests pass (111 tests: 7 data + 36 canvas + 37 info panel + 11 lambda + 20 layout)
