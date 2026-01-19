@@ -51,6 +51,11 @@ export class CanvasRenderer {
   private lastTouchDistance = 0;
   private isTouching = false;
 
+  // Velocity tracking for momentum/inertia
+  private lastDragTime = 0;
+  private velocityX = 0;
+  private velocityY = 0;
+
   // Animation state
   private targetState: CanvasState | null = null;
   private animationStartState: CanvasState | null = null;
@@ -130,6 +135,10 @@ export class CanvasRenderer {
     this.dragDistance = 0; // Reset drag distance on new drag
     this.dragStartX = e.clientX - this.state.translateX;
     this.dragStartY = e.clientY - this.state.translateY;
+    // Reset velocity tracking
+    this.lastDragTime = performance.now();
+    this.velocityX = 0;
+    this.velocityY = 0;
     this.canvas.style.cursor = 'grabbing';
   }
 
@@ -144,6 +153,20 @@ export class CanvasRenderer {
       // Track total distance moved during drag
       this.dragDistance += Math.abs(newTranslateX - this.state.translateX) +
                           Math.abs(newTranslateY - this.state.translateY);
+
+      // Track velocity for momentum
+      const now = performance.now();
+      const dt = now - this.lastDragTime;
+      if (dt > 0) {
+        // Use exponential smoothing to reduce noise in velocity
+        const alpha = 0.3;
+        const instantVelX = (newTranslateX - this.state.translateX) / dt;
+        const instantVelY = (newTranslateY - this.state.translateY) / dt;
+        this.velocityX = alpha * instantVelX + (1 - alpha) * this.velocityX;
+        this.velocityY = alpha * instantVelY + (1 - alpha) * this.velocityY;
+      }
+      this.lastDragTime = now;
+
       this.state.translateX = newTranslateX;
       this.state.translateY = newTranslateY;
       this.render();
@@ -159,6 +182,9 @@ export class CanvasRenderer {
   }
 
   private handleMouseUp(): void {
+    if (this.isDragging) {
+      this.applyMomentum();
+    }
     this.isDragging = false;
     this.canvas.style.cursor = this.hoveredService ? 'pointer' : 'grab';
   }
@@ -228,6 +254,10 @@ export class CanvasRenderer {
       const touch = e.touches[0];
       this.dragStartX = touch.clientX - this.state.translateX;
       this.dragStartY = touch.clientY - this.state.translateY;
+      // Reset velocity tracking
+      this.lastDragTime = performance.now();
+      this.velocityX = 0;
+      this.velocityY = 0;
     } else if (e.touches.length === 2) {
       // Two finger touch - prepare for pinch zoom
       this.lastTouchDistance = this.getTouchDistance(e.touches);
@@ -245,6 +275,20 @@ export class CanvasRenderer {
       const newTranslateY = touch.clientY - this.dragStartY;
       this.dragDistance += Math.abs(newTranslateX - this.state.translateX) +
                           Math.abs(newTranslateY - this.state.translateY);
+
+      // Track velocity for momentum
+      const now = performance.now();
+      const dt = now - this.lastDragTime;
+      if (dt > 0) {
+        // Use exponential smoothing to reduce noise in velocity
+        const alpha = 0.3;
+        const instantVelX = (newTranslateX - this.state.translateX) / dt;
+        const instantVelY = (newTranslateY - this.state.translateY) / dt;
+        this.velocityX = alpha * instantVelX + (1 - alpha) * this.velocityX;
+        this.velocityY = alpha * instantVelY + (1 - alpha) * this.velocityY;
+      }
+      this.lastDragTime = now;
+
       this.state.translateX = newTranslateX;
       this.state.translateY = newTranslateY;
       this.render();
@@ -276,6 +320,8 @@ export class CanvasRenderer {
   private handleTouchEnd(e: TouchEvent): void {
     // Check if this was a tap (not a drag)
     const DRAG_THRESHOLD = 5;
+    const wasDragging = this.isTouching && this.dragDistance >= DRAG_THRESHOLD;
+
     if (this.isTouching && this.dragDistance < DRAG_THRESHOLD && e.changedTouches.length === 1) {
       const touch = e.changedTouches[0];
       const rect = this.canvas.getBoundingClientRect();
@@ -298,12 +344,20 @@ export class CanvasRenderer {
     }
 
     if (e.touches.length === 0) {
+      // All fingers lifted - apply momentum if was a single-finger drag
+      if (wasDragging) {
+        this.applyMomentum();
+      }
       this.isTouching = false;
     } else if (e.touches.length === 1) {
       // Continuing with single touch after pinch
       const touch = e.touches[0];
       this.dragStartX = touch.clientX - this.state.translateX;
       this.dragStartY = touch.clientY - this.state.translateY;
+      // Reset velocity for new single-touch drag
+      this.lastDragTime = performance.now();
+      this.velocityX = 0;
+      this.velocityY = 0;
     }
   }
 
@@ -323,28 +377,25 @@ export class CanvasRenderer {
   // Keyboard event handler for accessibility
   private handleKeyDown(e: KeyboardEvent): void {
     const PAN_STEP = 50;
+    const PAN_DURATION = 150; // Animation duration for keyboard panning
     const ZOOM_STEP = 0.1;
 
     switch (e.key) {
       case 'ArrowUp':
         e.preventDefault();
-        this.state.translateY += PAN_STEP;
-        this.render();
+        this.panByAmount(0, PAN_STEP, PAN_DURATION);
         break;
       case 'ArrowDown':
         e.preventDefault();
-        this.state.translateY -= PAN_STEP;
-        this.render();
+        this.panByAmount(0, -PAN_STEP, PAN_DURATION);
         break;
       case 'ArrowLeft':
         e.preventDefault();
-        this.state.translateX += PAN_STEP;
-        this.render();
+        this.panByAmount(PAN_STEP, 0, PAN_DURATION);
         break;
       case 'ArrowRight':
         e.preventDefault();
-        this.state.translateX -= PAN_STEP;
-        this.render();
+        this.panByAmount(-PAN_STEP, 0, PAN_DURATION);
         break;
       case '+':
       case '=':
@@ -459,6 +510,45 @@ export class CanvasRenderer {
    */
   public isAnimating(): boolean {
     return this.animationFrameId !== null;
+  }
+
+  /**
+   * Pan the view by a given amount with smooth animation
+   */
+  private panByAmount(deltaX: number, deltaY: number, duration: number): void {
+    // Get current target (if animating) or current state
+    const currentX = this.targetState?.translateX ?? this.state.translateX;
+    const currentY = this.targetState?.translateY ?? this.state.translateY;
+
+    this.animateTo({
+      translateX: currentX + deltaX,
+      translateY: currentY + deltaY,
+    }, duration);
+  }
+
+  /**
+   * Apply momentum/inertia after drag release
+   * Only applies if velocity exceeds threshold
+   */
+  private applyMomentum(): void {
+    const speed = Math.sqrt(this.velocityX ** 2 + this.velocityY ** 2);
+    const MIN_VELOCITY_THRESHOLD = 0.15; // pixels per millisecond
+    const MOMENTUM_DURATION = 600; // Duration of momentum animation
+    const MOMENTUM_MULTIPLIER = 180; // How far momentum carries
+
+    if (speed > MIN_VELOCITY_THRESHOLD) {
+      const targetTranslateX = this.state.translateX + this.velocityX * MOMENTUM_MULTIPLIER;
+      const targetTranslateY = this.state.translateY + this.velocityY * MOMENTUM_MULTIPLIER;
+
+      this.animateTo({
+        translateX: targetTranslateX,
+        translateY: targetTranslateY,
+      }, MOMENTUM_DURATION);
+    }
+
+    // Reset velocity
+    this.velocityX = 0;
+    this.velocityY = 0;
   }
 
   /**

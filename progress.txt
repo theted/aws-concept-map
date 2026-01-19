@@ -602,3 +602,27 @@
   - The nodeWidths utility correctly uses `ServiceMap` since it operates on raw data before layout
 - All tests pass (146 tests: 7 data + 36 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
 
+## Enhanced panning animations with momentum and keyboard smoothing
+
+- Added momentum/inertia effect to panning in src/canvas/CanvasRenderer.ts:
+  - New velocity tracking properties: lastDragTime, velocityX, velocityY
+  - Velocity calculated during drag using exponential smoothing (alpha=0.3) for noise reduction
+  - New applyMomentum() method applies inertia on mouse/touch release
+  - Momentum only triggers if speed exceeds threshold (0.15 px/ms) to avoid drift on slow drags
+  - Momentum animation uses 600ms duration with ease-out cubic for natural deceleration
+  - Momentum multiplier (180) determines how far the view "coasts" after release
+- Added smooth animated keyboard panning:
+  - New panByAmount() method animates panning with configurable duration
+  - Arrow key panning now uses panByAmount() with 150ms duration instead of instant state changes
+  - Accumulates direction if multiple keys pressed rapidly (reads from targetState if animating)
+- Updated handleTouchEnd() to apply momentum on touch release, matching mouse behavior
+- Reset velocity tracking on new drag start to prevent stale velocity from affecting new gestures
+- Updated tests in src/canvas/CanvasRenderer.test.ts:
+  - Added flushAnimationFrames() calls to keyboard navigation tests for animated panning
+- Gotchas discovered:
+  - Exponential smoothing (alpha blend between instant and previous velocity) reduces jitter from imprecise drag sampling
+  - Momentum should only apply if user was actively dragging (wasDragging flag check)
+  - Velocity must be reset when transitioning from pinch to single-finger drag to avoid momentum artifacts
+  - The velocity threshold prevents tiny drifts when user releases mouse without meaningful movement
+- All tests pass (146 tests)
+

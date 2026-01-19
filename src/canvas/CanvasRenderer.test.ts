@@ -453,6 +453,8 @@ describe('CanvasRenderer keyboard navigation', () => {
     const initialState = renderer.getState();
     const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
     mockCanvas.__triggerEvent('keydown', keyEvent);
+    // Advance timers to complete animation
+    flushAnimationFrames();
     const newState = renderer.getState();
     expect(newState.translateY).toBe(initialState.translateY + 50);
   });
@@ -461,6 +463,8 @@ describe('CanvasRenderer keyboard navigation', () => {
     const initialState = renderer.getState();
     const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
     mockCanvas.__triggerEvent('keydown', keyEvent);
+    // Advance timers to complete animation
+    flushAnimationFrames();
     const newState = renderer.getState();
     expect(newState.translateY).toBe(initialState.translateY - 50);
   });
@@ -469,6 +473,8 @@ describe('CanvasRenderer keyboard navigation', () => {
     const initialState = renderer.getState();
     const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
     mockCanvas.__triggerEvent('keydown', keyEvent);
+    // Advance timers to complete animation
+    flushAnimationFrames();
     const newState = renderer.getState();
     expect(newState.translateX).toBe(initialState.translateX + 50);
   });
@@ -477,6 +483,8 @@ describe('CanvasRenderer keyboard navigation', () => {
     const initialState = renderer.getState();
     const keyEvent = new KeyboardEvent('keydown', { key: 'ArrowRight' });
     mockCanvas.__triggerEvent('keydown', keyEvent);
+    // Advance timers to complete animation
+    flushAnimationFrames();
     const newState = renderer.getState();
     expect(newState.translateX).toBe(initialState.translateX - 50);
   });
