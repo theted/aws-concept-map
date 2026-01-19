@@ -1,12 +1,18 @@
-import type { Service } from '../types';
+import type { Service, ServiceMap, Connection } from '../types';
 
 export interface InfoPanelOptions {
   onClose?: () => void;
+  onServiceSelect?: (key: string, service: Service) => void;
+  connections?: Connection[];
+  services?: ServiceMap;
 }
 
 export class InfoPanel {
   private element: HTMLElement;
   private onClose: (() => void) | null = null;
+  private onServiceSelect: ((key: string, service: Service) => void) | null = null;
+  private connections: Connection[] = [];
+  private services: ServiceMap = {};
   private currentServiceKey: string | null = null;
   private currentService: Service | null = null;
   private isExpanded: boolean = false;
@@ -14,6 +20,9 @@ export class InfoPanel {
   constructor(element: HTMLElement, options: InfoPanelOptions = {}) {
     this.element = element;
     this.onClose = options.onClose || null;
+    this.onServiceSelect = options.onServiceSelect || null;
+    this.connections = options.connections || [];
+    this.services = options.services || {};
   }
 
   /**
@@ -78,6 +87,36 @@ export class InfoPanel {
   }
 
   /**
+   * Gets all services related to the current service via connections
+   * Returns an array of [key, service] tuples sorted by service name
+   */
+  private getRelatedServices(): [string, Service][] {
+    if (!this.currentServiceKey || this.connections.length === 0) return [];
+
+    const relatedKeys = new Set<string>();
+
+    // Find all connections involving the current service (connections are bidirectional)
+    for (const [from, to] of this.connections) {
+      if (from === this.currentServiceKey) {
+        relatedKeys.add(to);
+      } else if (to === this.currentServiceKey) {
+        relatedKeys.add(from);
+      }
+    }
+
+    // Map keys to [key, service] tuples, filtering out missing services
+    const related: [string, Service][] = [];
+    for (const key of relatedKeys) {
+      if (this.services[key]) {
+        related.push([key, this.services[key]]);
+      }
+    }
+
+    // Sort by service name for consistent display
+    return related.sort((a, b) => a[1].name.localeCompare(b[1].name));
+  }
+
+  /**
    * Renders the service information HTML
    */
   private render(): void {
@@ -98,6 +137,24 @@ export class InfoPanel {
           <h3>Key Points for Exam:</h3>
           <ul>
             ${service.keyPoints.map((point) => `<li>${this.escapeHtml(point)}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    // Add Relationships section if there are related services
+    const relatedServices = this.getRelatedServices();
+    if (relatedServices.length > 0) {
+      html += `
+        <div class="relationships">
+          <h3>Related Services:</h3>
+          <ul>
+            ${relatedServices
+              .map(
+                ([key, relService]) =>
+                  `<li><button class="related-service-btn" data-service-key="${this.escapeHtml(key)}">${this.escapeHtml(relService.name)}</button></li>`
+              )
+              .join('')}
           </ul>
         </div>
       `;
@@ -168,6 +225,17 @@ export class InfoPanel {
         this.toggleExpanded();
       });
     }
+
+    // Attach click handlers for related service buttons
+    const relatedServiceBtns = this.element.querySelectorAll('.related-service-btn');
+    relatedServiceBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-service-key');
+        if (key && this.services[key] && this.onServiceSelect) {
+          this.onServiceSelect(key, this.services[key]);
+        }
+      });
+    });
   }
 
   /**

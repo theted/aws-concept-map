@@ -229,6 +229,66 @@ body {
     color: var(--color-primary);
 }
 
+/* Relationships section */
+.info-panel .relationships {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(20, 184, 166, 0.2);
+}
+
+.info-panel .relationships h3 {
+    font-size: 13px;
+    color: var(--color-primary-light);
+    margin-bottom: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-panel .relationships ul {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.info-panel .relationships li {
+    margin-bottom: 0;
+}
+
+.info-panel .related-service-btn {
+    background: rgba(20, 184, 166, 0.15);
+    color: var(--color-primary-light);
+    border: 1px solid rgba(20, 184, 166, 0.3);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background var(--transition-fast),
+                color var(--transition-fast),
+                border-color var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+.info-panel .related-service-btn:hover {
+    background: rgba(20, 184, 166, 0.3);
+    color: var(--color-text);
+    border-color: rgba(20, 184, 166, 0.5);
+    transform: translateY(-1px);
+}
+
+.info-panel .related-service-btn:active {
+    transform: translateY(0);
+    background: rgba(20, 184, 166, 0.4);
+}
+
+.info-panel .related-service-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 .info-panel .learn-more-btn {
     display: block;
     width: 100%;

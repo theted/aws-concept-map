@@ -515,3 +515,46 @@
   - display=swap ensures text is visible immediately with a fallback font while Inter loads
 - All tests continue to pass (134 tests)
 
+## Add Relationships section to InfoPanel
+
+- Updated src/ui/InfoPanel.ts with relationships functionality:
+  - Extended InfoPanelOptions interface with new optional properties:
+    - onServiceSelect: callback when a related service is clicked
+    - connections: array of [from, to] tuples representing service relationships
+    - services: ServiceMap for looking up service details by key
+  - Added getRelatedServices() private method that:
+    - Scans connections for any involving the current service (bidirectional)
+    - Returns [key, Service] tuples sorted alphabetically by service name
+    - Filters out missing services from the services map
+  - Updated render() to display "Related Services:" section with clickable buttons
+  - Updated attachEventListeners() to handle clicks on related service buttons
+  - Related service buttons use data-service-key attribute for identification
+- Updated src/main.ts to pass connections and services to InfoPanel:
+  - Reused existing handleServiceClick as onServiceSelect callback
+  - This keeps the panel and canvas in sync when navigating via relationships
+- Added comprehensive CSS styles in src/style.css:
+  - .relationships section with border-top separator and header
+  - .related-service-btn styled as pill buttons with hover/active states
+  - Buttons use flexbox with wrap for responsive layout
+  - Consistent with existing teal color palette and transition effects
+  - Added focus-visible styles for keyboard accessibility
+- Added 12 new tests in src/ui/InfoPanel.test.ts:
+  - Tests for no relationships when no connections provided
+  - Tests for no relationships when service has no connections
+  - Tests for relationships section rendering with connections
+  - Tests for correct button count and bidirectional relationship detection
+  - Tests for alphabetical sorting of related services
+  - Tests for data-service-key attribute on buttons
+  - Tests for onServiceSelect callback invocation
+  - Tests for graceful handling when callback not provided
+  - Tests for XSS protection in related service names
+  - Tests for filtering out missing services from the services map
+- Gotchas discovered:
+  - Connections are bidirectional: [a, b] means a→b AND b→a
+  - Must check both 'from' and 'to' positions when finding related services
+  - Related service buttons should use data attributes for service keys rather than relying on text content
+  - When a service key exists in connections but not in services map, it should be silently filtered out
+  - Sorting related services alphabetically provides consistent, predictable UI ordering
+  - The onServiceSelect callback pattern allows the InfoPanel to remain decoupled from the canvas
+- All tests pass (146 tests: 7 data + 36 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
+

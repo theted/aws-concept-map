@@ -32,8 +32,12 @@ function init(): void {
   renderer = new CanvasRenderer(canvasElement, layoutServices, connections, nodeWidths);
 
   // Create info panel with close callback to deselect service in canvas
+  // and onServiceSelect to navigate to related services
   infoPanel = new InfoPanel(infoPanelElement, {
     onClose: () => renderer.selectService(null),
+    onServiceSelect: handleServiceClick,
+    connections,
+    services: layoutServices,
   });
 
   renderer.setOnServiceClick(handleServiceClick);

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { InfoPanel } from './InfoPanel';
-import type { Service } from '../types';
+import type { Service, ServiceMap, Connection } from '../types';
 
 // Sample test service
 const testService: Service = {
@@ -415,6 +415,155 @@ describe('InfoPanel', () => {
       infoPanel.hide();
       infoPanel.show('lambda', testServiceWithExtended);
       expect(infoPanel.isExtendedContentVisible()).toBe(false);
+    });
+  });
+
+  describe('Relationships section', () => {
+    // Test services for relationships
+    const servicesMap: ServiceMap = {
+      ec2: testService,
+      lambda: testServiceWithExtended,
+      s3: testServiceWithOnlyDescription,
+      vpc: testServiceWithOnlyResources,
+      simple: testServiceNoKeyPoints,
+    };
+
+    // Connections: ec2 connects to lambda and vpc, lambda connects to s3
+    const connections: Connection[] = [
+      ['ec2', 'lambda'],
+      ['ec2', 'vpc'],
+      ['lambda', 's3'],
+    ];
+
+    let panelWithRelationships: InfoPanel;
+
+    beforeEach(() => {
+      panelWithRelationships = new InfoPanel(element, {
+        connections,
+        services: servicesMap,
+      });
+    });
+
+    it('should not show relationships section when no connections provided', () => {
+      const panelNoConnections = new InfoPanel(element, {});
+      panelNoConnections.show('ec2', testService);
+      const relationships = element.querySelector('.relationships');
+      expect(relationships).toBeNull();
+    });
+
+    it('should not show relationships section when service has no connections', () => {
+      panelWithRelationships.show('simple', testServiceNoKeyPoints);
+      const relationships = element.querySelector('.relationships');
+      expect(relationships).toBeNull();
+    });
+
+    it('should show relationships section when service has connections', () => {
+      panelWithRelationships.show('ec2', testService);
+      const relationships = element.querySelector('.relationships');
+      expect(relationships).not.toBeNull();
+      expect(relationships?.querySelector('h3')?.textContent).toBe('Related Services:');
+    });
+
+    it('should render correct number of related service buttons', () => {
+      // EC2 connects to lambda and vpc
+      panelWithRelationships.show('ec2', testService);
+      const buttons = element.querySelectorAll('.related-service-btn');
+      expect(buttons.length).toBe(2);
+    });
+
+    it('should find bidirectional relationships (as source)', () => {
+      // Lambda is connected to ec2 (as target), and to s3 (as source)
+      panelWithRelationships.show('lambda', testServiceWithExtended);
+      const buttons = element.querySelectorAll('.related-service-btn');
+      // Should find: ec2 (from ec2->lambda) and s3 (from lambda->s3)
+      expect(buttons.length).toBe(2);
+    });
+
+    it('should find bidirectional relationships (as target)', () => {
+      // VPC is only connected from ec2 (ec2->vpc)
+      panelWithRelationships.show('vpc', testServiceWithOnlyResources);
+      const buttons = element.querySelectorAll('.related-service-btn');
+      expect(buttons.length).toBe(1);
+      expect(buttons[0].textContent).toBe('EC2');
+    });
+
+    it('should sort related services by name', () => {
+      // EC2 connects to lambda (L) and vpc (V) - should be sorted L then V
+      panelWithRelationships.show('ec2', testService);
+      const buttons = element.querySelectorAll('.related-service-btn');
+      expect(buttons[0].textContent).toBe('Lambda');
+      expect(buttons[1].textContent).toBe('VPC');
+    });
+
+    it('should set data-service-key attribute on buttons', () => {
+      panelWithRelationships.show('ec2', testService);
+      const buttons = element.querySelectorAll('.related-service-btn');
+      const keys = Array.from(buttons).map((b) => b.getAttribute('data-service-key'));
+      expect(keys).toContain('lambda');
+      expect(keys).toContain('vpc');
+    });
+
+    it('should call onServiceSelect when related service button is clicked', () => {
+      const onServiceSelect = vi.fn();
+      const panelWithCallback = new InfoPanel(element, {
+        connections,
+        services: servicesMap,
+        onServiceSelect,
+      });
+
+      panelWithCallback.show('ec2', testService);
+      const lambdaBtn = element.querySelector(
+        '.related-service-btn[data-service-key="lambda"]'
+      ) as HTMLButtonElement;
+      lambdaBtn.click();
+
+      expect(onServiceSelect).toHaveBeenCalledWith('lambda', testServiceWithExtended);
+    });
+
+    it('should not call onServiceSelect when callback not provided', () => {
+      panelWithRelationships.show('ec2', testService);
+      const lambdaBtn = element.querySelector(
+        '.related-service-btn[data-service-key="lambda"]'
+      ) as HTMLButtonElement;
+      // Should not throw when clicking without callback
+      expect(() => lambdaBtn.click()).not.toThrow();
+    });
+
+    it('should escape HTML in related service names (XSS protection)', () => {
+      const maliciousServices: ServiceMap = {
+        malicious: {
+          ...testService,
+          name: '<script>alert("xss")</script>',
+        },
+        safe: testServiceNoKeyPoints,
+      };
+      const maliciousConnections: Connection[] = [['malicious', 'safe']];
+
+      const panelMalicious = new InfoPanel(element, {
+        connections: maliciousConnections,
+        services: maliciousServices,
+      });
+
+      panelMalicious.show('safe', testServiceNoKeyPoints);
+      const btn = element.querySelector('.related-service-btn');
+      expect(btn?.innerHTML).toContain('&lt;script&gt;');
+      expect(btn?.innerHTML).not.toContain('<script>');
+    });
+
+    it('should not show related services that are missing from services map', () => {
+      // Create connection to a service key that doesn't exist in the services map
+      const partialConnections: Connection[] = [['ec2', 'missing-service']];
+      const panelPartial = new InfoPanel(element, {
+        connections: partialConnections,
+        services: servicesMap,
+      });
+
+      panelPartial.show('ec2', testService);
+      const buttons = element.querySelectorAll('.related-service-btn');
+      expect(buttons.length).toBe(0);
+      // Should not render the relationships section at all
+      const relationships = element.querySelector('.relationships');
+      expect(relationships).toBeNull();
     });
   });
 });
