@@ -490,3 +490,28 @@
   - The base linear gradient should be the last layer (rendered first/behind) to provide a consistent dark foundation
 - All tests continue to pass (134 tests)
 
+## Design: Use modern, smooth sans-serif fonts
+
+- Added Inter font from Google Fonts to index.html:
+  - Used preconnect hints for faster font loading
+  - Loaded weights 400, 500, 600, 700 for body, medium, semibold, and bold text
+  - Used display=swap for better loading performance
+- Updated src/style.css with modern typography:
+  - Added --font-family CSS variable for consistent font reference
+  - Changed body font to Inter with system font fallbacks
+  - Added -webkit-font-smoothing: antialiased for crisp rendering on WebKit browsers
+  - Added -moz-osx-font-smoothing: grayscale for macOS Firefox
+  - Added text-rendering: optimizeLegibility for better letter spacing and kerning
+- Updated src/canvas/CanvasRenderer.ts:
+  - Changed canvas text font to Inter with system font fallbacks
+- Updated src/utils/nodeWidths.ts:
+  - Changed default font configuration to Inter for consistent node width calculations
+- Gotchas discovered:
+  - Inter font is designed specifically for screens and has excellent readability at small sizes
+  - The font stack should always include system font fallbacks for cases where web fonts fail to load
+  - -webkit-font-smoothing: antialiased is essential for modern macOS rendering (without it, fonts appear too bold)
+  - Canvas fonts don't automatically inherit from CSS, so they must be set explicitly with matching font stacks
+  - Using preconnect hints for Google Fonts significantly improves load time by establishing early connections
+  - display=swap ensures text is visible immediately with a fallback font while Inter loads
+- All tests continue to pass (134 tests)
+

@@ -10,7 +10,7 @@ export interface NodeWidthConfig {
 export type NodeWidthMap = Map<string, number>;
 
 const DEFAULT_CONFIG: NodeWidthConfig = {
-  font: '600 13px "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+  font: '600 13px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   minWidth: 80,
   maxWidth: 200,
   horizontalPadding: 24, // 12px padding on each side

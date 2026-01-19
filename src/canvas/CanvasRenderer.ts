@@ -593,7 +593,7 @@ export class CanvasRenderer {
 
     // Draw text
     this.ctx.fillStyle = '#ffffff';
-    this.ctx.font = '600 13px "Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
+    this.ctx.font = '600 13px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(service.name, x, y);
