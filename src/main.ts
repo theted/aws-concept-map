@@ -2,6 +2,7 @@ import { services, connections } from './data/services';
 import { CanvasRenderer } from './canvas/CanvasRenderer';
 import { InfoPanel } from './ui/InfoPanel';
 import { LayoutEngine } from './layout/LayoutEngine';
+import { computeAllNodeWidths } from './utils/nodeWidths';
 import type { Service, ServiceMap } from './types';
 
 // DOM elements
@@ -19,12 +20,16 @@ let layoutServices: ServiceMap;
 
 // Initialize the application
 function init(): void {
-  // Apply layout algorithm to prevent node overlaps
-  const layoutEngine = new LayoutEngine();
+  // Compute dynamic node widths based on service names
+  const nodeWidths = computeAllNodeWidths(services);
+
+  // Apply layout algorithm with variable widths to prevent node overlaps
+  const layoutEngine = new LayoutEngine({}, nodeWidths);
   const layoutResult = layoutEngine.computeLayout(services);
   layoutServices = layoutResult.services;
 
-  renderer = new CanvasRenderer(canvasElement, layoutServices, connections);
+  // Create renderer with the same node widths
+  renderer = new CanvasRenderer(canvasElement, layoutServices, connections, nodeWidths);
 
   // Create info panel with close callback to deselect service in canvas
   infoPanel = new InfoPanel(infoPanelElement, {

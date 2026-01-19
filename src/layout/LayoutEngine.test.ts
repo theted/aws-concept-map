@@ -13,7 +13,7 @@ describe('LayoutEngine', () => {
   describe('constructor', () => {
     it('should create an instance with default config', () => {
       const config = engine.getConfig();
-      expect(config.nodeWidth).toBe(120);
+      expect(config.defaultNodeWidth).toBe(120);
       expect(config.nodeHeight).toBe(40);
       expect(config.nodePadding).toBe(30);
       expect(config.categoryPadding).toBe(80);
@@ -22,11 +22,11 @@ describe('LayoutEngine', () => {
 
     it('should allow custom config', () => {
       const customEngine = new LayoutEngine({
-        nodeWidth: 100,
+        defaultNodeWidth: 100,
         nodePadding: 20,
       });
       const config = customEngine.getConfig();
-      expect(config.nodeWidth).toBe(100);
+      expect(config.defaultNodeWidth).toBe(100);
       expect(config.nodePadding).toBe(20);
       expect(config.nodeHeight).toBe(40); // Default
     });
@@ -153,39 +153,39 @@ describe('LayoutEngine', () => {
   describe('nodesOverlap', () => {
     it('should detect overlapping nodes', () => {
       const pos1 = { x: 100, y: 100 };
-      const pos2 = { x: 110, y: 100 }; // Only 10px apart, but nodes are 120px wide
+      const pos2 = { x: 110, y: 100 }; // Only 10px apart, but nodes are 120px wide by default
 
-      expect(engine.nodesOverlap(pos1, pos2)).toBe(true);
+      expect(engine.nodesOverlap('node1', pos1, 'node2', pos2)).toBe(true);
     });
 
     it('should not detect overlap for distant nodes', () => {
       const pos1 = { x: 0, y: 0 };
       const pos2 = { x: 200, y: 200 }; // Far apart
 
-      expect(engine.nodesOverlap(pos1, pos2)).toBe(false);
+      expect(engine.nodesOverlap('node1', pos1, 'node2', pos2)).toBe(false);
     });
 
     it('should detect overlap when nodes touch edges', () => {
-      // Nodes are 120px wide, so center-to-center distance < 120 means overlap
+      // Nodes are 120px wide by default, so center-to-center distance < 120 means overlap
       const pos1 = { x: 0, y: 0 };
       const pos2 = { x: 119, y: 0 }; // Just barely overlapping
 
-      expect(engine.nodesOverlap(pos1, pos2)).toBe(true);
+      expect(engine.nodesOverlap('node1', pos1, 'node2', pos2)).toBe(true);
     });
 
     it('should not detect overlap when nodes are separated by gap', () => {
-      // Nodes are 120px wide, so > 120 apart (center-to-center) means no overlap
+      // Nodes are 120px wide by default, so > 120 apart (center-to-center) means no overlap
       const pos1 = { x: 0, y: 0 };
       const pos2 = { x: 121, y: 0 }; // Just beyond touching
 
-      expect(engine.nodesOverlap(pos1, pos2)).toBe(false);
+      expect(engine.nodesOverlap('node1', pos1, 'node2', pos2)).toBe(false);
     });
 
     it('should detect vertical overlap', () => {
       const pos1 = { x: 100, y: 100 };
       const pos2 = { x: 100, y: 110 }; // Same x, only 10px apart vertically (nodes are 40px high)
 
-      expect(engine.nodesOverlap(pos1, pos2)).toBe(true);
+      expect(engine.nodesOverlap('node1', pos1, 'node2', pos2)).toBe(true);
     });
   });
 
@@ -330,7 +330,7 @@ describe('LayoutEngine', () => {
   describe('custom configuration', () => {
     it('should respect custom node dimensions', () => {
       const customEngine = new LayoutEngine({
-        nodeWidth: 200,
+        defaultNodeWidth: 200,
         nodeHeight: 80,
         nodePadding: 50,
       });
@@ -344,6 +344,103 @@ describe('LayoutEngine', () => {
       const validation = customEngine.validateNoOverlaps(result.services);
 
       expect(validation.valid).toBe(true);
+    });
+  });
+
+  describe('variable node widths', () => {
+    it('should accept node widths in constructor', () => {
+      const nodeWidths = new Map<string, number>([
+        ['test1', 150],
+        ['test2', 100],
+      ]);
+      const variableEngine = new LayoutEngine({}, nodeWidths);
+
+      const services: ServiceMap = {
+        test1: { name: 'Wide Service', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        test2: { name: 'Narrow', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+      };
+
+      const result = variableEngine.computeLayout(services);
+      const validation = variableEngine.validateNoOverlaps(result.services);
+
+      expect(validation.valid).toBe(true);
+    });
+
+    it('should use setNodeWidths to update widths', () => {
+      const variableEngine = new LayoutEngine();
+      const nodeWidths = new Map<string, number>([
+        ['test1', 200],
+        ['test2', 80],
+      ]);
+      variableEngine.setNodeWidths(nodeWidths);
+
+      const services: ServiceMap = {
+        test1: { name: 'Very Wide Service Name', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        test2: { name: 'S3', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+      };
+
+      const result = variableEngine.computeLayout(services);
+      const validation = variableEngine.validateNoOverlaps(result.services);
+
+      expect(validation.valid).toBe(true);
+    });
+
+    it('should prevent overlaps with variable widths', () => {
+      const nodeWidths = new Map<string, number>([
+        ['wide1', 200],
+        ['wide2', 180],
+        ['narrow1', 80],
+        ['narrow2', 90],
+      ]);
+      const variableEngine = new LayoutEngine({}, nodeWidths);
+
+      const services: ServiceMap = {
+        wide1: { name: 'CloudFormation', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        wide2: { name: 'Elastic Beanstalk', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        narrow1: { name: 'S3', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        narrow2: { name: 'EC2', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+      };
+
+      const result = variableEngine.computeLayout(services);
+      const validation = variableEngine.validateNoOverlaps(result.services);
+
+      expect(validation.valid).toBe(true);
+    });
+
+    it('should fall back to default width for unknown services', () => {
+      const nodeWidths = new Map<string, number>([
+        ['known', 150],
+      ]);
+      const variableEngine = new LayoutEngine({}, nodeWidths);
+
+      const services: ServiceMap = {
+        known: { name: 'Known', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        unknown: { name: 'Unknown', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+      };
+
+      const result = variableEngine.computeLayout(services);
+      const validation = variableEngine.validateNoOverlaps(result.services);
+
+      expect(validation.valid).toBe(true);
+    });
+
+    it('should calculate bounds correctly with variable widths', () => {
+      const nodeWidths = new Map<string, number>([
+        ['wide', 200],
+        ['narrow', 80],
+      ]);
+      const variableEngine = new LayoutEngine({}, nodeWidths);
+
+      const services: ServiceMap = {
+        wide: { name: 'Wide Service', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        narrow: { name: 'S3', category: 'storage', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+      };
+
+      const result = variableEngine.computeLayout(services);
+
+      // Bounds should account for the wider nodes
+      expect(result.bounds.maxX - result.bounds.minX).toBeGreaterThan(0);
+      expect(result.bounds.maxY - result.bounds.minY).toBeGreaterThan(0);
     });
   });
 });

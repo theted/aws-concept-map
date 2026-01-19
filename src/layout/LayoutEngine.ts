@@ -1,7 +1,9 @@
 import type { ServiceMap, ServiceCategory } from '../types';
 
+export type NodeWidthMap = Map<string, number>;
+
 export interface LayoutConfig {
-  nodeWidth: number;
+  defaultNodeWidth: number;
   nodeHeight: number;
   nodePadding: number;
   categoryPadding: number;
@@ -19,7 +21,7 @@ export interface LayoutResult {
 }
 
 const DEFAULT_CONFIG: LayoutConfig = {
-  nodeWidth: 120,
+  defaultNodeWidth: 120,
   nodeHeight: 40,
   nodePadding: 30, // Space between nodes within a category
   categoryPadding: 80, // Space between category groups
@@ -44,12 +46,29 @@ const CATEGORY_ORDER: ServiceCategory[] = [
 /**
  * LayoutEngine computes non-overlapping positions for service nodes
  * by grouping them by category and arranging in a grid pattern.
+ * Supports variable node widths for services with different name lengths.
  */
 export class LayoutEngine {
   private config: LayoutConfig;
+  private nodeWidths: NodeWidthMap;
 
-  constructor(config: Partial<LayoutConfig> = {}) {
+  constructor(config: Partial<LayoutConfig> = {}, nodeWidths?: NodeWidthMap) {
     this.config = { ...DEFAULT_CONFIG, ...config };
+    this.nodeWidths = nodeWidths || new Map();
+  }
+
+  /**
+   * Sets the node widths map for variable-width layout.
+   */
+  public setNodeWidths(nodeWidths: NodeWidthMap): void {
+    this.nodeWidths = nodeWidths;
+  }
+
+  /**
+   * Gets the width for a specific node, falling back to default.
+   */
+  private getNodeWidth(key: string): number {
+    return this.nodeWidths.get(key) ?? this.config.defaultNodeWidth;
   }
 
   /**
@@ -58,7 +77,7 @@ export class LayoutEngine {
    */
   public computeLayout(services: ServiceMap): LayoutResult {
     const grouped = this.groupByCategory(services);
-    const categoryGroups = this.computeCategoryPositions(grouped);
+    const categoryGroups = this.computeCategoryPositions(grouped, services);
 
     const result: ServiceMap = {};
     let minX = Infinity, maxX = -Infinity;
@@ -68,19 +87,20 @@ export class LayoutEngine {
       const groupPosition = categoryGroups.get(category as ServiceCategory);
       if (!groupPosition) continue;
 
-      const positions = this.layoutCategoryServices(serviceKeys, groupPosition);
+      const positions = this.layoutCategoryServices(serviceKeys, groupPosition, services);
 
       for (let i = 0; i < serviceKeys.length; i++) {
         const key = serviceKeys[i];
         const pos = positions[i];
+        const nodeWidth = this.getNodeWidth(key);
         result[key] = {
           ...services[key],
           x: pos.x,
           y: pos.y,
         };
 
-        minX = Math.min(minX, pos.x - this.config.nodeWidth / 2);
-        maxX = Math.max(maxX, pos.x + this.config.nodeWidth / 2);
+        minX = Math.min(minX, pos.x - nodeWidth / 2);
+        maxX = Math.max(maxX, pos.x + nodeWidth / 2);
         minY = Math.min(minY, pos.y - this.config.nodeHeight / 2);
         maxY = Math.max(maxY, pos.y + this.config.nodeHeight / 2);
       }
@@ -115,16 +135,30 @@ export class LayoutEngine {
   }
 
   /**
+   * Gets the maximum node width for a category's services.
+   */
+  private getMaxWidthForCategory(serviceKeys: string[]): number {
+    if (serviceKeys.length === 0) return this.config.defaultNodeWidth;
+    let maxWidth = 0;
+    for (const key of serviceKeys) {
+      maxWidth = Math.max(maxWidth, this.getNodeWidth(key));
+    }
+    return maxWidth;
+  }
+
+  /**
    * Computes the top-left position for each category group.
    * Categories are arranged in a grid pattern.
+   * Uses maximum node width within each category for consistent spacing.
    */
   private computeCategoryPositions(
-    grouped: Record<string, string[]>
-  ): Map<ServiceCategory, { x: number; y: number; width: number; height: number }> {
-    const positions = new Map<ServiceCategory, { x: number; y: number; width: number; height: number }>();
+    grouped: Record<string, string[]>,
+    _services: ServiceMap
+  ): Map<ServiceCategory, { x: number; y: number; width: number; height: number; maxNodeWidth: number }> {
+    const positions = new Map<ServiceCategory, { x: number; y: number; width: number; height: number; maxNodeWidth: number }>();
 
     // Calculate dimensions for each category group
-    const categoryDimensions: Map<ServiceCategory, { cols: number; rows: number; width: number; height: number }> = new Map();
+    const categoryDimensions: Map<ServiceCategory, { cols: number; rows: number; width: number; height: number; maxNodeWidth: number }> = new Map();
 
     for (const category of CATEGORY_ORDER) {
       const keys = grouped[category];
@@ -132,10 +166,13 @@ export class LayoutEngine {
 
       const cols = Math.ceil(Math.sqrt(keys.length));
       const rows = Math.ceil(keys.length / cols);
-      const width = cols * (this.config.nodeWidth + this.config.nodePadding) - this.config.nodePadding;
+
+      // Use the maximum node width in this category for consistent column spacing
+      const maxNodeWidth = this.getMaxWidthForCategory(keys);
+      const width = cols * (maxNodeWidth + this.config.nodePadding) - this.config.nodePadding;
       const height = rows * (this.config.nodeHeight + this.config.nodePadding) - this.config.nodePadding;
 
-      categoryDimensions.set(category, { cols, rows, width, height });
+      categoryDimensions.set(category, { cols, rows, width, height, maxNodeWidth });
     }
 
     // Arrange categories in rows
@@ -161,6 +198,7 @@ export class LayoutEngine {
         y: currentY,
         width: dims.width,
         height: dims.height,
+        maxNodeWidth: dims.maxNodeWidth,
       });
 
       currentX += dims.width + this.config.categoryPadding;
@@ -174,23 +212,26 @@ export class LayoutEngine {
   /**
    * Lays out services within a category group in a grid pattern.
    * Returns center positions for each service node.
+   * Uses the category's maximum node width for consistent cell spacing.
    */
   private layoutCategoryServices(
     serviceKeys: string[],
-    groupPosition: { x: number; y: number; width: number; height: number }
+    groupPosition: { x: number; y: number; width: number; height: number; maxNodeWidth: number },
+    _services: ServiceMap
   ): { x: number; y: number }[] {
     const positions: { x: number; y: number }[] = [];
     const cols = Math.ceil(Math.sqrt(serviceKeys.length));
 
-    const cellWidth = this.config.nodeWidth + this.config.nodePadding;
+    // Use the category's maximum node width for cell spacing
+    const cellWidth = groupPosition.maxNodeWidth + this.config.nodePadding;
     const cellHeight = this.config.nodeHeight + this.config.nodePadding;
 
     for (let i = 0; i < serviceKeys.length; i++) {
       const col = i % cols;
       const row = Math.floor(i / cols);
 
-      // Calculate center position
-      const x = groupPosition.x + col * cellWidth + this.config.nodeWidth / 2;
+      // Calculate center position using max width for consistent spacing
+      const x = groupPosition.x + col * cellWidth + groupPosition.maxNodeWidth / 2;
       const y = groupPosition.y + row * cellHeight + this.config.nodeHeight / 2;
 
       positions.push({ x, y });
@@ -200,25 +241,28 @@ export class LayoutEngine {
   }
 
   /**
-   * Checks if two nodes overlap.
+   * Checks if two nodes overlap using their individual widths.
    */
   public nodesOverlap(
+    key1: string,
     pos1: { x: number; y: number },
+    key2: string,
     pos2: { x: number; y: number }
   ): boolean {
-    const halfWidth = this.config.nodeWidth / 2;
+    const halfWidth1 = this.getNodeWidth(key1) / 2;
+    const halfWidth2 = this.getNodeWidth(key2) / 2;
     const halfHeight = this.config.nodeHeight / 2;
 
     const rect1 = {
-      left: pos1.x - halfWidth,
-      right: pos1.x + halfWidth,
+      left: pos1.x - halfWidth1,
+      right: pos1.x + halfWidth1,
       top: pos1.y - halfHeight,
       bottom: pos1.y + halfHeight,
     };
 
     const rect2 = {
-      left: pos2.x - halfWidth,
-      right: pos2.x + halfWidth,
+      left: pos2.x - halfWidth2,
+      right: pos2.x + halfWidth2,
       top: pos2.y - halfHeight,
       bottom: pos2.y + halfHeight,
     };
@@ -233,6 +277,7 @@ export class LayoutEngine {
 
   /**
    * Validates that no nodes in the layout overlap.
+   * Uses individual node widths for accurate collision detection.
    */
   public validateNoOverlaps(services: ServiceMap): { valid: boolean; overlaps: [string, string][] } {
     const overlaps: [string, string][] = [];
@@ -245,7 +290,7 @@ export class LayoutEngine {
         const service1 = services[key1];
         const service2 = services[key2];
 
-        if (this.nodesOverlap(service1, service2)) {
+        if (this.nodesOverlap(key1, service1, key2, service2)) {
           overlaps.push([key1, key2]);
         }
       }

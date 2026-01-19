@@ -1,4 +1,5 @@
 import type { Service, ServiceMap, Connection } from '../types';
+import { computeAllNodeWidths, type NodeWidthMap } from '../utils/nodeWidths';
 
 export interface CanvasState {
   scale: number;
@@ -7,7 +8,6 @@ export interface CanvasState {
 }
 
 export interface NodeDimensions {
-  width: number;
   height: number;
   padding: number;
 }
@@ -26,10 +26,12 @@ const CATEGORY_COLORS: Record<string, { start: string; end: string }> = {
 };
 
 const NODE_DIMENSIONS: NodeDimensions = {
-  width: 120,
   height: 40,
   padding: 12,
 };
+
+// Default fallback width if not computed
+const DEFAULT_NODE_WIDTH = 120;
 
 export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
@@ -56,10 +58,14 @@ export class CanvasRenderer {
   private animationDuration: number = 300;
   private animationFrameId: number | null = null;
 
+  // Dynamic node widths
+  private nodeWidths: NodeWidthMap;
+
   constructor(
     canvas: HTMLCanvasElement,
     services: ServiceMap,
-    connections: Connection[]
+    connections: Connection[],
+    nodeWidths?: NodeWidthMap
   ) {
     this.canvas = canvas;
     const ctx = canvas.getContext('2d');
@@ -74,6 +80,9 @@ export class CanvasRenderer {
       translateX: 0,
       translateY: 0,
     };
+
+    // Use provided widths or compute them
+    this.nodeWidths = nodeWidths || computeAllNodeWidths(services, this.ctx);
 
     this.setupCanvas();
     this.setupEventListeners();
@@ -452,6 +461,13 @@ export class CanvasRenderer {
     return this.animationFrameId !== null;
   }
 
+  /**
+   * Gets the width for a specific service node.
+   */
+  private getNodeWidth(key: string): number {
+    return this.nodeWidths.get(key) ?? DEFAULT_NODE_WIDTH;
+  }
+
   private getServiceAtPosition(screenX: number, screenY: number): string | null {
     // Convert screen coordinates to world coordinates
     const worldX = (screenX - this.state.translateX) / this.state.scale;
@@ -460,7 +476,7 @@ export class CanvasRenderer {
     for (const [key, service] of Object.entries(this.services)) {
       const nodeX = service.x;
       const nodeY = service.y;
-      const halfWidth = NODE_DIMENSIONS.width / 2;
+      const halfWidth = this.getNodeWidth(key) / 2;
       const halfHeight = NODE_DIMENSIONS.height / 2;
 
       if (
@@ -524,7 +540,8 @@ export class CanvasRenderer {
 
   private drawNode(key: string, service: Service): void {
     const { x, y } = service;
-    const { width, height } = NODE_DIMENSIONS;
+    const width = this.getNodeWidth(key);
+    const { height } = NODE_DIMENSIONS;
     const halfWidth = width / 2;
     const halfHeight = height / 2;
     const borderRadius = 8;
@@ -596,8 +613,8 @@ export class CanvasRenderer {
    * @param animate Whether to animate the transition (default: true)
    */
   public centerViewOnContent(animate: boolean = true): void {
-    const serviceList = Object.values(this.services);
-    if (serviceList.length === 0) {
+    const serviceEntries = Object.entries(this.services);
+    if (serviceEntries.length === 0) {
       this.state.scale = 1;
       this.state.translateX = 0;
       this.state.translateY = 0;
@@ -605,13 +622,14 @@ export class CanvasRenderer {
       return;
     }
 
-    // Calculate bounding box of all services
+    // Calculate bounding box of all services using their individual widths
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
 
-    for (const service of serviceList) {
-      minX = Math.min(minX, service.x - NODE_DIMENSIONS.width / 2);
-      maxX = Math.max(maxX, service.x + NODE_DIMENSIONS.width / 2);
+    for (const [key, service] of serviceEntries) {
+      const nodeWidth = this.getNodeWidth(key);
+      minX = Math.min(minX, service.x - nodeWidth / 2);
+      maxX = Math.max(maxX, service.x + nodeWidth / 2);
       minY = Math.min(minY, service.y - NODE_DIMENSIONS.height / 2);
       maxY = Math.max(maxY, service.y + NODE_DIMENSIONS.height / 2);
     }
@@ -688,5 +706,12 @@ export class CanvasRenderer {
   public setState(state: Partial<CanvasState>): void {
     this.state = { ...this.state, ...state };
     this.render();
+  }
+
+  /**
+   * Gets the computed node widths map.
+   */
+  public getNodeWidths(): NodeWidthMap {
+    return this.nodeWidths;
   }
 }

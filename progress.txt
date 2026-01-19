@@ -408,3 +408,56 @@
   - Including keyboard shortcuts in README helps discoverability since they're not visible in the UI
   - Service count (57) and category count (10) should be verified against actual data before documenting
 - All tests continue to pass (117 tests)
+
+## Update layout/grid system to dynamic widths for service names
+
+- Created src/utils/nodeWidths.ts utility module:
+  - computeNodeWidth() function measures text using canvas ctx.measureText()
+  - computeAllNodeWidths() computes widths for all services, creating temp canvas if needed
+  - Configurable via NodeWidthConfig: font, minWidth (80px), maxWidth (200px), horizontalPadding (24px)
+  - getDefaultNodeWidthConfig() returns a copy of the default configuration
+- Updated src/canvas/CanvasRenderer.ts with dynamic width support:
+  - Added nodeWidths property (Map<string, number>) to store computed widths
+  - Constructor accepts optional nodeWidths parameter, falls back to computing them internally
+  - Added private getNodeWidth(key) helper method with fallback to DEFAULT_NODE_WIDTH
+  - Updated getServiceAtPosition() to use dynamic width for hit detection
+  - Updated drawNode() to use dynamic width for rendering
+  - Updated centerViewOnContent() to use dynamic widths for bounding box calculation
+  - Added public getNodeWidths() getter to expose the widths map
+  - NodeDimensions interface now only contains height and padding (width is per-node)
+- Updated src/layout/LayoutEngine.ts to handle variable widths:
+  - Changed LayoutConfig.nodeWidth to LayoutConfig.defaultNodeWidth for fallback
+  - Constructor accepts optional NodeWidthMap as second parameter
+  - Added setNodeWidths() public method to update widths after construction
+  - Added private getNodeWidth(key) method with defaultNodeWidth fallback
+  - Added private getMaxWidthForCategory() to compute max width within a category
+  - Updated computeCategoryPositions() to use max width per category for grid sizing
+  - Updated layoutCategoryServices() to use maxNodeWidth for consistent cell spacing
+  - Updated nodesOverlap() signature to (key1, pos1, key2, pos2) for per-node widths
+  - Updated validateNoOverlaps() to pass node keys for accurate collision detection
+  - computeLayout() now uses per-node widths for bounds calculation
+- Updated src/main.ts to integrate variable widths:
+  - Imports computeAllNodeWidths from utils
+  - Computes nodeWidths before creating LayoutEngine and CanvasRenderer
+  - Passes same nodeWidths to both components for consistency
+- Added comprehensive tests in src/utils/nodeWidths.test.ts (12 tests):
+  - Tests for computeNodeWidth with various text lengths
+  - Tests for minimum and maximum width constraints
+  - Tests for custom configuration
+  - Tests for computeAllNodeWidths producing correct Map
+  - Tests for getDefaultNodeWidthConfig returning copies
+- Updated src/layout/LayoutEngine.test.ts:
+  - Changed nodeWidth references to defaultNodeWidth
+  - Updated nodesOverlap() calls to use new 4-argument signature
+  - Added 5 new tests for variable widths functionality
+- Updated src/canvas/CanvasRenderer.test.ts:
+  - Added measureText mock to createMockContext() returning text.length * 8
+- Gotchas discovered:
+  - Canvas measureText() requires an actual canvas context - JSDOM/happy-dom don't implement it
+  - Test mock returns text.length * 8 as approximate character width for predictable testing
+  - Category spacing uses max width of nodes in that category for uniform grid appearance
+  - Node widths should be computed once and shared between LayoutEngine and CanvasRenderer
+  - The nodesOverlap() method signature change is breaking - tests must be updated accordingly
+  - Creating a temporary canvas for width computation works in browsers but needs context mock in tests
+- All tests pass (134 tests: 7 data + 36 canvas + 37 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
+

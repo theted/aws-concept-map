@@ -75,6 +75,9 @@ function createMockContext(): CanvasRenderingContext2D {
     fill: vi.fn(),
     roundRect: vi.fn(),
     fillText: vi.fn(),
+    measureText: vi.fn((text: string) => ({
+      width: text.length * 8, // Approximate 8px per character
+    })),
     createLinearGradient: vi.fn(() => ({
       addColorStop: vi.fn(),
     })),
