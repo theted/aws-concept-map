@@ -461,3 +461,32 @@
   - Creating a temporary canvas for width computation works in browsers but needs context mock in tests
 - All tests pass (134 tests: 7 data + 36 canvas + 37 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
 
+## Design: Add mesh gradient background and update color palette to teal/cyan
+
+- Updated src/style.css with new teal/cyan color palette:
+  - --color-primary: #14B8A6 (teal-500, previously purple #8B5CF6)
+  - --color-primary-light: #2DD4BF (teal-400, previously #A78BFA)
+  - --color-primary-dark: #0D9488 (teal-600, previously #6D28D9)
+  - --color-bg-dark and --color-bg-darker adjusted to darker navy-teal tones
+- Implemented mesh gradient background using layered radial gradients:
+  - CSS doesn't natively support mesh gradients, so we simulate them with multiple radial-gradient layers
+  - 5 radial gradients positioned at different coordinates (10%/20%, 85%/80%, 25%/60%, 75%/15%, 5%/95%)
+  - Each uses elliptical shapes with varying sizes and opacity (0.12-0.25)
+  - Colors include teal (#0D9488), cyan (#06B6D4), and a touch of blue (#3B82F6) for depth
+  - Base layer is a linear gradient from dark navy (#0A1628) to dark teal (#081820)
+- Updated all rgba(139, 92, 246, ...) references to rgba(20, 184, 166, ...):
+  - Panel borders, scrollbar styling, close button backgrounds
+  - Key points borders, extended content borders
+  - Learn more button shadows
+- Updated src/canvas/CanvasRenderer.ts connection line colors:
+  - Connection stroke colors updated from purple to teal
+  - Highlighted connection colors updated accordingly
+- Gotchas discovered:
+  - Mesh gradients are achieved by layering multiple radial-gradient() declarations in the background property
+  - Each gradient should fade to transparent at its edges so they blend smoothly
+  - Using ellipse shapes (rather than circles) creates more organic, flowing gradient shapes
+  - Position gradients at different quadrants of the screen for balanced visual interest
+  - Keep opacity low (0.1-0.25) to maintain a subtle, professional look without overwhelming the UI
+  - The base linear gradient should be the last layer (rendered first/behind) to provide a consistent dark foundation
+- All tests continue to pass (134 tests)
+

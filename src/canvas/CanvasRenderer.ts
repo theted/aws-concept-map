@@ -509,7 +509,7 @@ export class CanvasRenderer {
   }
 
   private drawConnections(): void {
-    this.ctx.strokeStyle = 'rgba(139, 92, 246, 0.4)';
+    this.ctx.strokeStyle = 'rgba(20, 184, 166, 0.4)';
     this.ctx.lineWidth = 2;
 
     for (const [fromKey, toKey] of this.connections) {
@@ -522,8 +522,8 @@ export class CanvasRenderer {
 
         this.ctx.beginPath();
         this.ctx.strokeStyle = isHighlighted
-          ? 'rgba(139, 92, 246, 0.8)'
-          : 'rgba(139, 92, 246, 0.3)';
+          ? 'rgba(20, 184, 166, 0.8)'
+          : 'rgba(20, 184, 166, 0.3)';
         this.ctx.lineWidth = isHighlighted ? 3 : 1.5;
         this.ctx.moveTo(fromService.x, fromService.y);
         this.ctx.lineTo(toService.x, toService.y);
