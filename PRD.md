@@ -50,3 +50,12 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Ensure smooth animations, especially when zooming in/out
 - [x] Add a "toggle legends" button which toggles service categories visibility
 - [x] Add documentation in README
+- [ ] Design; update layout/grid system to not have hard-coded widths (this looks weird for services with long names)
+- [ ] Design: Add a smooth mesh gradient background in dark blue-greenish colors, update color palette to match (from purple to greenish blue)
+- [ ] Design: Use modern, smooth sans-serif fonts
+- [ ] Add a "Relationships" section in the in the infopanel, containing a list of services that are related to the selected service. Clicking a service opens the infopanel for that service.
+- [ ] Ensure service positions are not hard-coded
+- [ ] Ensure smooth animations - zoom and panning should have ease-out animations/transitions
+- [ ] Ensure good performance
+- [ ] Add keyboard navigation - tab/arrow keys should navigate between "next/previous" service
+- [ ] Add additional 'learn more' links in infopanel for all services - can be any useful external links (tutorials, best practices, blogs, youtube videos, etc.), not only AWS links. Every service should have at least total 3 links and at most 12.
