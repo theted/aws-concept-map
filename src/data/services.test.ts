@@ -48,6 +48,43 @@ describe('services data', () => {
       ).toContain(service.category);
     });
   });
+
+  it('each service should have 3-12 resources', () => {
+    Object.entries(services).forEach(([key, service]) => {
+      const resourceCount = service.resources?.length ?? 0;
+      expect(
+        resourceCount,
+        `${key} has ${resourceCount} resources (expected 3-12)`
+      ).toBeGreaterThanOrEqual(3);
+      expect(
+        resourceCount,
+        `${key} has ${resourceCount} resources (expected 3-12)`
+      ).toBeLessThanOrEqual(12);
+    });
+  });
+
+  it('each resource should have valid title and url', () => {
+    Object.entries(services).forEach(([key, service]) => {
+      service.resources?.forEach((resource, index) => {
+        expect(
+          resource.title,
+          `${key} resource ${index} missing title`
+        ).toBeDefined();
+        expect(
+          resource.title.length,
+          `${key} resource ${index} has empty title`
+        ).toBeGreaterThan(0);
+        expect(
+          resource.url,
+          `${key} resource ${index} missing url`
+        ).toBeDefined();
+        expect(
+          resource.url,
+          `${key} resource ${index} has invalid url`
+        ).toMatch(/^https?:\/\//);
+      });
+    });
+  });
 });
 
 describe('connections data', () => {

@@ -698,3 +698,26 @@
   - Arrow key navigation should only trigger when a service is already selected, otherwise it conflicts with panning
 - All tests pass (160 tests: 7 data + 50 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
 
+## Add additional 'learn more' links for all services
+
+- Expanded resources from 3 links per service to 5-6 links per service
+- Added 114 new external educational resources across all 57 services:
+  - AWS re:Invent talk links for deep-dive video content
+  - Tutorials Dojo cheat sheets for exam preparation
+  - freeCodeCamp tutorials for hands-on learning
+  - Official AWS workshops for guided learning experiences
+  - Community resources like The DynamoDB Book and EKS Workshop
+- Resource distribution:
+  - 41 services now have 5 resources
+  - 16 services now have 6 resources
+- Added 2 new tests in src/data/services.test.ts:
+  - Test for resource count constraints (3-12 per service)
+  - Test for valid resource structure (title and URL validation)
+- Gotchas discovered:
+  - Different types of resources serve different learning styles: videos for visual learners, cheat sheets for quick reference, workshops for hands-on practice
+  - External tutorials often explain "why" better than official docs, which focus on "how"
+  - Tutorials Dojo cheat sheets are particularly valuable for certification exam prep as they summarize key points
+  - YouTube videos should link to specific talks rather than channel pages for better user experience
+  - URLs should use https:// and point to stable documentation pages that are less likely to change
+- All tests pass (162 tests: 9 data + 50 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
+

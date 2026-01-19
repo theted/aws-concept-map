@@ -24,6 +24,18 @@
       {
         "title": "EC2 Pricing",
         "url": "https://aws.amazon.com/ec2/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - EC2 Foundations",
+        "url": "https://www.youtube.com/watch?v=kMMybKqC2Y0"
+      },
+      {
+        "title": "freeCodeCamp - EC2 Tutorial",
+        "url": "https://www.freecodecamp.org/news/ec2-instance-types-and-pricing/"
+      },
+      {
+        "title": "Tutorials Dojo - EC2 Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-ec2/"
       }
     ]
   },
@@ -52,6 +64,18 @@
       {
         "title": "Lambda Pricing",
         "url": "https://aws.amazon.com/lambda/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Serverless Best Practices",
+        "url": "https://www.youtube.com/watch?v=sdCA0Y7QDrM"
+      },
+      {
+        "title": "Serverless Framework Guide",
+        "url": "https://www.serverless.com/framework/docs/providers/aws/guide/intro"
+      },
+      {
+        "title": "Tutorials Dojo - Lambda Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-lambda/"
       }
     ]
   },
@@ -79,6 +103,18 @@
       {
         "title": "ECS vs EKS Comparison",
         "url": "https://aws.amazon.com/containers/"
+      },
+      {
+        "title": "AWS Containers - Getting Started",
+        "url": "https://www.youtube.com/watch?v=I9VAMGEjW-Q"
+      },
+      {
+        "title": "Tutorials Dojo - ECS Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-elastic-container-service-amazon-ecs/"
+      },
+      {
+        "title": "AWS Blog - ECS Deployment Strategies",
+        "url": "https://aws.amazon.com/blogs/containers/automating-amazon-ecs-deployments/"
       }
     ]
   },
@@ -107,6 +143,14 @@
       {
         "title": "ECR Pricing",
         "url": "https://aws.amazon.com/ecr/pricing/"
+      },
+      {
+        "title": "AWS Containers Workshop",
+        "url": "https://www.youtube.com/watch?v=IAHN1FVQWVI"
+      },
+      {
+        "title": "Tutorials Dojo - ECR Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-elastic-container-registry-amazon-ecr/"
       }
     ]
   },
@@ -135,6 +179,14 @@
       {
         "title": "Fargate Best Practices",
         "url": "https://docs.aws.amazon.com/AmazonECS/latest/bestpracticesguide/fargate.html"
+      },
+      {
+        "title": "AWS re:Invent - Fargate Deep Dive",
+        "url": "https://www.youtube.com/watch?v=n-HWx2KiL98"
+      },
+      {
+        "title": "Tutorials Dojo - Fargate Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-fargate/"
       }
     ]
   },
@@ -163,6 +215,14 @@
       {
         "title": "Deployment Policies",
         "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.rolling-version-deploy.html"
+      },
+      {
+        "title": "AWS re:Invent - Elastic Beanstalk",
+        "url": "https://www.youtube.com/watch?v=o4clRJuH9xU"
+      },
+      {
+        "title": "Tutorials Dojo - Beanstalk Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-elastic-beanstalk/"
       }
     ]
   },
@@ -191,6 +251,14 @@
       {
         "title": "Launch Templates",
         "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-templates.html"
+      },
+      {
+        "title": "AWS re:Invent - Auto Scaling Deep Dive",
+        "url": "https://www.youtube.com/watch?v=WUUbOQyrnf4"
+      },
+      {
+        "title": "Tutorials Dojo - Auto Scaling Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-auto-scaling/"
       }
     ]
   },
@@ -220,6 +288,18 @@
       {
         "title": "Target Groups",
         "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+      },
+      {
+        "title": "AWS re:Invent - ELB Deep Dive",
+        "url": "https://www.youtube.com/watch?v=VIgAT7vjol8"
+      },
+      {
+        "title": "Tutorials Dojo - ELB Cheat Sheet",
+        "url": "https://tutorialsdojo.com/elastic-load-balancing-elb/"
+      },
+      {
+        "title": "AWS Blog - ALB Advanced Features",
+        "url": "https://aws.amazon.com/blogs/aws/new-advanced-request-routing-for-aws-application-load-balancers/"
       }
     ]
   },
@@ -248,6 +328,18 @@
       {
         "title": "S3 Security Best Practices",
         "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html"
+      },
+      {
+        "title": "AWS re:Invent - S3 Best Practices",
+        "url": "https://www.youtube.com/watch?v=rHeTn9pHNKo"
+      },
+      {
+        "title": "Tutorials Dojo - S3 Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-s3/"
+      },
+      {
+        "title": "freeCodeCamp - S3 Complete Guide",
+        "url": "https://www.freecodecamp.org/news/aws-s3-tutorial/"
       }
     ]
   },
@@ -275,6 +367,14 @@
       {
         "title": "EBS Snapshots",
         "url": "https://docs.aws.amazon.com/ebs/latest/userguide/EBSSnapshots.html"
+      },
+      {
+        "title": "AWS re:Invent - EBS Deep Dive",
+        "url": "https://www.youtube.com/watch?v=wsMWANWNoqQ"
+      },
+      {
+        "title": "Tutorials Dojo - EBS Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-ebs/"
       }
     ]
   },
@@ -303,6 +403,14 @@
       {
         "title": "EFS Pricing",
         "url": "https://aws.amazon.com/efs/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - EFS Best Practices",
+        "url": "https://www.youtube.com/watch?v=PL9TKxcvkOw"
+      },
+      {
+        "title": "Tutorials Dojo - EFS Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-efs/"
       }
     ]
   },
@@ -331,6 +439,14 @@
       {
         "title": "Glacier Retrieval Options",
         "url": "https://docs.aws.amazon.com/amazonglacier/latest/dev/downloading-an-archive-two-steps.html"
+      },
+      {
+        "title": "AWS Storage Day - Archival",
+        "url": "https://www.youtube.com/watch?v=84zBbJFsF0w"
+      },
+      {
+        "title": "Tutorials Dojo - S3 Glacier Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-s3-glacier/"
       }
     ]
   },
@@ -359,6 +475,18 @@
       {
         "title": "RDS Best Practices",
         "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.html"
+      },
+      {
+        "title": "AWS re:Invent - RDS Deep Dive",
+        "url": "https://www.youtube.com/watch?v=igRfulrrYCo"
+      },
+      {
+        "title": "Tutorials Dojo - RDS Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-relational-database-service-amazon-rds/"
+      },
+      {
+        "title": "AWS re:Invent - Aurora Deep Dive",
+        "url": "https://www.youtube.com/watch?v=U42mC_iKSBg"
       }
     ]
   },
@@ -387,6 +515,18 @@
       {
         "title": "DynamoDB Pricing",
         "url": "https://aws.amazon.com/dynamodb/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - DynamoDB Deep Dive",
+        "url": "https://www.youtube.com/watch?v=MF9a1UNOAQo"
+      },
+      {
+        "title": "Tutorials Dojo - DynamoDB Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-dynamodb/"
+      },
+      {
+        "title": "The DynamoDB Book",
+        "url": "https://www.dynamodbguide.com/"
       }
     ]
   },
@@ -415,6 +555,18 @@
       {
         "title": "VPC Security",
         "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Security.html"
+      },
+      {
+        "title": "AWS re:Invent - VPC Fundamentals",
+        "url": "https://www.youtube.com/watch?v=jZAvKgqlrjY"
+      },
+      {
+        "title": "Tutorials Dojo - VPC Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-vpc/"
+      },
+      {
+        "title": "AWS VPC Networking Workshop",
+        "url": "https://networking.workshop.aws/"
       }
     ]
   },
@@ -443,6 +595,14 @@
       {
         "title": "Public vs Private Subnets",
         "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html"
+      },
+      {
+        "title": "AWS Networking Fundamentals",
+        "url": "https://www.youtube.com/watch?v=hiKPPy584Mg"
+      },
+      {
+        "title": "Tutorials Dojo - VPC Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-vpc/"
       }
     ]
   },
@@ -470,6 +630,14 @@
       {
         "title": "Egress-Only IGW",
         "url": "https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html"
+      },
+      {
+        "title": "AWS Networking Basics",
+        "url": "https://www.youtube.com/watch?v=z07HTSzzp3o"
+      },
+      {
+        "title": "Tutorials Dojo - VPC Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-vpc/"
       }
     ]
   },
@@ -499,6 +667,14 @@
       {
         "title": "SG Best Practices",
         "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html#security-group-best-practices"
+      },
+      {
+        "title": "AWS re:Invent - Security Best Practices",
+        "url": "https://www.youtube.com/watch?v=YQsK4MtsELU"
+      },
+      {
+        "title": "Tutorials Dojo - Security Groups Cheat Sheet",
+        "url": "https://tutorialsdojo.com/security-groups-vs-nacl/"
       }
     ]
   },
@@ -528,6 +704,14 @@
       {
         "title": "SG vs NACL Comparison",
         "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Security.html#VPC_Security_Comparison"
+      },
+      {
+        "title": "AWS re:Invent - Network Security",
+        "url": "https://www.youtube.com/watch?v=e0bUfXKDvZo"
+      },
+      {
+        "title": "Tutorials Dojo - NACLs vs Security Groups",
+        "url": "https://tutorialsdojo.com/security-groups-vs-nacl/"
       }
     ]
   },
@@ -556,6 +740,18 @@
       {
         "title": "IAM Policy Reference",
         "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html"
+      },
+      {
+        "title": "AWS re:Invent - IAM Best Practices",
+        "url": "https://www.youtube.com/watch?v=YQsK4MtsELU"
+      },
+      {
+        "title": "Tutorials Dojo - IAM Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-identity-and-access-management-iam/"
+      },
+      {
+        "title": "AWS IAM Policy Simulator",
+        "url": "https://policysim.aws.amazon.com/"
       }
     ]
   },
@@ -584,6 +780,14 @@
       {
         "title": "KMS Best Practices",
         "url": "https://docs.aws.amazon.com/kms/latest/developerguide/best-practices.html"
+      },
+      {
+        "title": "AWS re:Invent - Encryption Deep Dive",
+        "url": "https://www.youtube.com/watch?v=hxWvbNvj2lg"
+      },
+      {
+        "title": "Tutorials Dojo - KMS Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-key-management-service-aws-kms/"
       }
     ]
   },
@@ -611,6 +815,18 @@
       {
         "title": "CloudWatch Logs",
         "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/"
+      },
+      {
+        "title": "AWS re:Invent - CloudWatch Deep Dive",
+        "url": "https://www.youtube.com/watch?v=X3F4-Gz4Jec"
+      },
+      {
+        "title": "Tutorials Dojo - CloudWatch Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-cloudwatch/"
+      },
+      {
+        "title": "AWS Observability Workshop",
+        "url": "https://observability.workshop.aws/"
       }
     ]
   },
@@ -640,6 +856,14 @@
       {
         "title": "Creating a Trail",
         "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html"
+      },
+      {
+        "title": "AWS re:Invent - Security Logging",
+        "url": "https://www.youtube.com/watch?v=YCL5h_1YXJU"
+      },
+      {
+        "title": "Tutorials Dojo - CloudTrail Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-cloudtrail/"
       }
     ]
   },
@@ -668,6 +892,14 @@
       {
         "title": "Managed Rules List",
         "url": "https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html"
+      },
+      {
+        "title": "AWS re:Invent - AWS Config Deep Dive",
+        "url": "https://www.youtube.com/watch?v=kErRv4YB_T4"
+      },
+      {
+        "title": "Tutorials Dojo - AWS Config Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-config/"
       }
     ]
   },
@@ -695,6 +927,18 @@
       {
         "title": "Intrinsic Functions",
         "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html"
+      },
+      {
+        "title": "AWS re:Invent - CloudFormation Deep Dive",
+        "url": "https://www.youtube.com/watch?v=1h-GPXQrLZw"
+      },
+      {
+        "title": "Tutorials Dojo - CloudFormation Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-cloudformation/"
+      },
+      {
+        "title": "CloudFormation Examples",
+        "url": "https://github.com/awslabs/aws-cloudformation-templates"
       }
     ]
   },
@@ -723,6 +967,14 @@
       {
         "title": "Session Manager",
         "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html"
+      },
+      {
+        "title": "AWS re:Invent - Systems Manager",
+        "url": "https://www.youtube.com/watch?v=MK4ZoCs-muo"
+      },
+      {
+        "title": "Tutorials Dojo - Systems Manager Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-systems-manager/"
       }
     ]
   },
@@ -751,6 +1003,14 @@
       {
         "title": "Trusted Advisor Best Practices",
         "url": "https://aws.amazon.com/premiumsupport/technology/trusted-advisor/"
+      },
+      {
+        "title": "AWS re:Invent - Cost Optimization",
+        "url": "https://www.youtube.com/watch?v=JoX9W4v4u2U"
+      },
+      {
+        "title": "Tutorials Dojo - Trusted Advisor Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-trusted-advisor/"
       }
     ]
   },
@@ -779,6 +1039,14 @@
       {
         "title": "Organizations Best Practices",
         "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_best-practices.html"
+      },
+      {
+        "title": "AWS re:Invent - Multi-Account Strategy",
+        "url": "https://www.youtube.com/watch?v=aISWoPf_XNE"
+      },
+      {
+        "title": "Tutorials Dojo - Organizations Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-organizations/"
       }
     ]
   },
@@ -807,6 +1075,14 @@
       {
         "title": "Cost Anomaly Detection",
         "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html"
+      },
+      {
+        "title": "AWS re:Invent - Cost Management",
+        "url": "https://www.youtube.com/watch?v=ksh2T8tiJxg"
+      },
+      {
+        "title": "Tutorials Dojo - Cost Explorer Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-cost-explorer/"
       }
     ]
   },
@@ -835,6 +1111,14 @@
       {
         "title": "Budget Actions",
         "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html"
+      },
+      {
+        "title": "AWS Cost Management Workshop",
+        "url": "https://www.youtube.com/watch?v=PJ-dVAu6wKQ"
+      },
+      {
+        "title": "Tutorials Dojo - AWS Budgets Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-budgets/"
       }
     ]
   },
@@ -863,6 +1147,18 @@
       {
         "title": "SQS Best Practices",
         "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-best-practices.html"
+      },
+      {
+        "title": "AWS re:Invent - SQS Deep Dive",
+        "url": "https://www.youtube.com/watch?v=UesxWuZMZqI"
+      },
+      {
+        "title": "Tutorials Dojo - SQS Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-sqs/"
+      },
+      {
+        "title": "AWS Messaging Workshop",
+        "url": "https://messaging.workshop.aws/"
       }
     ]
   },
@@ -891,6 +1187,14 @@
       {
         "title": "SNS + SQS Fan-out",
         "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html"
+      },
+      {
+        "title": "AWS re:Invent - SNS Deep Dive",
+        "url": "https://www.youtube.com/watch?v=8zysQqxgj0I"
+      },
+      {
+        "title": "Tutorials Dojo - SNS Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-sns/"
       }
     ]
   },
@@ -919,6 +1223,14 @@
       {
         "title": "Lambda@Edge",
         "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-at-the-edge.html"
+      },
+      {
+        "title": "AWS re:Invent - CloudFront Deep Dive",
+        "url": "https://www.youtube.com/watch?v=DiIaoIcoKNY"
+      },
+      {
+        "title": "Tutorials Dojo - CloudFront Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-cloudfront/"
       }
     ]
   },
@@ -947,6 +1259,14 @@
       {
         "title": "Health Checks",
         "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-creating.html"
+      },
+      {
+        "title": "AWS re:Invent - Route 53 Deep Dive",
+        "url": "https://www.youtube.com/watch?v=BtiS0QyiTK8"
+      },
+      {
+        "title": "Tutorials Dojo - Route 53 Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-route-53/"
       }
     ]
   },
@@ -976,6 +1296,18 @@
       {
         "title": "API Gateway Pricing",
         "url": "https://aws.amazon.com/api-gateway/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - API Gateway Deep Dive",
+        "url": "https://www.youtube.com/watch?v=9ElpSPXk-g8"
+      },
+      {
+        "title": "Tutorials Dojo - API Gateway Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-api-gateway/"
+      },
+      {
+        "title": "Serverless API Workshop",
+        "url": "https://serverless-api.workshop.aws/"
       }
     ]
   },
@@ -1005,6 +1337,14 @@
       {
         "title": "Identity Pools",
         "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html"
+      },
+      {
+        "title": "AWS re:Invent - Cognito Deep Dive",
+        "url": "https://www.youtube.com/watch?v=OAR4ZHP8DEg"
+      },
+      {
+        "title": "Tutorials Dojo - Cognito Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-cognito/"
       }
     ]
   },
@@ -1034,6 +1374,18 @@
       {
         "title": "Step Functions Best Practices",
         "url": "https://docs.aws.amazon.com/step-functions/latest/dg/sfn-best-practices.html"
+      },
+      {
+        "title": "AWS re:Invent - Step Functions",
+        "url": "https://www.youtube.com/watch?v=Dh7h3lkpeP4"
+      },
+      {
+        "title": "Tutorials Dojo - Step Functions Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-step-functions/"
+      },
+      {
+        "title": "Step Functions Workshop",
+        "url": "https://step-functions-workshop.go-aws.com/"
       }
     ]
   },
@@ -1063,6 +1415,14 @@
       {
         "title": "EventBridge Scheduler",
         "url": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html"
+      },
+      {
+        "title": "AWS re:Invent - EventBridge Deep Dive",
+        "url": "https://www.youtube.com/watch?v=28B4ilDvKbs"
+      },
+      {
+        "title": "Tutorials Dojo - EventBridge Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-eventbridge/"
       }
     ]
   },
@@ -1092,6 +1452,14 @@
       {
         "title": "Secrets Manager vs Parameter Store",
         "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/integration-ps-secretsmanager.html"
+      },
+      {
+        "title": "AWS re:Invent - Secrets Management",
+        "url": "https://www.youtube.com/watch?v=PlCLRzBqRqQ"
+      },
+      {
+        "title": "Tutorials Dojo - Secrets Manager Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-secrets-manager/"
       }
     ]
   },
@@ -1121,6 +1489,18 @@
       {
         "title": "CodePipeline Tutorials",
         "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials.html"
+      },
+      {
+        "title": "AWS re:Invent - CI/CD on AWS",
+        "url": "https://www.youtube.com/watch?v=1DDXepr72Ko"
+      },
+      {
+        "title": "Tutorials Dojo - CodePipeline Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-codepipeline/"
+      },
+      {
+        "title": "AWS DevOps Workshop",
+        "url": "https://devops.workshop.aws/"
       }
     ]
   },
@@ -1150,6 +1530,14 @@
       {
         "title": "CodeBuild Pricing",
         "url": "https://aws.amazon.com/codebuild/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Build Systems",
+        "url": "https://www.youtube.com/watch?v=4b4Tp7J5Wk8"
+      },
+      {
+        "title": "Tutorials Dojo - CodeBuild Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-codebuild/"
       }
     ]
   },
@@ -1179,6 +1567,14 @@
       {
         "title": "Deployment Configurations",
         "url": "https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html"
+      },
+      {
+        "title": "AWS re:Invent - Deployment Strategies",
+        "url": "https://www.youtube.com/watch?v=sU3ql0h3Sao"
+      },
+      {
+        "title": "Tutorials Dojo - CodeDeploy Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-codedeploy/"
       }
     ]
   },
@@ -1208,6 +1604,14 @@
       {
         "title": "Caching Strategies",
         "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html"
+      },
+      {
+        "title": "AWS re:Invent - ElastiCache Deep Dive",
+        "url": "https://www.youtube.com/watch?v=QEKDpToureQ"
+      },
+      {
+        "title": "Tutorials Dojo - ElastiCache Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-elasticache/"
       }
     ]
   },
@@ -1237,6 +1641,14 @@
       {
         "title": "Redshift Spectrum",
         "url": "https://docs.aws.amazon.com/redshift/latest/dg/c-getting-started-using-spectrum.html"
+      },
+      {
+        "title": "AWS re:Invent - Redshift Deep Dive",
+        "url": "https://www.youtube.com/watch?v=Rva2rbPAohU"
+      },
+      {
+        "title": "Tutorials Dojo - Redshift Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-redshift/"
       }
     ]
   },
@@ -1266,6 +1678,14 @@
       {
         "title": "Athena + Glue Integration",
         "url": "https://docs.aws.amazon.com/athena/latest/ug/glue-athena.html"
+      },
+      {
+        "title": "AWS re:Invent - Athena Best Practices",
+        "url": "https://www.youtube.com/watch?v=bJGVMD8ZHgs"
+      },
+      {
+        "title": "Tutorials Dojo - Athena Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-athena/"
       }
     ]
   },
@@ -1295,6 +1715,14 @@
       {
         "title": "WAF Best Practices",
         "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-managed-rule-groups-best-practices.html"
+      },
+      {
+        "title": "AWS re:Invent - WAF Deep Dive",
+        "url": "https://www.youtube.com/watch?v=nUI7G9UzyN8"
+      },
+      {
+        "title": "Tutorials Dojo - WAF Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-waf/"
       }
     ]
   },
@@ -1324,6 +1752,14 @@
       {
         "title": "DDoS Resilience",
         "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/aws-best-practices-ddos-resiliency.html"
+      },
+      {
+        "title": "AWS re:Invent - DDoS Protection",
+        "url": "https://www.youtube.com/watch?v=HnoZS5jj7pk"
+      },
+      {
+        "title": "Tutorials Dojo - Shield Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-shield/"
       }
     ]
   },
@@ -1353,6 +1789,14 @@
       {
         "title": "GuardDuty Best Practices",
         "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_settingup.html#guardduty-best-practices"
+      },
+      {
+        "title": "AWS re:Invent - Threat Detection",
+        "url": "https://www.youtube.com/watch?v=Imjbh0WPSR4"
+      },
+      {
+        "title": "Tutorials Dojo - GuardDuty Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-guardduty/"
       }
     ]
   },
@@ -1382,6 +1826,14 @@
       {
         "title": "Inspector Findings",
         "url": "https://docs.aws.amazon.com/inspector/latest/user/findings-understanding.html"
+      },
+      {
+        "title": "AWS re:Invent - Security Automation",
+        "url": "https://www.youtube.com/watch?v=CfYGxMUwP3E"
+      },
+      {
+        "title": "Tutorials Dojo - Inspector Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-inspector/"
       }
     ]
   },
@@ -1411,6 +1863,14 @@
       {
         "title": "NAT Gateway Pricing",
         "url": "https://aws.amazon.com/vpc/pricing/"
+      },
+      {
+        "title": "AWS Networking Fundamentals",
+        "url": "https://www.youtube.com/watch?v=hiKPPy584Mg"
+      },
+      {
+        "title": "Tutorials Dojo - NAT Gateway Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-vpc/"
       }
     ]
   },
@@ -1440,6 +1900,18 @@
       {
         "title": "EKS vs ECS",
         "url": "https://aws.amazon.com/containers/"
+      },
+      {
+        "title": "AWS re:Invent - EKS Deep Dive",
+        "url": "https://www.youtube.com/watch?v=LBrqJV_Zc4Y"
+      },
+      {
+        "title": "Tutorials Dojo - EKS Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-elastic-kubernetes-service-eks/"
+      },
+      {
+        "title": "EKS Workshop",
+        "url": "https://www.eksworkshop.com/"
       }
     ]
   },
@@ -1469,6 +1941,14 @@
       {
         "title": "Data Firehose",
         "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+      },
+      {
+        "title": "AWS re:Invent - Kinesis Deep Dive",
+        "url": "https://www.youtube.com/watch?v=MbEfiX4sMXc"
+      },
+      {
+        "title": "Tutorials Dojo - Kinesis Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-kinesis/"
       }
     ]
   },
@@ -1498,6 +1978,14 @@
       {
         "title": "X-Ray SDK",
         "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk.html"
+      },
+      {
+        "title": "AWS re:Invent - Distributed Tracing",
+        "url": "https://www.youtube.com/watch?v=5lIdNrrO_o8"
+      },
+      {
+        "title": "Tutorials Dojo - X-Ray Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-x-ray/"
       }
     ]
   },
@@ -1527,6 +2015,14 @@
       {
         "title": "Direct Connect Pricing",
         "url": "https://aws.amazon.com/directconnect/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Direct Connect",
+        "url": "https://www.youtube.com/watch?v=eNxPhHTN8gY"
+      },
+      {
+        "title": "Tutorials Dojo - Direct Connect Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-direct-connect/"
       }
     ]
   },
@@ -1556,6 +2052,14 @@
       {
         "title": "VPN Troubleshooting",
         "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/Troubleshooting.html"
+      },
+      {
+        "title": "AWS re:Invent - Hybrid Networking",
+        "url": "https://www.youtube.com/watch?v=AUNwT6-F2vE"
+      },
+      {
+        "title": "Tutorials Dojo - VPN Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-site-to-site-vpn/"
       }
     ]
   },
@@ -1585,6 +2089,14 @@
       {
         "title": "Storage Gateway Pricing",
         "url": "https://aws.amazon.com/storagegateway/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Storage Gateway",
+        "url": "https://www.youtube.com/watch?v=CfYxTAz8LOc"
+      },
+      {
+        "title": "Tutorials Dojo - Storage Gateway Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-storage-gateway/"
       }
     ]
   },
@@ -1614,6 +2126,14 @@
       {
         "title": "Snow Family Pricing",
         "url": "https://aws.amazon.com/snow/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Snow Family",
+        "url": "https://www.youtube.com/watch?v=9Ar-N-cfXSI"
+      },
+      {
+        "title": "Tutorials Dojo - Snow Family Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-snow-family/"
       }
     ]
   }

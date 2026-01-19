@@ -58,4 +58,4 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Ensure smooth animations - zoom and panning should have ease-out animations/transitions
 - [x] Ensure good performance
 - [x] Add keyboard navigation - tab/arrow keys should navigate between "next/previous" service
-- [ ] Add additional 'learn more' links in infopanel for all services - can be any useful external links (tutorials, best practices, blogs, youtube videos, etc.), not only AWS links. Every service should have at least total 3 links and at most 12.
+- [x] Add additional 'learn more' links in infopanel for all services - can be any useful external links (tutorials, best practices, blogs, youtube videos, etc.), not only AWS links. Every service should have at least total 3 links and at most 12.
