@@ -14,8 +14,7 @@ describe('services data', () => {
       expect(service.description, `${key} missing description`).toBeDefined();
       expect(service.details, `${key} missing details`).toBeDefined();
       expect(service.keyPoints, `${key} missing keyPoints`).toBeInstanceOf(Array);
-      expect(typeof service.x, `${key} missing x coordinate`).toBe('number');
-      expect(typeof service.y, `${key} missing y coordinate`).toBe('number');
+      // Note: x/y coordinates are computed dynamically by LayoutEngine, not stored in JSON
     });
   });
 

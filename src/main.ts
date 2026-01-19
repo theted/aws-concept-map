@@ -3,7 +3,7 @@ import { CanvasRenderer } from './canvas/CanvasRenderer';
 import { InfoPanel } from './ui/InfoPanel';
 import { LayoutEngine } from './layout/LayoutEngine';
 import { computeAllNodeWidths } from './utils/nodeWidths';
-import type { Service, ServiceMap } from './types';
+import type { PositionedService, PositionedServiceMap } from './types';
 
 // DOM elements
 const canvasElement = document.getElementById('canvas') as HTMLCanvasElement;
@@ -16,7 +16,7 @@ const legendElement = document.getElementById('legend')!;
 // Canvas renderer and info panel
 let renderer: CanvasRenderer;
 let infoPanel: InfoPanel;
-let layoutServices: ServiceMap;
+let layoutServices: PositionedServiceMap;
 
 // Initialize the application
 function init(): void {
@@ -45,7 +45,7 @@ function init(): void {
 }
 
 // Handle service click from canvas
-function handleServiceClick(key: string, service: Service): void {
+function handleServiceClick(key: string, service: PositionedService): void {
   if (key && service.name) {
     infoPanel.show(key, service);
     renderer.selectService(key);

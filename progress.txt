@@ -558,3 +558,47 @@
   - The onServiceSelect callback pattern allows the InfoPanel to remain decoupled from the canvas
 - All tests pass (146 tests: 7 data + 36 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
 
+## Ensure service positions are not hard-coded
+
+- Updated src/types.ts with new type structure:
+  - Made x and y optional in the base `Service` interface (for raw JSON data)
+  - Created new `PositionedService` interface that extends Service with required x/y (for layout-computed data)
+  - Created `PositionedServiceMap` type alias for Record<string, PositionedService>
+  - This type separation enforces that positions are computed, not stored
+- Removed all x/y coordinates from src/data/services.json:
+  - 57 services × 2 coordinates = 114 coordinate values removed
+  - JSON now contains only service content (name, category, description, etc.)
+- Updated src/layout/LayoutEngine.ts:
+  - Changed `LayoutResult.services` to return `PositionedServiceMap`
+  - Updated `validateNoOverlaps()` to accept `PositionedServiceMap`
+  - Removed unused `PositionedService` import
+- Updated src/canvas/CanvasRenderer.ts:
+  - Changed `services` property type to `PositionedServiceMap`
+  - Changed constructor parameter to accept `PositionedServiceMap`
+  - Updated `onServiceClick` callback to use `PositionedService`
+  - Updated `drawNode` method signature to use `PositionedService`
+  - Fixed type casts from `Service` to `PositionedService`
+- Updated src/ui/InfoPanel.ts:
+  - Changed `services` property type to `PositionedServiceMap`
+  - Changed `currentService` type to `PositionedService`
+  - Updated `show()` method parameter type
+  - Updated `getRelatedServices()` return type
+  - Updated `onServiceSelect` callback type
+- Updated src/main.ts:
+  - Changed imports to use `PositionedService` and `PositionedServiceMap`
+  - Updated `layoutServices` variable type
+  - Updated `handleServiceClick` function parameter type
+- Updated test files:
+  - src/data/services.test.ts: Removed x/y coordinate assertions (now computed dynamically)
+  - src/canvas/CanvasRenderer.test.ts: Changed to use `PositionedServiceMap` type
+  - src/layout/LayoutEngine.test.ts: Changed `validateNoOverlaps` tests to use `PositionedServiceMap`
+  - src/ui/InfoPanel.test.ts: Changed to use `PositionedService` and `PositionedServiceMap` types
+- Gotchas discovered:
+  - Creating a separate `PositionedService` interface provides compile-time enforcement that x/y are computed
+  - Using `extends Omit<Service, 'x' | 'y'>` pattern allows PositionedService to have required x/y while Service has optional
+  - Raw service data (JSON) should use `ServiceMap`, while post-layout data uses `PositionedServiceMap`
+  - The LayoutEngine's spread-with-override pattern `{ ...services[key], x: pos.x, y: pos.y }` correctly converts Service to PositionedService
+  - Test data that includes x/y coordinates should be typed as `PositionedServiceMap` for type safety
+  - The nodeWidths utility correctly uses `ServiceMap` since it operates on raw data before layout
+- All tests pass (146 tests: 7 data + 36 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
+

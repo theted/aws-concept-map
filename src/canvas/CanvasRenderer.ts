@@ -1,4 +1,4 @@
-import type { Service, ServiceMap, Connection } from '../types';
+import type { PositionedService, PositionedServiceMap, Connection } from '../types';
 import { computeAllNodeWidths, type NodeWidthMap } from '../utils/nodeWidths';
 
 export interface CanvasState {
@@ -36,7 +36,7 @@ const DEFAULT_NODE_WIDTH = 120;
 export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  private services: ServiceMap;
+  private services: PositionedServiceMap;
   private connections: Connection[];
   private state: CanvasState;
   private selectedService: string | null = null;
@@ -45,7 +45,7 @@ export class CanvasRenderer {
   private dragStartX = 0;
   private dragStartY = 0;
   private dragDistance = 0; // Track total drag distance to distinguish click from drag
-  private onServiceClick: ((key: string, service: Service) => void) | null = null;
+  private onServiceClick: ((key: string, service: PositionedService) => void) | null = null;
 
   // Touch gesture tracking
   private lastTouchDistance = 0;
@@ -63,7 +63,7 @@ export class CanvasRenderer {
 
   constructor(
     canvas: HTMLCanvasElement,
-    services: ServiceMap,
+    services: PositionedServiceMap,
     connections: Connection[],
     nodeWidths?: NodeWidthMap
   ) {
@@ -209,7 +209,7 @@ export class CanvasRenderer {
     } else {
       this.selectedService = null;
       if (this.onServiceClick) {
-        this.onServiceClick('', {} as Service);
+        this.onServiceClick('', {} as PositionedService);
       }
     }
     this.render();
@@ -291,7 +291,7 @@ export class CanvasRenderer {
       } else {
         this.selectedService = null;
         if (this.onServiceClick) {
-          this.onServiceClick('', {} as Service);
+          this.onServiceClick('', {} as PositionedService);
         }
       }
       this.render();
@@ -362,7 +362,7 @@ export class CanvasRenderer {
       case 'Escape':
         this.selectedService = null;
         if (this.onServiceClick) {
-          this.onServiceClick('', {} as Service);
+          this.onServiceClick('', {} as PositionedService);
         }
         this.render();
         break;
@@ -538,7 +538,7 @@ export class CanvasRenderer {
     }
   }
 
-  private drawNode(key: string, service: Service): void {
+  private drawNode(key: string, service: PositionedService): void {
     const { x, y } = service;
     const width = this.getNodeWidth(key);
     const { height } = NODE_DIMENSIONS;
@@ -599,7 +599,7 @@ export class CanvasRenderer {
     this.ctx.fillText(service.name, x, y);
   }
 
-  public setOnServiceClick(callback: (key: string, service: Service) => void): void {
+  public setOnServiceClick(callback: (key: string, service: PositionedService) => void): void {
     this.onServiceClick = callback;
   }
 

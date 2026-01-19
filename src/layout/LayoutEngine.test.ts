@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { LayoutEngine } from './LayoutEngine';
-import type { ServiceMap, ServiceCategory } from '../types';
+import type { ServiceMap, PositionedServiceMap, ServiceCategory } from '../types';
 import { services as realServices } from '../data/services';
 
 describe('LayoutEngine', () => {
@@ -191,7 +191,7 @@ describe('LayoutEngine', () => {
 
   describe('validateNoOverlaps', () => {
     it('should validate layout with no overlaps', () => {
-      const services: ServiceMap = {
+      const services: PositionedServiceMap = {
         test1: {
           name: 'Test 1',
           category: 'compute',
@@ -218,7 +218,7 @@ describe('LayoutEngine', () => {
     });
 
     it('should detect overlapping services', () => {
-      const services: ServiceMap = {
+      const services: PositionedServiceMap = {
         test1: {
           name: 'Test 1',
           category: 'compute',

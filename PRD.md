@@ -54,7 +54,7 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Design: Add a smooth mesh gradient background in dark blue-greenish colors, update color palette to match (from purple to greenish blue)
 - [x] Design: Use modern, smooth sans-serif fonts
 - [x] Add a "Relationships" section in the in the infopanel, containing a list of services that are related to the selected service. Clicking a service opens the infopanel for that service.
-- [ ] Ensure service positions are not hard-coded
+- [x] Ensure service positions are not hard-coded
 - [ ] Ensure smooth animations - zoom and panning should have ease-out animations/transitions
 - [ ] Ensure good performance
 - [ ] Add keyboard navigation - tab/arrow keys should navigate between "next/previous" service

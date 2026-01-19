@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { CanvasRenderer } from './CanvasRenderer';
-import type { ServiceMap, Connection } from '../types';
+import type { PositionedServiceMap, Connection } from '../types';
 
 // RAF callback queue for manual mocking
 let rafCallbacks: Map<number, FrameRequestCallback> = new Map();
@@ -139,7 +139,7 @@ function createMockCanvas(ctx: CanvasRenderingContext2D): MockCanvas {
 }
 
 // Sample test data
-const testServices: ServiceMap = {
+const testServices: PositionedServiceMap = {
   ec2: {
     name: 'EC2',
     category: 'compute',

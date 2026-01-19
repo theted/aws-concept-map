@@ -1,20 +1,20 @@
-import type { Service, ServiceMap, Connection } from '../types';
+import type { PositionedService, PositionedServiceMap, Connection } from '../types';
 
 export interface InfoPanelOptions {
   onClose?: () => void;
-  onServiceSelect?: (key: string, service: Service) => void;
+  onServiceSelect?: (key: string, service: PositionedService) => void;
   connections?: Connection[];
-  services?: ServiceMap;
+  services?: PositionedServiceMap;
 }
 
 export class InfoPanel {
   private element: HTMLElement;
   private onClose: (() => void) | null = null;
-  private onServiceSelect: ((key: string, service: Service) => void) | null = null;
+  private onServiceSelect: ((key: string, service: PositionedService) => void) | null = null;
   private connections: Connection[] = [];
-  private services: ServiceMap = {};
+  private services: PositionedServiceMap = {};
   private currentServiceKey: string | null = null;
-  private currentService: Service | null = null;
+  private currentService: PositionedService | null = null;
   private isExpanded: boolean = false;
 
   constructor(element: HTMLElement, options: InfoPanelOptions = {}) {
@@ -28,7 +28,7 @@ export class InfoPanel {
   /**
    * Shows the info panel with service details
    */
-  public show(serviceKey: string, service: Service): void {
+  public show(serviceKey: string, service: PositionedService): void {
     this.currentServiceKey = serviceKey;
     this.currentService = service;
     this.isExpanded = false;
@@ -90,7 +90,7 @@ export class InfoPanel {
    * Gets all services related to the current service via connections
    * Returns an array of [key, service] tuples sorted by service name
    */
-  private getRelatedServices(): [string, Service][] {
+  private getRelatedServices(): [string, PositionedService][] {
     if (!this.currentServiceKey || this.connections.length === 0) return [];
 
     const relatedKeys = new Set<string>();
@@ -105,7 +105,7 @@ export class InfoPanel {
     }
 
     // Map keys to [key, service] tuples, filtering out missing services
-    const related: [string, Service][] = [];
+    const related: [string, PositionedService][] = [];
     for (const key of relatedKeys) {
       if (this.services[key]) {
         related.push([key, this.services[key]]);

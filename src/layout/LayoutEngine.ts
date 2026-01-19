@@ -1,4 +1,4 @@
-import type { ServiceMap, ServiceCategory } from '../types';
+import type { ServiceMap, PositionedServiceMap, ServiceCategory } from '../types';
 
 export type NodeWidthMap = Map<string, number>;
 
@@ -11,7 +11,7 @@ export interface LayoutConfig {
 }
 
 export interface LayoutResult {
-  services: ServiceMap;
+  services: PositionedServiceMap;
   bounds: {
     minX: number;
     maxX: number;
@@ -79,7 +79,7 @@ export class LayoutEngine {
     const grouped = this.groupByCategory(services);
     const categoryGroups = this.computeCategoryPositions(grouped, services);
 
-    const result: ServiceMap = {};
+    const result: PositionedServiceMap = {};
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
 
@@ -279,7 +279,7 @@ export class LayoutEngine {
    * Validates that no nodes in the layout overlap.
    * Uses individual node widths for accurate collision detection.
    */
-  public validateNoOverlaps(services: ServiceMap): { valid: boolean; overlaps: [string, string][] } {
+  public validateNoOverlaps(services: PositionedServiceMap): { valid: boolean; overlaps: [string, string][] } {
     const overlaps: [string, string][] = [];
     const keys = Object.keys(services);
 

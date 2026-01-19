@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { InfoPanel } from './InfoPanel';
-import type { Service, ServiceMap, Connection } from '../types';
+import type { PositionedService, PositionedServiceMap, Connection } from '../types';
 
 // Sample test service
-const testService: Service = {
+const testService: PositionedService = {
   name: 'EC2',
   category: 'compute',
   description: 'Elastic Compute Cloud - Virtual servers in the cloud',
@@ -17,7 +17,7 @@ const testService: Service = {
   y: 350,
 };
 
-const testServiceNoKeyPoints: Service = {
+const testServiceNoKeyPoints: PositionedService = {
   name: 'Simple Service',
   category: 'storage',
   description: 'A simple service',
@@ -27,7 +27,7 @@ const testServiceNoKeyPoints: Service = {
   y: 100,
 };
 
-const testServiceWithExtended: Service = {
+const testServiceWithExtended: PositionedService = {
   name: 'Lambda',
   category: 'compute',
   description: 'Serverless compute',
@@ -42,7 +42,7 @@ const testServiceWithExtended: Service = {
   ],
 };
 
-const testServiceWithOnlyDescription: Service = {
+const testServiceWithOnlyDescription: PositionedService = {
   name: 'S3',
   category: 'storage',
   description: 'Object storage',
@@ -53,7 +53,7 @@ const testServiceWithOnlyDescription: Service = {
   extendedDescription: 'S3 storage classes include Standard, IA, and Glacier.',
 };
 
-const testServiceWithOnlyResources: Service = {
+const testServiceWithOnlyResources: PositionedService = {
   name: 'VPC',
   category: 'networking',
   description: 'Virtual network',
@@ -190,7 +190,7 @@ describe('InfoPanel', () => {
 
   describe('XSS protection', () => {
     it('should escape HTML in service name', () => {
-      const maliciousService: Service = {
+      const maliciousService: PositionedService = {
         ...testService,
         name: '<script>alert("xss")</script>',
       };
@@ -204,7 +204,7 @@ describe('InfoPanel', () => {
     });
 
     it('should escape HTML in description', () => {
-      const maliciousService: Service = {
+      const maliciousService: PositionedService = {
         ...testService,
         description: '<img src="x" onerror="alert(1)">',
       };
@@ -217,7 +217,7 @@ describe('InfoPanel', () => {
     });
 
     it('should escape HTML in key points', () => {
-      const maliciousService: Service = {
+      const maliciousService: PositionedService = {
         ...testService,
         keyPoints: ['<a href="javascript:alert(1)">Click me</a>'],
       };
@@ -230,7 +230,7 @@ describe('InfoPanel', () => {
     });
 
     it('should escape HTML in extended description', () => {
-      const maliciousService: Service = {
+      const maliciousService: PositionedService = {
         ...testServiceWithExtended,
         extendedDescription: '<script>alert("xss")</script>',
       };
@@ -242,7 +242,7 @@ describe('InfoPanel', () => {
     });
 
     it('should escape HTML in resource titles', () => {
-      const maliciousService: Service = {
+      const maliciousService: PositionedService = {
         ...testServiceWithExtended,
         resources: [
           {
@@ -420,7 +420,7 @@ describe('InfoPanel', () => {
 
   describe('Relationships section', () => {
     // Test services for relationships
-    const servicesMap: ServiceMap = {
+    const servicesMap: PositionedServiceMap = {
       ec2: testService,
       lambda: testServiceWithExtended,
       s3: testServiceWithOnlyDescription,
@@ -530,7 +530,7 @@ describe('InfoPanel', () => {
     });
 
     it('should escape HTML in related service names (XSS protection)', () => {
-      const maliciousServices: ServiceMap = {
+      const maliciousServices: PositionedServiceMap = {
         malicious: {
           ...testService,
           name: '<script>alert("xss")</script>',
