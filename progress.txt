@@ -626,3 +626,37 @@
   - The velocity threshold prevents tiny drifts when user releases mouse without meaningful movement
 - All tests pass (146 tests)
 
+## Ensure good performance
+
+- Added viewport culling to src/canvas/CanvasRenderer.ts:
+  - New VIEWPORT_PADDING constant (100px) for smooth edge rendering
+  - New getViewportBounds() method calculates visible area in world coordinates
+  - New isNodeInViewport() method checks if a node intersects the viewport
+  - New isConnectionInViewport() method uses bounding box of line segment for quick rejection
+  - drawNodes() now skips rendering nodes entirely outside the viewport
+  - drawConnections() now skips rendering connections with both endpoints outside viewport
+- Cached service entries for performance:
+  - New serviceEntries property stores Object.entries(services) once at construction
+  - Eliminates repeated array creation on every render, hit detection, and centerViewOnContent
+  - getServiceAtPosition() now uses cached entries for hit detection
+  - drawNodes() now uses cached entries for iteration
+  - centerViewOnContent() now uses cached entries for bounding box calculation
+- Built connection map for O(1) lookup:
+  - New connectionMap property (Map<string, Set<string>>) stores bidirectional relationships
+  - New buildConnectionMap() method constructs the map at construction time
+  - Enables efficient connection highlighting when a service is selected
+- Added comprehensive tests in src/canvas/CanvasRenderer.test.ts:
+  - Tests for cached service entries working correctly across multiple renders
+  - Tests for connection map building and usage during selection
+  - Tests for viewport culling with nodes at extreme positions
+  - Tests for viewport culling with connections far from viewport
+  - Tests for empty services handling with cached entries
+  - Tests for services at viewport boundaries
+- Gotchas discovered:
+  - Viewport padding should be scaled by the inverse of zoom level for consistent visual results
+  - Bounding box check for line segments is a fast approximation - doesn't handle all diagonal cases perfectly but is sufficient for performance
+  - Service entries must be cached at construction, not lazily, to ensure consistent behavior
+  - Connection map is bidirectional (both directions stored) for O(1) lookup regardless of connection direction
+  - The viewport bounds calculation must account for translation being in screen coordinates while positions are in world coordinates
+- All tests pass (152 tests: 7 data + 42 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
+

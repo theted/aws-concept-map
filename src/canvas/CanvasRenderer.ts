@@ -33,12 +33,19 @@ const NODE_DIMENSIONS: NodeDimensions = {
 // Default fallback width if not computed
 const DEFAULT_NODE_WIDTH = 120;
 
+// Viewport culling padding (draw slightly outside visible area for smoother panning)
+const VIEWPORT_PADDING = 100;
+
 export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private services: PositionedServiceMap;
   private connections: Connection[];
   private state: CanvasState;
+
+  // Cached service data for performance
+  private serviceEntries: [string, PositionedService][];
+  private connectionMap: Map<string, Set<string>>; // Maps service key to connected service keys
   private selectedService: string | null = null;
   private hoveredService: string | null = null;
   private isDragging = false;
@@ -89,8 +96,33 @@ export class CanvasRenderer {
     // Use provided widths or compute them
     this.nodeWidths = nodeWidths || computeAllNodeWidths(services, this.ctx);
 
+    // Cache service entries for performance (avoid repeated Object.entries calls)
+    this.serviceEntries = Object.entries(services);
+
+    // Build connection map for O(1) lookup during rendering
+    this.connectionMap = this.buildConnectionMap(connections);
+
     this.setupCanvas();
     this.setupEventListeners();
+  }
+
+  /**
+   * Builds a map from service key to set of connected service keys.
+   * This enables O(1) lookup for connection highlighting.
+   */
+  private buildConnectionMap(connections: Connection[]): Map<string, Set<string>> {
+    const map = new Map<string, Set<string>>();
+    for (const [from, to] of connections) {
+      if (!map.has(from)) {
+        map.set(from, new Set());
+      }
+      if (!map.has(to)) {
+        map.set(to, new Set());
+      }
+      map.get(from)!.add(to);
+      map.get(to)!.add(from);
+    }
+    return map;
   }
 
   private setupCanvas(): void {
@@ -558,12 +590,73 @@ export class CanvasRenderer {
     return this.nodeWidths.get(key) ?? DEFAULT_NODE_WIDTH;
   }
 
+  /**
+   * Calculates the visible viewport bounds in world coordinates.
+   * Used for viewport culling to skip drawing off-screen elements.
+   */
+  private getViewportBounds(): { minX: number; maxX: number; minY: number; maxY: number } {
+    const rect = this.canvas.getBoundingClientRect();
+    const padding = VIEWPORT_PADDING / this.state.scale;
+
+    // Convert screen bounds to world coordinates
+    const minX = (0 - this.state.translateX) / this.state.scale - padding;
+    const maxX = (rect.width - this.state.translateX) / this.state.scale + padding;
+    const minY = (0 - this.state.translateY) / this.state.scale - padding;
+    const maxY = (rect.height - this.state.translateY) / this.state.scale + padding;
+
+    return { minX, maxX, minY, maxY };
+  }
+
+  /**
+   * Checks if a node is within the visible viewport.
+   */
+  private isNodeInViewport(
+    x: number,
+    y: number,
+    width: number,
+    bounds: { minX: number; maxX: number; minY: number; maxY: number }
+  ): boolean {
+    const halfWidth = width / 2;
+    const halfHeight = NODE_DIMENSIONS.height / 2;
+    return (
+      x + halfWidth >= bounds.minX &&
+      x - halfWidth <= bounds.maxX &&
+      y + halfHeight >= bounds.minY &&
+      y - halfHeight <= bounds.maxY
+    );
+  }
+
+  /**
+   * Checks if a connection line is potentially visible in the viewport.
+   */
+  private isConnectionInViewport(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    bounds: { minX: number; maxX: number; minY: number; maxY: number }
+  ): boolean {
+    // Use bounding box of the line segment for quick rejection
+    const lineMinX = Math.min(x1, x2);
+    const lineMaxX = Math.max(x1, x2);
+    const lineMinY = Math.min(y1, y2);
+    const lineMaxY = Math.max(y1, y2);
+
+    return (
+      lineMaxX >= bounds.minX &&
+      lineMinX <= bounds.maxX &&
+      lineMaxY >= bounds.minY &&
+      lineMinY <= bounds.maxY
+    );
+  }
+
   private getServiceAtPosition(screenX: number, screenY: number): string | null {
     // Convert screen coordinates to world coordinates
     const worldX = (screenX - this.state.translateX) / this.state.scale;
     const worldY = (screenY - this.state.translateY) / this.state.scale;
 
-    for (const [key, service] of Object.entries(this.services)) {
+    // Use cached entries instead of Object.entries()
+    for (const [key, service] of this.serviceEntries) {
       const nodeX = service.x;
       const nodeY = service.y;
       const halfWidth = this.getNodeWidth(key) / 2;
@@ -589,24 +682,33 @@ export class CanvasRenderer {
     this.ctx.translate(this.state.translateX, this.state.translateY);
     this.ctx.scale(this.state.scale, this.state.scale);
 
+    // Calculate viewport bounds once for culling
+    const viewportBounds = this.getViewportBounds();
+
     // Draw connections first (behind nodes)
-    this.drawConnections();
+    this.drawConnections(viewportBounds);
 
     // Draw nodes on top
-    this.drawNodes();
+    this.drawNodes(viewportBounds);
 
     this.ctx.restore();
   }
 
-  private drawConnections(): void {
-    this.ctx.strokeStyle = 'rgba(20, 184, 166, 0.4)';
-    this.ctx.lineWidth = 2;
-
+  private drawConnections(viewportBounds: { minX: number; maxX: number; minY: number; maxY: number }): void {
     for (const [fromKey, toKey] of this.connections) {
       const fromService = this.services[fromKey];
       const toService = this.services[toKey];
 
       if (fromService && toService) {
+        // Viewport culling: skip connections entirely outside the viewport
+        if (!this.isConnectionInViewport(
+          fromService.x, fromService.y,
+          toService.x, toService.y,
+          viewportBounds
+        )) {
+          continue;
+        }
+
         const isHighlighted =
           this.selectedService === fromKey || this.selectedService === toKey;
 
@@ -622,8 +724,16 @@ export class CanvasRenderer {
     }
   }
 
-  private drawNodes(): void {
-    for (const [key, service] of Object.entries(this.services)) {
+  private drawNodes(viewportBounds: { minX: number; maxX: number; minY: number; maxY: number }): void {
+    // Use cached entries instead of Object.entries()
+    for (const [key, service] of this.serviceEntries) {
+      const nodeWidth = this.getNodeWidth(key);
+
+      // Viewport culling: skip nodes entirely outside the viewport
+      if (!this.isNodeInViewport(service.x, service.y, nodeWidth, viewportBounds)) {
+        continue;
+      }
+
       this.drawNode(key, service);
     }
   }
@@ -703,8 +813,8 @@ export class CanvasRenderer {
    * @param animate Whether to animate the transition (default: true)
    */
   public centerViewOnContent(animate: boolean = true): void {
-    const serviceEntries = Object.entries(this.services);
-    if (serviceEntries.length === 0) {
+    // Use cached entries instead of Object.entries()
+    if (this.serviceEntries.length === 0) {
       this.state.scale = 1;
       this.state.translateX = 0;
       this.state.translateY = 0;
@@ -716,7 +826,7 @@ export class CanvasRenderer {
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
 
-    for (const [key, service] of serviceEntries) {
+    for (const [key, service] of this.serviceEntries) {
       const nodeWidth = this.getNodeWidth(key);
       minX = Math.min(minX, service.x - nodeWidth / 2);
       maxX = Math.max(maxX, service.x + nodeWidth / 2);
