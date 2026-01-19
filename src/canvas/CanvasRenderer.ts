@@ -73,6 +73,9 @@ export class CanvasRenderer {
   // Dynamic node widths
   private nodeWidths: NodeWidthMap;
 
+  // Sorted service keys for keyboard navigation (by category, then alphabetically)
+  private sortedServiceKeys: string[];
+
   constructor(
     canvas: HTMLCanvasElement,
     services: PositionedServiceMap,
@@ -99,6 +102,9 @@ export class CanvasRenderer {
     // Cache service entries for performance (avoid repeated Object.entries calls)
     this.serviceEntries = Object.entries(services);
 
+    // Sort service keys by category, then alphabetically for consistent keyboard navigation
+    this.sortedServiceKeys = this.buildSortedServiceKeys();
+
     // Build connection map for O(1) lookup during rendering
     this.connectionMap = this.buildConnectionMap(connections);
 
@@ -123,6 +129,147 @@ export class CanvasRenderer {
       map.get(to)!.add(from);
     }
     return map;
+  }
+
+  /**
+   * Builds a sorted list of service keys for keyboard navigation.
+   * Sorts by category first, then alphabetically by service name within each category.
+   */
+  private buildSortedServiceKeys(): string[] {
+    return this.serviceEntries
+      .slice() // Don't mutate cached entries
+      .sort((a, b) => {
+        // First sort by category
+        const categoryCompare = a[1].category.localeCompare(b[1].category);
+        if (categoryCompare !== 0) return categoryCompare;
+        // Then sort by name within category
+        return a[1].name.localeCompare(b[1].name);
+      })
+      .map(([key]) => key);
+  }
+
+  /**
+   * Navigate to the next service in the sorted list.
+   * If no service is selected, selects the first service.
+   */
+  public navigateToNextService(): void {
+    if (this.sortedServiceKeys.length === 0) return;
+
+    let nextIndex: number;
+    if (this.selectedService === null) {
+      nextIndex = 0;
+    } else {
+      const currentIndex = this.sortedServiceKeys.indexOf(this.selectedService);
+      nextIndex = (currentIndex + 1) % this.sortedServiceKeys.length;
+    }
+
+    const nextKey = this.sortedServiceKeys[nextIndex];
+    this.focusOnService(nextKey);
+    if (this.onServiceClick) {
+      this.onServiceClick(nextKey, this.services[nextKey]);
+    }
+  }
+
+  /**
+   * Navigate to the previous service in the sorted list.
+   * If no service is selected, selects the last service.
+   */
+  public navigateToPreviousService(): void {
+    if (this.sortedServiceKeys.length === 0) return;
+
+    let prevIndex: number;
+    if (this.selectedService === null) {
+      prevIndex = this.sortedServiceKeys.length - 1;
+    } else {
+      const currentIndex = this.sortedServiceKeys.indexOf(this.selectedService);
+      prevIndex = (currentIndex - 1 + this.sortedServiceKeys.length) % this.sortedServiceKeys.length;
+    }
+
+    const prevKey = this.sortedServiceKeys[prevIndex];
+    this.focusOnService(prevKey);
+    if (this.onServiceClick) {
+      this.onServiceClick(prevKey, this.services[prevKey]);
+    }
+  }
+
+  /**
+   * Gets the sorted service keys for keyboard navigation (for testing).
+   */
+  public getSortedServiceKeys(): string[] {
+    return [...this.sortedServiceKeys];
+  }
+
+  /**
+   * Navigate to the nearest service in the specified direction from the current selection.
+   * Direction: 'up' | 'down' | 'left' | 'right'
+   * Returns true if navigation occurred, false otherwise.
+   */
+  public navigateToServiceInDirection(direction: 'up' | 'down' | 'left' | 'right'): boolean {
+    if (!this.selectedService || this.sortedServiceKeys.length <= 1) {
+      return false;
+    }
+
+    const currentService = this.services[this.selectedService];
+    if (!currentService) return false;
+
+    let bestCandidate: string | null = null;
+    let bestScore = Infinity;
+
+    for (const [key, service] of this.serviceEntries) {
+      if (key === this.selectedService) continue;
+
+      const dx = service.x - currentService.x;
+      const dy = service.y - currentService.y;
+
+      // Check if service is in the correct direction
+      let isInDirection = false;
+      let primaryDistance = 0;
+      let perpendicularOffset = 0;
+
+      switch (direction) {
+        case 'up':
+          isInDirection = dy < -10; // Negative Y is up
+          primaryDistance = -dy;
+          perpendicularOffset = Math.abs(dx);
+          break;
+        case 'down':
+          isInDirection = dy > 10;
+          primaryDistance = dy;
+          perpendicularOffset = Math.abs(dx);
+          break;
+        case 'left':
+          isInDirection = dx < -10;
+          primaryDistance = -dx;
+          perpendicularOffset = Math.abs(dy);
+          break;
+        case 'right':
+          isInDirection = dx > 10;
+          primaryDistance = dx;
+          perpendicularOffset = Math.abs(dy);
+          break;
+      }
+
+      if (!isInDirection) continue;
+
+      // Score: prioritize services more directly in line (lower perpendicular offset)
+      // Use weighted combination of primary distance and perpendicular offset
+      const score = primaryDistance + perpendicularOffset * 0.5;
+
+      if (score < bestScore) {
+        bestScore = score;
+        bestCandidate = key;
+      }
+    }
+
+    if (bestCandidate) {
+      this.focusOnService(bestCandidate);
+      if (this.onServiceClick) {
+        this.onServiceClick(bestCandidate, this.services[bestCandidate]);
+      }
+      return true;
+    }
+
+    return false;
   }
 
   private setupCanvas(): void {
@@ -415,18 +562,31 @@ export class CanvasRenderer {
     switch (e.key) {
       case 'ArrowUp':
         e.preventDefault();
+        // When a service is selected, try spatial navigation first
+        if (this.selectedService && this.navigateToServiceInDirection('up')) {
+          break;
+        }
         this.panByAmount(0, PAN_STEP, PAN_DURATION);
         break;
       case 'ArrowDown':
         e.preventDefault();
+        if (this.selectedService && this.navigateToServiceInDirection('down')) {
+          break;
+        }
         this.panByAmount(0, -PAN_STEP, PAN_DURATION);
         break;
       case 'ArrowLeft':
         e.preventDefault();
+        if (this.selectedService && this.navigateToServiceInDirection('left')) {
+          break;
+        }
         this.panByAmount(PAN_STEP, 0, PAN_DURATION);
         break;
       case 'ArrowRight':
         e.preventDefault();
+        if (this.selectedService && this.navigateToServiceInDirection('right')) {
+          break;
+        }
         this.panByAmount(-PAN_STEP, 0, PAN_DURATION);
         break;
       case '+':
@@ -448,6 +608,14 @@ export class CanvasRenderer {
           this.onServiceClick('', {} as PositionedService);
         }
         this.render();
+        break;
+      case 'Tab':
+        e.preventDefault();
+        if (e.shiftKey) {
+          this.navigateToPreviousService();
+        } else {
+          this.navigateToNextService();
+        }
         break;
     }
   }

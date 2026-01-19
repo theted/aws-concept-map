@@ -660,3 +660,41 @@
   - The viewport bounds calculation must account for translation being in screen coordinates while positions are in world coordinates
 - All tests pass (152 tests: 7 data + 42 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
 
+## Add keyboard navigation between services
+
+- Updated src/canvas/CanvasRenderer.ts with comprehensive keyboard service navigation:
+  - Added sortedServiceKeys property to cache services sorted by category, then alphabetically by name
+  - Added buildSortedServiceKeys() method to create the sorted list at construction time
+  - Added navigateToNextService() method for Tab key navigation (cycles forward through services)
+  - Added navigateToPreviousService() method for Shift+Tab navigation (cycles backward through services)
+  - Added navigateToServiceInDirection() method for arrow key spatial navigation
+  - Added getSortedServiceKeys() public method for testing
+- Tab/Shift+Tab navigation:
+  - Tab selects the next service in sorted order (by category, then alphabetically)
+  - Shift+Tab selects the previous service in sorted order
+  - Navigation wraps around (last service -> first, first service -> last)
+  - If no service is selected, Tab selects first service, Shift+Tab selects last
+- Arrow key spatial navigation:
+  - When a service is selected, arrow keys navigate to the nearest service in that direction
+  - Uses a weighted scoring algorithm: primaryDistance + perpendicularOffset * 0.5
+  - 10px threshold prevents selecting services that are essentially in the same position
+  - Falls back to panning if no service exists in the target direction
+  - When no service is selected, arrow keys continue to pan as before
+- Added 8 new tests in src/canvas/CanvasRenderer.test.ts:
+  - Tests for Tab key selecting next service
+  - Tests for Shift+Tab selecting previous service
+  - Tests for cycling through all services with Tab
+  - Tests for sorted service keys order (by category, then alphabetically)
+  - Tests for spatial navigation with ArrowUp to service above
+  - Tests for spatial navigation with ArrowRight to service on right
+  - Tests for panning fallback when no service in direction
+  - Tests for panning with arrow keys when no service is selected
+- Gotchas discovered:
+  - Service sorting should use localeCompare() for consistent cross-browser alphabetical ordering
+  - The spatial navigation algorithm weights perpendicular offset at 0.5 to prefer services more directly in line
+  - A 10px threshold in direction detection prevents edge cases where services at nearly the same position trigger navigation
+  - The slice() call when sorting ensures the cached serviceEntries array is not mutated
+  - focusOnService() both selects and centers the view, providing good UX when navigating with keyboard
+  - Arrow key navigation should only trigger when a service is already selected, otherwise it conflicts with panning
+- All tests pass (160 tests: 7 data + 50 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
+

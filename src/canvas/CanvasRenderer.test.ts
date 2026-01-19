@@ -531,6 +531,141 @@ describe('CanvasRenderer keyboard navigation', () => {
 
     expect(callback).toHaveBeenCalledWith('', expect.any(Object));
   });
+
+  it('should navigate to next service with Tab key', () => {
+    const callback = vi.fn();
+    renderer.setOnServiceClick(callback);
+
+    // First Tab selects first service in sorted order
+    const tabEvent = new KeyboardEvent('keydown', { key: 'Tab' });
+    mockCanvas.__triggerEvent('keydown', tabEvent);
+    flushAnimationFrames();
+
+    expect(callback).toHaveBeenCalled();
+    const firstCallKey = callback.mock.calls[0][0];
+    expect(firstCallKey).toBeTruthy();
+
+    // Second Tab selects next service
+    callback.mockClear();
+    mockCanvas.__triggerEvent('keydown', tabEvent);
+    flushAnimationFrames();
+
+    expect(callback).toHaveBeenCalled();
+    const secondCallKey = callback.mock.calls[0][0];
+    expect(secondCallKey).not.toBe(firstCallKey);
+  });
+
+  it('should navigate to previous service with Shift+Tab', () => {
+    const callback = vi.fn();
+    renderer.setOnServiceClick(callback);
+
+    // First Shift+Tab selects last service in sorted order
+    const shiftTabEvent = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true });
+    mockCanvas.__triggerEvent('keydown', shiftTabEvent);
+    flushAnimationFrames();
+
+    expect(callback).toHaveBeenCalled();
+    const firstCallKey = callback.mock.calls[0][0];
+
+    // Second Shift+Tab selects previous service
+    callback.mockClear();
+    mockCanvas.__triggerEvent('keydown', shiftTabEvent);
+    flushAnimationFrames();
+
+    expect(callback).toHaveBeenCalled();
+    const secondCallKey = callback.mock.calls[0][0];
+    expect(secondCallKey).not.toBe(firstCallKey);
+  });
+
+  it('should cycle through services with Tab', () => {
+    const callback = vi.fn();
+    renderer.setOnServiceClick(callback);
+    const sortedKeys = renderer.getSortedServiceKeys();
+
+    // Tab through all services and back to first
+    for (let i = 0; i <= sortedKeys.length; i++) {
+      const tabEvent = new KeyboardEvent('keydown', { key: 'Tab' });
+      mockCanvas.__triggerEvent('keydown', tabEvent);
+      flushAnimationFrames();
+    }
+
+    // Should have cycled back to first service
+    const lastCallKey = callback.mock.calls[callback.mock.calls.length - 1][0];
+    expect(lastCallKey).toBe(sortedKeys[0]);
+  });
+
+  it('should sort services by category then alphabetically', () => {
+    const sortedKeys = renderer.getSortedServiceKeys();
+
+    // testServices: ec2 (compute), s3 (storage), vpc (networking)
+    // Alphabetically by category: compute < networking < storage
+    // So order should be: ec2, vpc, s3
+    expect(sortedKeys).toEqual(['ec2', 'vpc', 's3']);
+  });
+
+  it('should navigate spatially with arrow keys when service is selected', () => {
+    const callback = vi.fn();
+    renderer.setOnServiceClick(callback);
+
+    // Select ec2 (x=400, y=350)
+    renderer.focusOnService('ec2');
+    flushAnimationFrames();
+    callback.mockClear();
+
+    // VPC is above EC2 (x=400, y=100), so ArrowUp should select VPC
+    const arrowUpEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
+    mockCanvas.__triggerEvent('keydown', arrowUpEvent);
+    flushAnimationFrames();
+
+    expect(callback).toHaveBeenCalledWith('vpc', expect.any(Object));
+  });
+
+  it('should navigate right to nearby service', () => {
+    const callback = vi.fn();
+    renderer.setOnServiceClick(callback);
+
+    // Select ec2 (x=400, y=350)
+    renderer.focusOnService('ec2');
+    flushAnimationFrames();
+    callback.mockClear();
+
+    // S3 is to the right of EC2 (x=600, y=350), so ArrowRight should select S3
+    const arrowRightEvent = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+    mockCanvas.__triggerEvent('keydown', arrowRightEvent);
+    flushAnimationFrames();
+
+    expect(callback).toHaveBeenCalledWith('s3', expect.any(Object));
+  });
+
+  it('should pan when no service in direction (spatial navigation fallback)', () => {
+    // Select s3 which is rightmost - no service to the right
+    renderer.focusOnService('s3');
+    flushAnimationFrames();
+    const initialState = renderer.getState();
+
+    // ArrowRight should pan since no service is to the right of S3
+    const arrowRightEvent = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+    mockCanvas.__triggerEvent('keydown', arrowRightEvent);
+    flushAnimationFrames();
+
+    const newState = renderer.getState();
+    // Should have panned (translateX changed)
+    expect(newState.translateX).toBe(initialState.translateX - 50);
+  });
+
+  it('should pan with arrow keys when no service is selected', () => {
+    // Ensure no service is selected
+    renderer.selectService(null);
+    const initialState = renderer.getState();
+
+    // ArrowUp should pan, not navigate
+    const arrowUpEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
+    mockCanvas.__triggerEvent('keydown', arrowUpEvent);
+    flushAnimationFrames();
+
+    const newState = renderer.getState();
+    expect(newState.translateY).toBe(initialState.translateY + 50);
+  });
 });
 
 describe('CanvasRenderer performance optimizations', () => {
