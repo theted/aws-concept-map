@@ -1,4 +1,4 @@
-import type { ServiceMap, PositionedServiceMap, ServiceCategory } from '../types';
+import type { ServiceMap, PositionedServiceMap, ServiceCategory, CategoryPosition } from '../types';
 import { LAYOUT } from '../config';
 
 export type NodeWidthMap = Map<string, number>;
@@ -19,6 +19,8 @@ export interface LayoutResult {
     minY: number;
     maxY: number;
   };
+  /** Category position information for drawing section headings */
+  categories: CategoryPosition[];
 }
 
 const DEFAULT_CONFIG: LayoutConfig = {
@@ -43,6 +45,20 @@ const CATEGORY_ORDER: ServiceCategory[] = [
   'cdn',
   'cost',
 ];
+
+// Display names for each category (human-readable labels)
+const CATEGORY_DISPLAY_NAMES: Record<ServiceCategory, string> = {
+  networking: 'Networking',
+  compute: 'Compute',
+  storage: 'Storage',
+  database: 'Database',
+  security: 'Security',
+  management: 'Management',
+  messaging: 'Messaging',
+  devtools: 'DevTools',
+  cdn: 'CDN & DNS',
+  cost: 'Cost Management',
+};
 
 /**
  * LayoutEngine computes non-overlapping positions for service nodes
@@ -81,12 +97,23 @@ export class LayoutEngine {
     const categoryGroups = this.computeCategoryPositions(grouped, services);
 
     const result: PositionedServiceMap = {};
+    const categories: CategoryPosition[] = [];
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
 
     for (const [category, serviceKeys] of Object.entries(grouped)) {
       const groupPosition = categoryGroups.get(category as ServiceCategory);
       if (!groupPosition) continue;
+
+      // Collect category position for section headings
+      categories.push({
+        category: category as ServiceCategory,
+        displayName: CATEGORY_DISPLAY_NAMES[category as ServiceCategory] || category,
+        x: groupPosition.x,
+        y: groupPosition.y,
+        width: groupPosition.width,
+        height: groupPosition.height,
+      });
 
       const positions = this.layoutCategoryServices(serviceKeys, groupPosition, services);
 
@@ -110,6 +137,7 @@ export class LayoutEngine {
     return {
       services: result,
       bounds: { minX, maxX, minY, maxY },
+      categories,
     };
   }
 

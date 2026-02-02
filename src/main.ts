@@ -10,8 +10,6 @@ const canvasElement = document.getElementById('canvas') as HTMLCanvasElement;
 const infoPanelElement = document.getElementById('infoPanel')!;
 const resetBtn = document.getElementById('resetBtn')!;
 const focusBtn = document.getElementById('focusBtn')!;
-const toggleLegendBtn = document.getElementById('toggleLegendBtn')!;
-const legendElement = document.getElementById('legend')!;
 
 // Canvas renderer and info panel
 let renderer: CanvasRenderer;
@@ -28,8 +26,14 @@ function init(): void {
   const layoutResult = layoutEngine.computeLayout(services);
   layoutServices = layoutResult.services;
 
-  // Create renderer with the same node widths
-  renderer = new CanvasRenderer(canvasElement, layoutServices, connections, nodeWidths);
+  // Create renderer with the same node widths and category positions for headings
+  renderer = new CanvasRenderer(
+    canvasElement,
+    layoutServices,
+    connections,
+    nodeWidths,
+    layoutResult.categories
+  );
 
   // Create info panel with close callback to deselect service in canvas
   // and onServiceSelect to navigate to related services
@@ -68,16 +72,10 @@ function focusNetworking(): void {
   infoPanel.show('vpc', layoutServices.vpc);
 }
 
-// Toggle legend visibility
-function toggleLegend(): void {
-  legendElement.classList.toggle('hidden');
-}
-
 // Set up control button listeners
 function setupControlListeners(): void {
   resetBtn.addEventListener('click', resetView);
   focusBtn.addEventListener('click', focusNetworking);
-  toggleLegendBtn.addEventListener('click', toggleLegend);
 }
 
 // Start the application

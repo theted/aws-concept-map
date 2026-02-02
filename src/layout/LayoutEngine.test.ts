@@ -443,4 +443,95 @@ describe('LayoutEngine', () => {
       expect(result.bounds.maxY - result.bounds.minY).toBeGreaterThan(0);
     });
   });
+
+  describe('category positions', () => {
+    it('should return category positions for single category', () => {
+      const services: ServiceMap = {
+        test1: { name: 'Test 1', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        test2: { name: 'Test 2', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+      };
+
+      const result = engine.computeLayout(services);
+
+      expect(result.categories).toBeDefined();
+      expect(result.categories.length).toBe(1);
+      expect(result.categories[0].category).toBe('compute');
+      expect(result.categories[0].displayName).toBe('Compute');
+    });
+
+    it('should return category positions for multiple categories', () => {
+      const services: ServiceMap = {
+        comp: { name: 'Compute 1', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        stor: { name: 'Storage 1', category: 'storage', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        db: { name: 'Database 1', category: 'database', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+      };
+
+      const result = engine.computeLayout(services);
+
+      expect(result.categories.length).toBe(3);
+
+      const categoryNames = result.categories.map(c => c.category);
+      expect(categoryNames).toContain('compute');
+      expect(categoryNames).toContain('storage');
+      expect(categoryNames).toContain('database');
+    });
+
+    it('should include position and dimension data for categories', () => {
+      const services: ServiceMap = {
+        test1: { name: 'Test 1', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+        test2: { name: 'Test 2', category: 'compute', description: '', details: '', keyPoints: [], x: 0, y: 0 },
+      };
+
+      const result = engine.computeLayout(services);
+      const category = result.categories[0];
+
+      expect(typeof category.x).toBe('number');
+      expect(typeof category.y).toBe('number');
+      expect(typeof category.width).toBe('number');
+      expect(typeof category.height).toBe('number');
+      expect(category.width).toBeGreaterThan(0);
+      expect(category.height).toBeGreaterThan(0);
+    });
+
+    it('should return display names for all categories', () => {
+      const displayNames: Record<string, string> = {
+        compute: 'Compute',
+        storage: 'Storage',
+        database: 'Database',
+        networking: 'Networking',
+        security: 'Security',
+        management: 'Management',
+        messaging: 'Messaging',
+        devtools: 'DevTools',
+        cdn: 'CDN & DNS',
+        cost: 'Cost Management',
+      };
+
+      const categories: ServiceCategory[] = ['compute', 'storage', 'database', 'networking', 'security'];
+      const services: ServiceMap = {};
+
+      categories.forEach((category) => {
+        services[category] = {
+          name: category,
+          category,
+          description: '',
+          details: '',
+          keyPoints: [],
+          x: 0,
+          y: 0,
+        };
+      });
+
+      const result = engine.computeLayout(services);
+
+      for (const cat of result.categories) {
+        expect(cat.displayName).toBe(displayNames[cat.category]);
+      }
+    });
+
+    it('should return empty categories array for empty services', () => {
+      const result = engine.computeLayout({});
+      expect(result.categories).toEqual([]);
+    });
+  });
 });

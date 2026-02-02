@@ -1,4 +1,4 @@
-import type { PositionedService, PositionedServiceMap, Connection } from '../types';
+import type { PositionedService, PositionedServiceMap, Connection, CategoryPosition } from '../types';
 import { computeAllNodeWidths, type NodeWidthMap } from '../utils/nodeWidths';
 import {
   CATEGORY_COLORS,
@@ -30,7 +30,7 @@ export class CanvasRenderer {
 
   // Cached service data for performance
   private serviceEntries: [string, PositionedService][];
-  private connectionMap: Map<string, Set<string>>; // Maps service key to connected service keys
+  private _connectionMap: Map<string, Set<string>>; // Maps service key to connected service keys (for future O(1) lookup)
   private selectedService: string | null = null;
   private hoveredService: string | null = null;
   private isDragging = false;
@@ -64,7 +64,7 @@ export class CanvasRenderer {
   // Initial fade-in animation state
   private globalOpacity: number = 0;
   private fadeInStartTime: number = 0;
-  private fadeInAnimationId: number | null = null;
+  private _fadeInAnimationId: number | null = null; // Tracks active fade-in animation
 
   // Connection opacity animation state
   private connectionOpacities: Map<string, number> = new Map();
@@ -72,11 +72,15 @@ export class CanvasRenderer {
   private connectionAnimationStartTime: number = 0;
   private connectionAnimationId: number | null = null;
 
+  // Category positions for section headings
+  private categoryPositions: CategoryPosition[] = [];
+
   constructor(
     canvas: HTMLCanvasElement,
     services: PositionedServiceMap,
     connections: Connection[],
-    nodeWidths?: NodeWidthMap
+    nodeWidths?: NodeWidthMap,
+    categoryPositions?: CategoryPosition[]
   ) {
     this.canvas = canvas;
     const ctx = canvas.getContext('2d');
@@ -86,6 +90,7 @@ export class CanvasRenderer {
     this.ctx = ctx;
     this.services = services;
     this.connections = connections;
+    this.categoryPositions = categoryPositions || [];
     this.state = {
       scale: 1,
       translateX: 0,
@@ -102,7 +107,7 @@ export class CanvasRenderer {
     this.sortedServiceKeys = this.buildSortedServiceKeys();
 
     // Build connection map for O(1) lookup during rendering
-    this.connectionMap = this.buildConnectionMap(connections);
+    this._connectionMap = this.buildConnectionMap(connections);
 
     // Initialize connection opacities
     this.initializeConnectionOpacities();
@@ -995,7 +1000,10 @@ export class CanvasRenderer {
     // Calculate viewport bounds once for culling
     const viewportBounds = this.getViewportBounds();
 
-    // Draw connections first (behind nodes)
+    // Draw category headings first (behind everything)
+    this.drawCategoryHeadings(viewportBounds);
+
+    // Draw connections (behind nodes)
     this.drawConnections(viewportBounds);
 
     // Draw nodes on top
@@ -1047,6 +1055,42 @@ export class CanvasRenderer {
       }
 
       this.drawNode(key, service);
+    }
+  }
+
+  /**
+   * Draws category section headings above each category group.
+   */
+  private drawCategoryHeadings(viewportBounds: { minX: number; maxX: number; minY: number; maxY: number }): void {
+    const headingConfig = TYPOGRAPHY.categoryHeading;
+
+    for (const category of this.categoryPositions) {
+      // Calculate heading position (centered above the category group)
+      const headingX = category.x + category.width / 2;
+      const headingY = category.y - headingConfig.offsetY;
+
+      // Viewport culling: check if heading is visible
+      // Use a generous width estimate for the heading text
+      const estimatedWidth = category.displayName.length * 12;
+      if (!this.isNodeInViewport(headingX, headingY, estimatedWidth, viewportBounds)) {
+        continue;
+      }
+
+      // Apply global opacity for fade-in effect
+      this.ctx.globalAlpha = this.globalOpacity * headingConfig.opacity;
+
+      // Get category color for the heading
+      const colors = CATEGORY_COLORS[category.category] || COLORS.fallbackCategory;
+
+      // Draw heading text
+      this.ctx.font = headingConfig.font;
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillStyle = colors.start; // Use the lighter category color
+      this.ctx.fillText(category.displayName, headingX, headingY);
+
+      // Reset global alpha
+      this.ctx.globalAlpha = 1;
     }
   }
 

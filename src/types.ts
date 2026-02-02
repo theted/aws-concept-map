@@ -44,3 +44,15 @@ export type ServiceMap = Record<string, Service>;
 export type PositionedServiceMap = Record<string, PositionedService>;
 
 export type Connection = [string, string];
+
+/**
+ * Category position information for drawing section headings.
+ */
+export interface CategoryPosition {
+  category: ServiceCategory;
+  displayName: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}

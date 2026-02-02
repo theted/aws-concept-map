@@ -63,6 +63,6 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Add additional animations - transition opacity/color of relationships lines when selecting a service, a smooth fade-in animation for the network diagram upon initial page load. Additional animations may also be added.
 - [x] There are a lot of things that are not stored in variables - for example colors, constants/configs - configs should be centralized, no magick numbers, constants, etc!
 - [x] Revise services list - are there any services missing?
-- [ ] Add title headings for the different sections, remove service categories legend
+- [x] Add title headings for the different sections, remove service categories legend
 - [ ] Remove the title box with 3 buttons - replace with a simple title "AWS services"
 - [ ] Add a staggered zoom-in animation - each service zooms in in a staggered animation upon initial page load. Service titles fades in as well.

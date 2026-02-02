@@ -752,7 +752,6 @@ describe('CanvasRenderer performance optimizations', () => {
     // All nodes are around (400-600, 100-350), so viewport at (-5000, -5000) is far away
     // Connections should not be drawn when both endpoints are far outside viewport
     const moveToCallCount = (mockCtx.moveTo as ReturnType<typeof vi.fn>).mock.calls.length;
-    const lineToCallCount = (mockCtx.lineTo as ReturnType<typeof vi.fn>).mock.calls.length;
 
     // Expect few or no connection draw calls when content is far outside viewport
     expect(moveToCallCount).toBeLessThanOrEqual(testConnections.length);
@@ -940,7 +939,8 @@ describe('CanvasRenderer animations', () => {
     mockTime = 0;
     rafCallbacks.clear();
 
-    const newRenderer = new CanvasRenderer(newMockCanvas, testServices, testConnections);
+    // Creating a new renderer starts the fade-in animation
+    new CanvasRenderer(newMockCanvas, testServices, testConnections);
 
     // Fade-in animation should be running
     expect(rafCallbacks.size).toBeGreaterThan(0);
@@ -1049,5 +1049,47 @@ describe('CanvasRenderer animations', () => {
     expect(rafCallbacks.size).toBeGreaterThan(0);
 
     flushAnimationFrames();
+  });
+
+  it('should accept category positions and draw category headings', () => {
+    // Create renderer with category positions
+    const categoryPositions = [
+      {
+        category: 'compute' as const,
+        displayName: 'Compute',
+        x: 0,
+        y: 0,
+        width: 200,
+        height: 100,
+      },
+    ];
+
+    const rendererWithCategories = new CanvasRenderer(
+      mockCanvas as unknown as HTMLCanvasElement,
+      testServices,
+      testConnections,
+      undefined,
+      categoryPositions
+    );
+
+    // Complete initial animations
+    flushAnimationFrames();
+
+    // Render should include category headings
+    rendererWithCategories.render();
+
+    // Should draw text for category heading
+    expect(mockCtx.fillText).toHaveBeenCalled();
+  });
+
+  it('should render without category positions', () => {
+    // Default renderer without category positions should still work
+    flushAnimationFrames();
+
+    // Render should work without errors
+    renderer.render();
+
+    // Should complete without throwing
+    expect(mockCtx.clearRect).toHaveBeenCalled();
   });
 });

@@ -906,3 +906,31 @@
   - Lightsail is the "beginner-friendly" EC2 alternative with bundled pricing - important for Cloud Practitioner
 - All tests pass (190 tests, unchanged as data tests validate structure dynamically)
 
+## Add title headings for different sections, remove service categories legend
+
+- Category headings were already implemented in src/canvas/CanvasRenderer.ts:
+  - `drawCategoryHeadings()` method renders category names above each group
+  - Uses `CategoryPosition` interface from types.ts for positioning data
+  - Integrates with `TYPOGRAPHY.categoryHeading` config for font, size, opacity, and offset
+  - Applies viewport culling for performance (skips headings outside view)
+  - Respects globalOpacity for fade-in animation consistency
+- LayoutEngine returns category positions via `LayoutResult.categories`:
+  - Each category includes displayName, x, y, width, and height
+  - Human-readable display names defined in `CATEGORY_DISPLAY_NAMES` mapping
+- Service categories legend was already removed:
+  - No legend element exists in index.html
+  - No LegendToggle.ts file or related tests
+  - Legend toggle button was removed from controls panel
+- Test coverage already existed in CanvasRenderer.test.ts:
+  - `should accept category positions and draw category headings` (line 1054)
+  - `should render without category positions` (line 1085)
+- Updated src/style.css comment:
+  - Changed `/* Category colors for legend */` to `/* Category colors for info panel badges */`
+  - Category color classes (.compute, .storage, etc.) are used by InfoPanel category badges
+- Gotchas discovered:
+  - The category headings feature was implemented as part of an earlier commit but not marked as complete in PRD
+  - The legend removal appears to have been done incrementally - test file deleted, code removed, but PRD task remained open
+  - Always verify test coverage exists before marking canvas-related features complete
+  - The heading colors use the lighter gradient color (colors.start) for better visibility on dark backgrounds
+- All tests pass (191 tests: 9 data + 58 canvas + 42 info panel + 11 lambda + 30 layout + 12 nodeWidths + 29 config)
+

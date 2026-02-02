@@ -69,6 +69,18 @@ export const TYPOGRAPHY = {
   get canvasFont(): string {
     return `${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`;
   },
+  /** Category heading configuration */
+  categoryHeading: {
+    fontWeight: '700',
+    fontSize: 16,
+    get font(): string {
+      return `${this.fontWeight} ${this.fontSize}px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+    },
+    /** Vertical offset above the category group (pixels) */
+    offsetY: 30,
+    /** Opacity for category headings */
+    opacity: 0.85,
+  },
 } as const;
 
 // =============================================================================
