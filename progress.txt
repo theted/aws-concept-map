@@ -749,3 +749,56 @@
   - Always showing extended content improves discoverability - users don't have to click to see resources
 - All tests pass (155 tests: 9 data + 50 canvas + 42 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
 
+## Add additional animations - fade-in and connection transitions
+
+- Enhanced src/canvas/CanvasRenderer.ts with two new animation systems:
+  - **Initial fade-in animation**: Network diagram fades in smoothly over 800ms upon page load
+  - **Connection opacity transitions**: Connections animate opacity when selecting/deselecting services
+- Added animation configuration constants at module level:
+  - FADE_IN_DURATION: 800ms for initial canvas fade-in
+  - CONNECTION_TRANSITION_DURATION: 300ms for connection opacity changes
+  - CONNECTION_OPACITY_NORMAL: 0.3 (default connection opacity)
+  - CONNECTION_OPACITY_HIGHLIGHTED: 0.8 (opacity for selected service connections)
+  - CONNECTION_OPACITY_DIMMED: 0.1 (opacity for unrelated connections when a service is selected)
+- Added new properties to CanvasRenderer:
+  - globalOpacity: Tracks overall canvas opacity for fade-in effect (0 → 1)
+  - fadeInStartTime, fadeInAnimationId: Track fade-in animation state
+  - connectionOpacities: Map<string, number> storing current opacity per connection
+  - connectionTargetOpacities: Map<string, number> storing target opacity per connection
+  - connectionAnimationStartTime, connectionAnimationId: Track connection animation state
+- Implemented new private methods:
+  - initializeConnectionOpacities(): Sets all connections to normal opacity at construction
+  - getConnectionKey(from, to): Creates order-independent key for connection lookup
+  - startFadeInAnimation(): Initiates the global opacity animation
+  - fadeInLoop(): requestAnimationFrame loop for fade-in interpolation
+  - updateConnectionTargets(selectedKey): Calculates target opacities based on selection
+  - startConnectionAnimation(): Begins connection opacity transition
+  - connectionAnimationLoop(): requestAnimationFrame loop for connection interpolation
+  - getConnectionOpacity(from, to): Returns current animated opacity for a connection
+- Updated drawNode() to apply globalOpacity using ctx.globalAlpha:
+  - Sets globalAlpha before drawing, resets to 1 after
+  - Shadow opacity also scales with globalOpacity
+- Updated drawConnections() to use animated opacities:
+  - Combines connection opacity with globalOpacity for final stroke color
+  - Uses rgba() with computed opacity instead of hardcoded values
+- Updated selectService() to trigger connection animations when selection changes
+- Updated handleClick() to trigger connection animations on mouse click
+- Updated handleTouchEnd() to trigger connection animations on touch
+- Updated handleKeyDown() for Escape key to trigger connection animation
+- Updated focusOnService() to trigger connection animation
+- Added 6 new tests in src/canvas/CanvasRenderer.test.ts:
+  - Tests for fade-in animation starting on construction
+  - Tests for connection opacity animation on service selection
+  - Tests for dimming unrelated connections
+  - Tests for restoring opacities when selection is cleared
+  - Tests for connection animation on keyboard navigation
+  - Tests for connection animation on Escape key press
+- Gotchas discovered:
+  - When testing globalAlpha, you can't just check its final value since drawNode resets it to 1 - need to spy on the setter
+  - Connection keys should be order-independent (a:b == b:a) to avoid duplicate state
+  - The connection animation uses lerp (linear interpolation) within the easing - each frame moves toward target rather than replaying from start
+  - Multiple animation systems can run concurrently (fade-in + connection + view panning) without interference
+  - Initializing connection opacities in constructor ensures first render has correct values before any animations
+  - The globalAlpha approach is cleaner than manually adjusting each color's alpha channel
+- All tests pass (161 tests: 9 data + 56 canvas + 42 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
+

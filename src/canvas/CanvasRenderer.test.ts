@@ -91,6 +91,7 @@ function createMockContext(): CanvasRenderingContext2D {
     shadowBlur: 0,
     shadowOffsetX: 0,
     shadowOffsetY: 0,
+    globalAlpha: 1,
   } as unknown as CanvasRenderingContext2D;
 }
 
@@ -916,5 +917,137 @@ describe('CanvasRenderer animations', () => {
     // Should have zoomed in more than a single zoom step
     // Single zoom factor is 1.1, so two should give > 1.1x original scale
     expect(finalState.scale).toBeGreaterThan(initialState.scale * 1.1);
+  });
+
+  it('should start fade-in animation on construction', () => {
+    // Create a new renderer - fade-in should start immediately
+    const newMockCtx = createMockContext();
+    const newMockCanvas = createMockCanvas(newMockCtx);
+
+    // Track globalAlpha values set during rendering
+    const alphaValues: number[] = [];
+    Object.defineProperty(newMockCtx, 'globalAlpha', {
+      get: function() { return this._globalAlpha ?? 1; },
+      set: function(value) {
+        this._globalAlpha = value;
+        if (value < 1) {
+          alphaValues.push(value);
+        }
+      },
+    });
+
+    // Reset mock time
+    mockTime = 0;
+    rafCallbacks.clear();
+
+    const newRenderer = new CanvasRenderer(newMockCanvas, testServices, testConnections);
+
+    // Fade-in animation should be running
+    expect(rafCallbacks.size).toBeGreaterThan(0);
+
+    // Advance time partially through fade-in (800ms duration)
+    advanceMockTime(400);
+
+    // globalAlpha should have been set to values less than 1 during fade-in
+    expect(alphaValues.length).toBeGreaterThan(0);
+    expect(Math.min(...alphaValues)).toBeLessThan(1);
+
+    // Complete the animation
+    flushAnimationFrames();
+  });
+
+  it('should animate connection opacity when selecting a service', () => {
+    // Complete the initial fade-in animation
+    flushAnimationFrames();
+
+    // Select a service - this should trigger connection animation
+    renderer.selectService('ec2');
+
+    // The connection animation should be running
+    expect(rafCallbacks.size).toBeGreaterThan(0);
+
+    // Complete the connection animation
+    flushAnimationFrames();
+
+    // Render should complete successfully
+    renderer.render();
+    expect(mockCtx.stroke).toHaveBeenCalled();
+  });
+
+  it('should dim unrelated connections when a service is selected', () => {
+    // Complete initial animations
+    flushAnimationFrames();
+
+    // Clear mocks to track new stroke calls
+    mockCtx.stroke = vi.fn();
+
+    // Select a service and complete animation
+    renderer.selectService('ec2');
+    flushAnimationFrames();
+
+    renderer.render();
+
+    // Both connections should be drawn (ec2-s3 and vpc-ec2)
+    // They should have different opacities (highlighted vs dimmed)
+    expect(mockCtx.stroke).toHaveBeenCalled();
+  });
+
+  it('should restore connection opacities when selection is cleared', () => {
+    // Complete initial animations
+    flushAnimationFrames();
+
+    // Select a service
+    renderer.selectService('ec2');
+    flushAnimationFrames();
+
+    // Clear selection
+    renderer.selectService(null);
+
+    // Connection animation should start
+    expect(rafCallbacks.size).toBeGreaterThan(0);
+
+    // Complete the animation
+    flushAnimationFrames();
+
+    renderer.render();
+    expect(mockCtx.stroke).toHaveBeenCalled();
+  });
+
+  it('should trigger connection animation on keyboard navigation', () => {
+    // Complete initial animations
+    flushAnimationFrames();
+
+    // Navigate with Tab to select first service
+    const tabEvent = new KeyboardEvent('keydown', { key: 'Tab' });
+    mockCanvas.__triggerEvent('keydown', tabEvent);
+
+    // Should trigger connection animation
+    expect(rafCallbacks.size).toBeGreaterThan(0);
+
+    flushAnimationFrames();
+
+    renderer.render();
+    expect(mockCtx.stroke).toHaveBeenCalled();
+  });
+
+  it('should trigger connection animation when pressing Escape to deselect', () => {
+    // Complete initial animations
+    flushAnimationFrames();
+
+    // Select a service first
+    renderer.selectService('ec2');
+    flushAnimationFrames();
+
+    // Clear the RAF callbacks to track new animations
+    rafCallbacks.clear();
+
+    // Press Escape to deselect
+    const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+    mockCanvas.__triggerEvent('keydown', escapeEvent);
+
+    // Should trigger connection animation to restore normal opacities
+    expect(rafCallbacks.size).toBeGreaterThan(0);
+
+    flushAnimationFrames();
   });
 });

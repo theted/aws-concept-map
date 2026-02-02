@@ -36,6 +36,13 @@ const DEFAULT_NODE_WIDTH = 120;
 // Viewport culling padding (draw slightly outside visible area for smoother panning)
 const VIEWPORT_PADDING = 100;
 
+// Animation configuration
+const FADE_IN_DURATION = 800; // Duration for initial fade-in animation
+const CONNECTION_TRANSITION_DURATION = 300; // Duration for connection opacity transitions
+const CONNECTION_OPACITY_NORMAL = 0.3; // Default connection opacity
+const CONNECTION_OPACITY_HIGHLIGHTED = 0.8; // Highlighted connection opacity
+const CONNECTION_OPACITY_DIMMED = 0.1; // Dimmed connection opacity when other service selected
+
 export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -76,6 +83,17 @@ export class CanvasRenderer {
   // Sorted service keys for keyboard navigation (by category, then alphabetically)
   private sortedServiceKeys: string[];
 
+  // Initial fade-in animation state
+  private globalOpacity: number = 0;
+  private fadeInStartTime: number = 0;
+  private fadeInAnimationId: number | null = null;
+
+  // Connection opacity animation state
+  private connectionOpacities: Map<string, number> = new Map();
+  private connectionTargetOpacities: Map<string, number> = new Map();
+  private connectionAnimationStartTime: number = 0;
+  private connectionAnimationId: number | null = null;
+
   constructor(
     canvas: HTMLCanvasElement,
     services: PositionedServiceMap,
@@ -108,8 +126,144 @@ export class CanvasRenderer {
     // Build connection map for O(1) lookup during rendering
     this.connectionMap = this.buildConnectionMap(connections);
 
+    // Initialize connection opacities
+    this.initializeConnectionOpacities();
+
     this.setupCanvas();
     this.setupEventListeners();
+
+    // Start fade-in animation after setup
+    this.startFadeInAnimation();
+  }
+
+  /**
+   * Initializes connection opacities to the normal value.
+   */
+  private initializeConnectionOpacities(): void {
+    for (const [from, to] of this.connections) {
+      const key = this.getConnectionKey(from, to);
+      this.connectionOpacities.set(key, CONNECTION_OPACITY_NORMAL);
+      this.connectionTargetOpacities.set(key, CONNECTION_OPACITY_NORMAL);
+    }
+  }
+
+  /**
+   * Creates a unique key for a connection (order-independent).
+   */
+  private getConnectionKey(from: string, to: string): string {
+    return from < to ? `${from}:${to}` : `${to}:${from}`;
+  }
+
+  /**
+   * Starts the initial fade-in animation for the entire canvas.
+   */
+  private startFadeInAnimation(): void {
+    this.globalOpacity = 0;
+    this.fadeInStartTime = performance.now();
+    this.fadeInAnimationId = requestAnimationFrame(() => this.fadeInLoop());
+  }
+
+  /**
+   * Animation loop for the initial fade-in effect.
+   */
+  private fadeInLoop(): void {
+    const elapsed = performance.now() - this.fadeInStartTime;
+    const progress = Math.min(elapsed / FADE_IN_DURATION, 1);
+
+    // Use ease-out cubic for smooth deceleration
+    this.globalOpacity = this.easeOutCubic(progress);
+    this.render();
+
+    if (progress < 1) {
+      this.fadeInAnimationId = requestAnimationFrame(() => this.fadeInLoop());
+    } else {
+      this.fadeInAnimationId = null;
+      this.globalOpacity = 1;
+    }
+  }
+
+  /**
+   * Updates connection target opacities based on the selected service.
+   * When a service is selected, its connections are highlighted and others are dimmed.
+   */
+  private updateConnectionTargets(selectedKey: string | null): void {
+    for (const [from, to] of this.connections) {
+      const key = this.getConnectionKey(from, to);
+      let targetOpacity: number;
+
+      if (selectedKey === null) {
+        // No selection - all connections return to normal
+        targetOpacity = CONNECTION_OPACITY_NORMAL;
+      } else if (from === selectedKey || to === selectedKey) {
+        // This connection involves the selected service - highlight it
+        targetOpacity = CONNECTION_OPACITY_HIGHLIGHTED;
+      } else {
+        // Other connections - dim them
+        targetOpacity = CONNECTION_OPACITY_DIMMED;
+      }
+
+      this.connectionTargetOpacities.set(key, targetOpacity);
+    }
+
+    // Start the animation if not already running
+    this.startConnectionAnimation();
+  }
+
+  /**
+   * Starts or continues the connection opacity animation.
+   */
+  private startConnectionAnimation(): void {
+    // Store current opacities as start values
+    this.connectionAnimationStartTime = performance.now();
+
+    if (this.connectionAnimationId === null) {
+      this.connectionAnimationId = requestAnimationFrame(() => this.connectionAnimationLoop());
+    }
+  }
+
+  /**
+   * Animation loop for connection opacity transitions.
+   */
+  private connectionAnimationLoop(): void {
+    const elapsed = performance.now() - this.connectionAnimationStartTime;
+    const progress = Math.min(elapsed / CONNECTION_TRANSITION_DURATION, 1);
+    const eased = this.easeOutCubic(progress);
+
+    let needsUpdate = false;
+
+    for (const [key, targetOpacity] of this.connectionTargetOpacities) {
+      const currentOpacity = this.connectionOpacities.get(key) ?? CONNECTION_OPACITY_NORMAL;
+
+      if (Math.abs(currentOpacity - targetOpacity) > 0.001) {
+        const newOpacity = currentOpacity + (targetOpacity - currentOpacity) * eased;
+        this.connectionOpacities.set(key, newOpacity);
+        needsUpdate = true;
+      } else {
+        this.connectionOpacities.set(key, targetOpacity);
+      }
+    }
+
+    if (needsUpdate) {
+      this.render();
+    }
+
+    if (progress < 1 && needsUpdate) {
+      this.connectionAnimationId = requestAnimationFrame(() => this.connectionAnimationLoop());
+    } else {
+      this.connectionAnimationId = null;
+      // Ensure all opacities are at target values
+      for (const [key, target] of this.connectionTargetOpacities) {
+        this.connectionOpacities.set(key, target);
+      }
+    }
+  }
+
+  /**
+   * Gets the current opacity for a connection.
+   */
+  private getConnectionOpacity(from: string, to: string): number {
+    const key = this.getConnectionKey(from, to);
+    return this.connectionOpacities.get(key) ?? CONNECTION_OPACITY_NORMAL;
   }
 
   /**
@@ -405,6 +559,7 @@ export class CanvasRenderer {
     const mouseY = e.clientY - rect.top;
 
     const clickedKey = this.getServiceAtPosition(mouseX, mouseY);
+    const previousSelection = this.selectedService;
 
     if (clickedKey) {
       this.selectedService = clickedKey;
@@ -417,6 +572,12 @@ export class CanvasRenderer {
         this.onServiceClick('', {} as PositionedService);
       }
     }
+
+    // Trigger connection animation if selection changed
+    if (previousSelection !== this.selectedService) {
+      this.updateConnectionTargets(this.selectedService);
+    }
+
     this.render();
   }
 
@@ -508,6 +669,8 @@ export class CanvasRenderer {
       const touchY = touch.clientY - rect.top;
 
       const clickedKey = this.getServiceAtPosition(touchX, touchY);
+      const previousSelection = this.selectedService;
+
       if (clickedKey) {
         this.selectedService = clickedKey;
         if (this.onServiceClick) {
@@ -519,6 +682,12 @@ export class CanvasRenderer {
           this.onServiceClick('', {} as PositionedService);
         }
       }
+
+      // Trigger connection animation if selection changed
+      if (previousSelection !== this.selectedService) {
+        this.updateConnectionTargets(this.selectedService);
+      }
+
       this.render();
     }
 
@@ -603,11 +772,14 @@ export class CanvasRenderer {
         this.centerViewOnContent();
         break;
       case 'Escape':
-        this.selectedService = null;
-        if (this.onServiceClick) {
-          this.onServiceClick('', {} as PositionedService);
+        if (this.selectedService !== null) {
+          this.selectedService = null;
+          this.updateConnectionTargets(null);
+          if (this.onServiceClick) {
+            this.onServiceClick('', {} as PositionedService);
+          }
+          this.render();
         }
-        this.render();
         break;
       case 'Tab':
         e.preventDefault();
@@ -880,10 +1052,12 @@ export class CanvasRenderer {
         const isHighlighted =
           this.selectedService === fromKey || this.selectedService === toKey;
 
+        // Get animated opacity for this connection
+        const connectionOpacity = this.getConnectionOpacity(fromKey, toKey);
+        const finalOpacity = connectionOpacity * this.globalOpacity;
+
         this.ctx.beginPath();
-        this.ctx.strokeStyle = isHighlighted
-          ? 'rgba(20, 184, 166, 0.8)'
-          : 'rgba(20, 184, 166, 0.3)';
+        this.ctx.strokeStyle = `rgba(20, 184, 166, ${finalOpacity})`;
         this.ctx.lineWidth = isHighlighted ? 3 : 1.5;
         this.ctx.moveTo(fromService.x, fromService.y);
         this.ctx.lineTo(toService.x, toService.y);
@@ -917,8 +1091,11 @@ export class CanvasRenderer {
     const isSelected = this.selectedService === key;
     const isHovered = this.hoveredService === key;
 
+    // Apply global opacity for fade-in effect
+    this.ctx.globalAlpha = this.globalOpacity;
+
     // Draw shadow
-    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    this.ctx.shadowColor = `rgba(0, 0, 0, ${0.3 * this.globalOpacity})`;
     this.ctx.shadowBlur = isSelected || isHovered ? 12 : 6;
     this.ctx.shadowOffsetX = 0;
     this.ctx.shadowOffsetY = isSelected || isHovered ? 6 : 4;
@@ -965,6 +1142,9 @@ export class CanvasRenderer {
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(service.name, x, y);
+
+    // Reset global alpha
+    this.ctx.globalAlpha = 1;
   }
 
   public setOnServiceClick(callback: (key: string, service: PositionedService) => void): void {
@@ -1046,7 +1226,13 @@ export class CanvasRenderer {
     const targetTranslateX = rect.width / 2 - service.x * targetScale;
     const targetTranslateY = rect.height / 2 - service.y * targetScale;
 
+    const previousSelection = this.selectedService;
     this.selectedService = key;
+
+    // Trigger connection animation if selection changed
+    if (previousSelection !== key) {
+      this.updateConnectionTargets(key);
+    }
 
     if (animate) {
       this.animateTo({
@@ -1063,7 +1249,14 @@ export class CanvasRenderer {
   }
 
   public selectService(key: string | null): void {
+    const previousSelection = this.selectedService;
     this.selectedService = key;
+
+    // Trigger connection opacity animation if selection changed
+    if (previousSelection !== key) {
+      this.updateConnectionTargets(key);
+    }
+
     this.render();
   }
 
