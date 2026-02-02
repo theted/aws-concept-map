@@ -13,6 +13,7 @@ import {
   ZOOM,
   INTERACTION,
   MOMENTUM,
+  LAYOUT,
 } from '../config';
 
 export interface CanvasState {
@@ -72,6 +73,11 @@ export class CanvasRenderer {
   private connectionAnimationStartTime: number = 0;
   private connectionAnimationId: number | null = null;
 
+  // Per-node staggered zoom-in animation state
+  private nodeScales: Map<string, number> = new Map();
+  private nodeAnimationStartTimes: Map<string, number> = new Map();
+  private nodeAnimationId: number | null = null;
+
   // Category positions for section headings
   private categoryPositions: CategoryPosition[] = [];
 
@@ -112,11 +118,15 @@ export class CanvasRenderer {
     // Initialize connection opacities
     this.initializeConnectionOpacities();
 
+    // Initialize node scales for staggered zoom-in animation
+    this.initializeNodeScales();
+
     this.setupCanvas();
     this.setupEventListeners();
 
-    // Start fade-in animation after setup
+    // Start staggered zoom-in and fade-in animations after setup
     this.startFadeInAnimation();
+    this.startNodeZoomInAnimation();
   }
 
   /**
@@ -128,6 +138,101 @@ export class CanvasRenderer {
       this.connectionOpacities.set(key, CONNECTION_OPACITY.normal);
       this.connectionTargetOpacities.set(key, CONNECTION_OPACITY.normal);
     }
+  }
+
+  /**
+   * Initializes node scales and animation start times for staggered zoom-in.
+   * Nodes are sorted by their position (top-left to bottom-right) to create
+   * a wave-like effect across the canvas.
+   */
+  private initializeNodeScales(): void {
+    // Sort services by position to create a wave effect (top-to-bottom, left-to-right)
+    const sortedEntries = [...this.serviceEntries].sort((a, b) => {
+      const [, serviceA] = a;
+      const [, serviceB] = b;
+      // Sort by category first (using category position), then by Y, then by X
+      const categoryOrder = serviceA.category.localeCompare(serviceB.category);
+      if (categoryOrder !== 0) return categoryOrder;
+      const yDiff = serviceA.y - serviceB.y;
+      if (Math.abs(yDiff) > LAYOUT.nodeHeight) return yDiff;
+      return serviceA.x - serviceB.x;
+    });
+
+    // Initialize each node with starting scale and staggered animation times
+    sortedEntries.forEach(([key], index) => {
+      this.nodeScales.set(key, ANIMATION.nodeZoomInStartScale);
+      // Calculate staggered start time based on index
+      const startDelay = index * ANIMATION.nodeZoomInStaggerDelay;
+      this.nodeAnimationStartTimes.set(key, startDelay);
+    });
+  }
+
+  /**
+   * Starts the staggered zoom-in animation for all nodes.
+   */
+  private startNodeZoomInAnimation(): void {
+    const animationStartTime = performance.now();
+    this.nodeAnimationId = requestAnimationFrame(() =>
+      this.nodeZoomInLoop(animationStartTime)
+    );
+  }
+
+  /**
+   * Animation loop for staggered node zoom-in effect.
+   */
+  private nodeZoomInLoop(animationStartTime: number): void {
+    const now = performance.now();
+    const elapsed = now - animationStartTime;
+    let allComplete = true;
+
+    for (const [key] of this.serviceEntries) {
+      const nodeStartDelay = this.nodeAnimationStartTimes.get(key) ?? 0;
+
+      // Check if this node's animation has started
+      if (elapsed < nodeStartDelay) {
+        // Node animation hasn't started yet
+        this.nodeScales.set(key, ANIMATION.nodeZoomInStartScale);
+        allComplete = false;
+        continue;
+      }
+
+      // Calculate progress for this node
+      const nodeElapsed = elapsed - nodeStartDelay;
+      const progress = Math.min(nodeElapsed / ANIMATION.nodeZoomInDuration, 1);
+
+      if (progress < 1) {
+        allComplete = false;
+      }
+
+      // Use ease-out cubic for smooth deceleration
+      const eased = this.easeOutCubic(progress);
+
+      // Interpolate scale from start scale to 1
+      const startScale = ANIMATION.nodeZoomInStartScale;
+      const currentScale = startScale + (1 - startScale) * eased;
+      this.nodeScales.set(key, currentScale);
+    }
+
+    this.render();
+
+    if (!allComplete) {
+      this.nodeAnimationId = requestAnimationFrame(() =>
+        this.nodeZoomInLoop(animationStartTime)
+      );
+    } else {
+      this.nodeAnimationId = null;
+      // Ensure all nodes are at full scale
+      for (const [key] of this.serviceEntries) {
+        this.nodeScales.set(key, 1);
+      }
+    }
+  }
+
+  /**
+   * Gets the current scale for a node (used during staggered zoom-in animation).
+   */
+  private getNodeScale(key: string): number {
+    return this.nodeScales.get(key) ?? 1;
   }
 
   /**
@@ -1098,23 +1203,31 @@ export class CanvasRenderer {
     const { x, y } = service;
     const width = this.getNodeWidth(key);
     const { height, borderRadius } = NODE_DIMENSIONS;
-    const halfWidth = width / 2;
-    const halfHeight = height / 2;
 
     const isSelected = this.selectedService === key;
     const isHovered = this.hoveredService === key;
     const isActive = isSelected || isHovered;
 
-    // Apply global opacity for fade-in effect
-    this.ctx.globalAlpha = this.globalOpacity;
+    // Get per-node scale for staggered zoom-in animation
+    const nodeScale = this.getNodeScale(key);
 
-    // Draw shadow
+    // Scale dimensions
+    const scaledWidth = width * nodeScale;
+    const scaledHeight = height * nodeScale;
+    const halfWidth = scaledWidth / 2;
+    const halfHeight = scaledHeight / 2;
+
+    // Apply global opacity combined with node-specific opacity for fade-in effect
+    // Text fades in as the node zooms in
+    this.ctx.globalAlpha = this.globalOpacity * nodeScale;
+
+    // Draw shadow (scaled)
     this.ctx.shadowColor = COLORS.shadow;
-    this.ctx.shadowBlur = isActive ? NODE_SHADOW.blurActive : NODE_SHADOW.blurNormal;
+    this.ctx.shadowBlur = (isActive ? NODE_SHADOW.blurActive : NODE_SHADOW.blurNormal) * nodeScale;
     this.ctx.shadowOffsetX = 0;
-    this.ctx.shadowOffsetY = isActive ? NODE_SHADOW.offsetYActive : NODE_SHADOW.offsetYNormal;
+    this.ctx.shadowOffsetY = (isActive ? NODE_SHADOW.offsetYActive : NODE_SHADOW.offsetYNormal) * nodeScale;
 
-    // Create gradient
+    // Create gradient (using scaled dimensions)
     const colors = CATEGORY_COLORS[service.category] || COLORS.fallbackCategory;
     const gradient = this.ctx.createLinearGradient(
       x - halfWidth,
@@ -1125,14 +1238,15 @@ export class CanvasRenderer {
     gradient.addColorStop(0, colors.start);
     gradient.addColorStop(1, colors.end);
 
-    // Draw rounded rectangle
+    // Draw rounded rectangle (scaled from center)
+    const scaledBorderRadius = borderRadius * nodeScale;
     this.ctx.beginPath();
     this.ctx.roundRect(
       x - halfWidth,
       y - halfHeight,
-      width,
-      height,
-      borderRadius
+      scaledWidth,
+      scaledHeight,
+      scaledBorderRadius
     );
     this.ctx.fillStyle = gradient;
     this.ctx.fill();
@@ -1146,13 +1260,14 @@ export class CanvasRenderer {
     // Draw border for selected/hovered state
     if (isActive) {
       this.ctx.strokeStyle = isSelected ? COLORS.border.selected : COLORS.border.hovered;
-      this.ctx.lineWidth = isSelected ? NODE_BORDER.widthSelected : NODE_BORDER.widthHovered;
+      this.ctx.lineWidth = (isSelected ? NODE_BORDER.widthSelected : NODE_BORDER.widthHovered) * nodeScale;
       this.ctx.stroke();
     }
 
-    // Draw text
+    // Draw text (scaled font size for smooth zoom effect)
     this.ctx.fillStyle = COLORS.text;
-    this.ctx.font = TYPOGRAPHY.canvasFont;
+    const scaledFontSize = TYPOGRAPHY.fontSize * nodeScale;
+    this.ctx.font = `${TYPOGRAPHY.fontWeight} ${scaledFontSize}px ${TYPOGRAPHY.fontFamily}`;
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(service.name, x, y);
@@ -1301,5 +1416,19 @@ export class CanvasRenderer {
    */
   public isFadeInAnimating(): boolean {
     return this.fadeInAnimationId !== null;
+  }
+
+  /**
+   * Checks if the staggered node zoom-in animation is still in progress.
+   */
+  public isNodeZoomInAnimating(): boolean {
+    return this.nodeAnimationId !== null;
+  }
+
+  /**
+   * Gets the current scale of a specific node (for testing).
+   */
+  public getNodeScaleForKey(key: string): number {
+    return this.nodeScales.get(key) ?? 1;
   }
 }

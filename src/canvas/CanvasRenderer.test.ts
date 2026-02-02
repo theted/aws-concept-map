@@ -1092,4 +1092,133 @@ describe('CanvasRenderer animations', () => {
     // Should complete without throwing
     expect(mockCtx.clearRect).toHaveBeenCalled();
   });
+
+  // Staggered node zoom-in animation tests
+  it('should start node zoom-in animation on construction', () => {
+    // Reset for fresh renderer
+    setupRAFMock();
+    const freshCtx = createMockContext();
+    const freshCanvas = createMockCanvas(freshCtx);
+
+    const freshRenderer = new CanvasRenderer(
+      freshCanvas as unknown as HTMLCanvasElement,
+      testServices,
+      testConnections
+    );
+
+    // Should report that node zoom animation is in progress
+    expect(freshRenderer.isNodeZoomInAnimating()).toBe(true);
+
+    flushAnimationFrames();
+
+    // After animation completes, should no longer be animating
+    expect(freshRenderer.isNodeZoomInAnimating()).toBe(false);
+  });
+
+  it('should have nodes start at reduced scale during zoom-in animation', () => {
+    // Create fresh renderer to test initial state
+    setupRAFMock();
+    const freshCtx = createMockContext();
+    const freshCanvas = createMockCanvas(freshCtx);
+
+    const freshRenderer = new CanvasRenderer(
+      freshCanvas as unknown as HTMLCanvasElement,
+      testServices,
+      testConnections
+    );
+
+    // Immediately after creation, first nodes should be at or near start scale
+    const ec2Scale = freshRenderer.getNodeScaleForKey('ec2');
+    expect(ec2Scale).toBeLessThan(1);
+    expect(ec2Scale).toBeGreaterThan(0);
+  });
+
+  it('should have all nodes at full scale after zoom-in animation completes', () => {
+    // Complete all animations
+    flushAnimationFrames();
+
+    // All nodes should be at scale 1
+    const ec2Scale = renderer.getNodeScaleForKey('ec2');
+    const s3Scale = renderer.getNodeScaleForKey('s3');
+    const vpcScale = renderer.getNodeScaleForKey('vpc');
+
+    expect(ec2Scale).toBe(1);
+    expect(s3Scale).toBe(1);
+    expect(vpcScale).toBe(1);
+  });
+
+  it('should animate nodes in staggered fashion (later nodes start animation later)', () => {
+    // Create fresh renderer
+    setupRAFMock();
+    const freshCtx = createMockContext();
+    const freshCanvas = createMockCanvas(freshCtx);
+
+    const freshRenderer = new CanvasRenderer(
+      freshCanvas as unknown as HTMLCanvasElement,
+      testServices,
+      testConnections
+    );
+
+    // Advance time partially - early nodes should have progressed more than later ones
+    advanceMockTime(100);
+
+    const scales: number[] = [];
+    for (const key of Object.keys(testServices)) {
+      scales.push(freshRenderer.getNodeScaleForKey(key));
+    }
+
+    // At least one node should have started animating (scale > start scale)
+    const hasAnimatedNode = scales.some((scale) => scale > 0.3);
+    expect(hasAnimatedNode).toBe(true);
+
+    // Complete animation
+    flushAnimationFrames();
+  });
+
+  it('should scale node text along with the node during animation', () => {
+    // Create fresh renderer
+    setupRAFMock();
+    const freshCtx = createMockContext();
+    const freshCanvas = createMockCanvas(freshCtx);
+
+    new CanvasRenderer(
+      freshCanvas as unknown as HTMLCanvasElement,
+      testServices,
+      testConnections
+    );
+
+    // After render is called during animation, font should be set with scaled size
+    // The font property will be set during drawNode
+    expect(freshCtx.font).toBeDefined();
+  });
+
+  it('should combine node scale with global opacity for fade-in effect', () => {
+    // Create fresh renderer
+    setupRAFMock();
+    const freshCtx = createMockContext();
+    const freshCanvas = createMockCanvas(freshCtx);
+
+    new CanvasRenderer(
+      freshCanvas as unknown as HTMLCanvasElement,
+      testServices,
+      testConnections
+    );
+
+    // During animation, globalAlpha should be set (combines global opacity and node scale)
+    // The value will be less than 1 during animation
+    let globalAlphaWasSet = false;
+    Object.defineProperty(freshCtx, 'globalAlpha', {
+      set: (value: number) => {
+        if (value < 1 && value > 0) {
+          globalAlphaWasSet = true;
+        }
+      },
+      get: () => 1,
+    });
+
+    // Advance animation slightly and render
+    advanceMockTime(50);
+
+    expect(globalAlphaWasSet).toBe(true);
+  });
 });

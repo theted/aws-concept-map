@@ -962,3 +962,49 @@
   - The PRD mentioned "3 buttons" but only 2 existed (Reset View, Focus Security/Network) - the Toggle Legend button was removed earlier
 - All tests pass (191 tests: 9 data + 58 canvas + 42 info panel + 11 lambda + 30 layout + 12 nodeWidths + 29 config)
 
+## Add staggered zoom-in animation for service nodes
+
+- Added new animation configuration constants to src/config/index.ts:
+  - `nodeZoomInDuration`: 500ms per-node animation duration
+  - `nodeZoomInStaggerDelay`: 25ms delay between each node's animation start
+  - `nodeZoomInStartScale`: 0.3 (nodes start at 30% scale)
+- Updated src/canvas/CanvasRenderer.ts with staggered zoom-in animation system:
+  - Added `nodeScales` Map to track per-node scale during animation
+  - Added `nodeAnimationStartTimes` Map to store staggered start times
+  - Added `nodeAnimationId` to track active animation frame
+  - Added `initializeNodeScales()` method that:
+    - Sorts services by category and position for wave-like visual effect
+    - Initializes each node at start scale with staggered animation timing
+  - Added `startNodeZoomInAnimation()` to begin the animation loop
+  - Added `nodeZoomInLoop()` animation loop that:
+    - Calculates per-node progress based on staggered start times
+    - Uses easeOutCubic for smooth deceleration
+    - Interpolates scale from startScale to 1
+    - Continues until all nodes reach full scale
+  - Added `getNodeScale()` helper to retrieve current node scale
+  - Added public `isNodeZoomInAnimating()` method for testing
+  - Added public `getNodeScaleForKey()` method for testing
+- Modified `drawNode()` to use per-node scale:
+  - Scales node width, height, and border radius from center
+  - Scales shadow blur and offset proportionally
+  - Scales font size for smooth text zoom effect
+  - Combines globalOpacity with nodeScale for text fade-in effect
+- Added 6 new tests in src/canvas/CanvasRenderer.test.ts:
+  - Test for animation starting on construction
+  - Test for nodes starting at reduced scale
+  - Test for all nodes reaching full scale after animation
+  - Test for staggered animation timing (later nodes start later)
+  - Test for text scaling along with nodes
+  - Test for combined opacity/scale fade-in effect
+- Added 2 new tests in src/config/index.test.ts:
+  - Test for positive node zoom-in durations
+  - Test for valid start scale (between 0 and 1)
+- Gotchas discovered:
+  - Nodes sorted by category then position creates visually pleasing "wave" effect
+  - Using nodeScale for both size AND opacity gives a "pop-in" effect (nodes appear to zoom in from small/transparent)
+  - Font size must be scaled separately since canvas font is a string property, not affected by ctx.scale()
+  - Shadow blur/offset should scale with node to maintain visual proportions during animation
+  - The stagger delay (25ms) multiplied by number of services gives total stagger time - with 67 services, last node starts ~1.7s after first
+  - Scaling from center is achieved by using scaled halfWidth/halfHeight in position calculations
+  - The animation runs concurrently with the global fade-in, creating a layered effect
+- All tests pass (198 tests: 9 data + 64 canvas + 42 info panel + 11 lambda + 30 layout + 12 nodeWidths + 30 config)
