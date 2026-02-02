@@ -1,47 +1,25 @@
 import type { PositionedService, PositionedServiceMap, Connection } from '../types';
 import { computeAllNodeWidths, type NodeWidthMap } from '../utils/nodeWidths';
+import {
+  CATEGORY_COLORS,
+  COLORS,
+  TYPOGRAPHY,
+  NODE_DIMENSIONS,
+  ANIMATION,
+  CONNECTION_OPACITY,
+  CONNECTION_LINE_WIDTH,
+  NODE_SHADOW,
+  NODE_BORDER,
+  ZOOM,
+  INTERACTION,
+  MOMENTUM,
+} from '../config';
 
 export interface CanvasState {
   scale: number;
   translateX: number;
   translateY: number;
 }
-
-export interface NodeDimensions {
-  height: number;
-  padding: number;
-}
-
-const CATEGORY_COLORS: Record<string, { start: string; end: string }> = {
-  compute: { start: '#FF9900', end: '#FF6600' },
-  storage: { start: '#569A31', end: '#3E7B1F' },
-  database: { start: '#2E5C8A', end: '#1A3A5C' },
-  networking: { start: '#8B5CF6', end: '#6D28D9' },
-  security: { start: '#DC2626', end: '#991B1B' },
-  management: { start: '#0891B2', end: '#0E7490' },
-  cost: { start: '#F59E0B', end: '#D97706' },
-  messaging: { start: '#EC4899', end: '#BE185D' },
-  cdn: { start: '#14B8A6', end: '#0D9488' },
-  devtools: { start: '#3B82F6', end: '#1D4ED8' },
-};
-
-const NODE_DIMENSIONS: NodeDimensions = {
-  height: 40,
-  padding: 12,
-};
-
-// Default fallback width if not computed
-const DEFAULT_NODE_WIDTH = 120;
-
-// Viewport culling padding (draw slightly outside visible area for smoother panning)
-const VIEWPORT_PADDING = 100;
-
-// Animation configuration
-const FADE_IN_DURATION = 800; // Duration for initial fade-in animation
-const CONNECTION_TRANSITION_DURATION = 300; // Duration for connection opacity transitions
-const CONNECTION_OPACITY_NORMAL = 0.3; // Default connection opacity
-const CONNECTION_OPACITY_HIGHLIGHTED = 0.8; // Highlighted connection opacity
-const CONNECTION_OPACITY_DIMMED = 0.1; // Dimmed connection opacity when other service selected
 
 export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
@@ -142,8 +120,8 @@ export class CanvasRenderer {
   private initializeConnectionOpacities(): void {
     for (const [from, to] of this.connections) {
       const key = this.getConnectionKey(from, to);
-      this.connectionOpacities.set(key, CONNECTION_OPACITY_NORMAL);
-      this.connectionTargetOpacities.set(key, CONNECTION_OPACITY_NORMAL);
+      this.connectionOpacities.set(key, CONNECTION_OPACITY.normal);
+      this.connectionTargetOpacities.set(key, CONNECTION_OPACITY.normal);
     }
   }
 
@@ -168,7 +146,7 @@ export class CanvasRenderer {
    */
   private fadeInLoop(): void {
     const elapsed = performance.now() - this.fadeInStartTime;
-    const progress = Math.min(elapsed / FADE_IN_DURATION, 1);
+    const progress = Math.min(elapsed / ANIMATION.fadeInDuration, 1);
 
     // Use ease-out cubic for smooth deceleration
     this.globalOpacity = this.easeOutCubic(progress);
@@ -193,13 +171,13 @@ export class CanvasRenderer {
 
       if (selectedKey === null) {
         // No selection - all connections return to normal
-        targetOpacity = CONNECTION_OPACITY_NORMAL;
+        targetOpacity = CONNECTION_OPACITY.normal;
       } else if (from === selectedKey || to === selectedKey) {
         // This connection involves the selected service - highlight it
-        targetOpacity = CONNECTION_OPACITY_HIGHLIGHTED;
+        targetOpacity = CONNECTION_OPACITY.highlighted;
       } else {
         // Other connections - dim them
-        targetOpacity = CONNECTION_OPACITY_DIMMED;
+        targetOpacity = CONNECTION_OPACITY.dimmed;
       }
 
       this.connectionTargetOpacities.set(key, targetOpacity);
@@ -226,13 +204,13 @@ export class CanvasRenderer {
    */
   private connectionAnimationLoop(): void {
     const elapsed = performance.now() - this.connectionAnimationStartTime;
-    const progress = Math.min(elapsed / CONNECTION_TRANSITION_DURATION, 1);
+    const progress = Math.min(elapsed / ANIMATION.connectionTransitionDuration, 1);
     const eased = this.easeOutCubic(progress);
 
     let needsUpdate = false;
 
     for (const [key, targetOpacity] of this.connectionTargetOpacities) {
-      const currentOpacity = this.connectionOpacities.get(key) ?? CONNECTION_OPACITY_NORMAL;
+      const currentOpacity = this.connectionOpacities.get(key) ?? CONNECTION_OPACITY.normal;
 
       if (Math.abs(currentOpacity - targetOpacity) > 0.001) {
         const newOpacity = currentOpacity + (targetOpacity - currentOpacity) * eased;
@@ -263,7 +241,7 @@ export class CanvasRenderer {
    */
   private getConnectionOpacity(from: string, to: string): number {
     const key = this.getConnectionKey(from, to);
-    return this.connectionOpacities.get(key) ?? CONNECTION_OPACITY_NORMAL;
+    return this.connectionOpacities.get(key) ?? CONNECTION_OPACITY.normal;
   }
 
   /**
@@ -380,24 +358,25 @@ export class CanvasRenderer {
       let primaryDistance = 0;
       let perpendicularOffset = 0;
 
+      const threshold = INTERACTION.spatialNavigationThreshold;
       switch (direction) {
         case 'up':
-          isInDirection = dy < -10; // Negative Y is up
+          isInDirection = dy < -threshold; // Negative Y is up
           primaryDistance = -dy;
           perpendicularOffset = Math.abs(dx);
           break;
         case 'down':
-          isInDirection = dy > 10;
+          isInDirection = dy > threshold;
           primaryDistance = dy;
           perpendicularOffset = Math.abs(dx);
           break;
         case 'left':
-          isInDirection = dx < -10;
+          isInDirection = dx < -threshold;
           primaryDistance = -dx;
           perpendicularOffset = Math.abs(dy);
           break;
         case 'right':
-          isInDirection = dx > 10;
+          isInDirection = dx > threshold;
           primaryDistance = dx;
           perpendicularOffset = Math.abs(dy);
           break;
@@ -407,7 +386,7 @@ export class CanvasRenderer {
 
       // Score: prioritize services more directly in line (lower perpendicular offset)
       // Use weighted combination of primary distance and perpendicular offset
-      const score = primaryDistance + perpendicularOffset * 0.5;
+      const score = primaryDistance + perpendicularOffset * INTERACTION.spatialNavigationPerpendicularWeight;
 
       if (score < bestScore) {
         bestScore = score;
@@ -492,7 +471,7 @@ export class CanvasRenderer {
       const dt = now - this.lastDragTime;
       if (dt > 0) {
         // Use exponential smoothing to reduce noise in velocity
-        const alpha = 0.3;
+        const alpha = MOMENTUM.velocitySmoothing;
         const instantVelX = (newTranslateX - this.state.translateX) / dt;
         const instantVelY = (newTranslateY - this.state.translateY) / dt;
         this.velocityX = alpha * instantVelX + (1 - alpha) * this.velocityX;
@@ -530,8 +509,8 @@ export class CanvasRenderer {
 
     // Get current scale (from target if animating, otherwise from state)
     const currentScale = this.targetState?.scale ?? this.state.scale;
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    const newScale = Math.max(0.3, Math.min(3, currentScale * delta));
+    const delta = e.deltaY > 0 ? ZOOM.wheelOut : ZOOM.wheelIn;
+    const newScale = Math.max(ZOOM.min, Math.min(ZOOM.max, currentScale * delta));
 
     // Calculate world position under mouse using current state (for smooth feel)
     const worldX = (mouseX - this.state.translateX) / this.state.scale;
@@ -546,13 +525,12 @@ export class CanvasRenderer {
       scale: newScale,
       translateX: targetTranslateX,
       translateY: targetTranslateY,
-    }, 120);
+    }, ANIMATION.wheelZoomDuration);
   }
 
   private handleClick(e: MouseEvent): void {
-    // Ignore clicks that were actually drags (moved more than 5 pixels)
-    const DRAG_THRESHOLD = 5;
-    if (this.dragDistance > DRAG_THRESHOLD) return;
+    // Ignore clicks that were actually drags
+    if (this.dragDistance > INTERACTION.dragThreshold) return;
 
     const rect = this.canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -621,7 +599,7 @@ export class CanvasRenderer {
       const dt = now - this.lastDragTime;
       if (dt > 0) {
         // Use exponential smoothing to reduce noise in velocity
-        const alpha = 0.3;
+        const alpha = MOMENTUM.velocitySmoothing;
         const instantVelX = (newTranslateX - this.state.translateX) / dt;
         const instantVelY = (newTranslateY - this.state.translateY) / dt;
         this.velocityX = alpha * instantVelX + (1 - alpha) * this.velocityX;
@@ -640,7 +618,7 @@ export class CanvasRenderer {
 
       // Calculate zoom
       const delta = distance / this.lastTouchDistance;
-      const newScale = Math.max(0.3, Math.min(3, this.state.scale * delta));
+      const newScale = Math.max(ZOOM.min, Math.min(ZOOM.max, this.state.scale * delta));
 
       // Zoom towards touch center
       const centerX = center.x - rect.left;
@@ -659,10 +637,9 @@ export class CanvasRenderer {
 
   private handleTouchEnd(e: TouchEvent): void {
     // Check if this was a tap (not a drag)
-    const DRAG_THRESHOLD = 5;
-    const wasDragging = this.isTouching && this.dragDistance >= DRAG_THRESHOLD;
+    const wasDragging = this.isTouching && this.dragDistance >= INTERACTION.dragThreshold;
 
-    if (this.isTouching && this.dragDistance < DRAG_THRESHOLD && e.changedTouches.length === 1) {
+    if (this.isTouching && this.dragDistance < INTERACTION.dragThreshold && e.changedTouches.length === 1) {
       const touch = e.changedTouches[0];
       const rect = this.canvas.getBoundingClientRect();
       const touchX = touch.clientX - rect.left;
@@ -724,10 +701,6 @@ export class CanvasRenderer {
 
   // Keyboard event handler for accessibility
   private handleKeyDown(e: KeyboardEvent): void {
-    const PAN_STEP = 50;
-    const PAN_DURATION = 150; // Animation duration for keyboard panning
-    const ZOOM_STEP = 0.1;
-
     switch (e.key) {
       case 'ArrowUp':
         e.preventDefault();
@@ -735,37 +708,37 @@ export class CanvasRenderer {
         if (this.selectedService && this.navigateToServiceInDirection('up')) {
           break;
         }
-        this.panByAmount(0, PAN_STEP, PAN_DURATION);
+        this.panByAmount(0, INTERACTION.panStep, ANIMATION.keyboardPanDuration);
         break;
       case 'ArrowDown':
         e.preventDefault();
         if (this.selectedService && this.navigateToServiceInDirection('down')) {
           break;
         }
-        this.panByAmount(0, -PAN_STEP, PAN_DURATION);
+        this.panByAmount(0, -INTERACTION.panStep, ANIMATION.keyboardPanDuration);
         break;
       case 'ArrowLeft':
         e.preventDefault();
         if (this.selectedService && this.navigateToServiceInDirection('left')) {
           break;
         }
-        this.panByAmount(PAN_STEP, 0, PAN_DURATION);
+        this.panByAmount(INTERACTION.panStep, 0, ANIMATION.keyboardPanDuration);
         break;
       case 'ArrowRight':
         e.preventDefault();
         if (this.selectedService && this.navigateToServiceInDirection('right')) {
           break;
         }
-        this.panByAmount(-PAN_STEP, 0, PAN_DURATION);
+        this.panByAmount(-INTERACTION.panStep, 0, ANIMATION.keyboardPanDuration);
         break;
       case '+':
       case '=':
         e.preventDefault();
-        this.zoomAtCenter(1 + ZOOM_STEP);
+        this.zoomAtCenter(1 + ZOOM.keyboardStep);
         break;
       case '-':
         e.preventDefault();
-        this.zoomAtCenter(1 - ZOOM_STEP);
+        this.zoomAtCenter(1 - ZOOM.keyboardStep);
         break;
       case '0':
         e.preventDefault();
@@ -797,7 +770,7 @@ export class CanvasRenderer {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const newScale = Math.max(0.3, Math.min(3, this.state.scale * factor));
+    const newScale = Math.max(ZOOM.min, Math.min(ZOOM.max, this.state.scale * factor));
     const worldX = (centerX - this.state.translateX) / this.state.scale;
     const worldY = (centerY - this.state.translateY) / this.state.scale;
 
@@ -808,7 +781,7 @@ export class CanvasRenderer {
       scale: newScale,
       translateX: targetTranslateX,
       translateY: targetTranslateY,
-    }, 150);
+    }, ANIMATION.keyboardZoomDuration);
   }
 
   /**
@@ -821,7 +794,7 @@ export class CanvasRenderer {
   /**
    * Start a smooth animation to the target state
    */
-  private animateTo(targetState: Partial<CanvasState>, duration: number = 300): void {
+  private animateTo(targetState: Partial<CanvasState>, duration: number = ANIMATION.defaultDuration): void {
     // Cancel any existing animation
     this.cancelAnimation();
 
@@ -904,18 +877,15 @@ export class CanvasRenderer {
    */
   private applyMomentum(): void {
     const speed = Math.sqrt(this.velocityX ** 2 + this.velocityY ** 2);
-    const MIN_VELOCITY_THRESHOLD = 0.15; // pixels per millisecond
-    const MOMENTUM_DURATION = 600; // Duration of momentum animation
-    const MOMENTUM_MULTIPLIER = 180; // How far momentum carries
 
-    if (speed > MIN_VELOCITY_THRESHOLD) {
-      const targetTranslateX = this.state.translateX + this.velocityX * MOMENTUM_MULTIPLIER;
-      const targetTranslateY = this.state.translateY + this.velocityY * MOMENTUM_MULTIPLIER;
+    if (speed > MOMENTUM.velocityThreshold) {
+      const targetTranslateX = this.state.translateX + this.velocityX * MOMENTUM.multiplier;
+      const targetTranslateY = this.state.translateY + this.velocityY * MOMENTUM.multiplier;
 
       this.animateTo({
         translateX: targetTranslateX,
         translateY: targetTranslateY,
-      }, MOMENTUM_DURATION);
+      }, ANIMATION.momentumDuration);
     }
 
     // Reset velocity
@@ -927,7 +897,7 @@ export class CanvasRenderer {
    * Gets the width for a specific service node.
    */
   private getNodeWidth(key: string): number {
-    return this.nodeWidths.get(key) ?? DEFAULT_NODE_WIDTH;
+    return this.nodeWidths.get(key) ?? NODE_DIMENSIONS.defaultWidth;
   }
 
   /**
@@ -936,7 +906,7 @@ export class CanvasRenderer {
    */
   private getViewportBounds(): { minX: number; maxX: number; minY: number; maxY: number } {
     const rect = this.canvas.getBoundingClientRect();
-    const padding = VIEWPORT_PADDING / this.state.scale;
+    const padding = INTERACTION.viewportCullingPadding / this.state.scale;
 
     // Convert screen bounds to world coordinates
     const minX = (0 - this.state.translateX) / this.state.scale - padding;
@@ -1057,8 +1027,8 @@ export class CanvasRenderer {
         const finalOpacity = connectionOpacity * this.globalOpacity;
 
         this.ctx.beginPath();
-        this.ctx.strokeStyle = `rgba(20, 184, 166, ${finalOpacity})`;
-        this.ctx.lineWidth = isHighlighted ? 3 : 1.5;
+        this.ctx.strokeStyle = `rgba(${COLORS.primaryRGB}, ${finalOpacity})`;
+        this.ctx.lineWidth = isHighlighted ? CONNECTION_LINE_WIDTH.highlighted : CONNECTION_LINE_WIDTH.normal;
         this.ctx.moveTo(fromService.x, fromService.y);
         this.ctx.lineTo(toService.x, toService.y);
         this.ctx.stroke();
@@ -1083,25 +1053,25 @@ export class CanvasRenderer {
   private drawNode(key: string, service: PositionedService): void {
     const { x, y } = service;
     const width = this.getNodeWidth(key);
-    const { height } = NODE_DIMENSIONS;
+    const { height, borderRadius } = NODE_DIMENSIONS;
     const halfWidth = width / 2;
     const halfHeight = height / 2;
-    const borderRadius = 8;
 
     const isSelected = this.selectedService === key;
     const isHovered = this.hoveredService === key;
+    const isActive = isSelected || isHovered;
 
     // Apply global opacity for fade-in effect
     this.ctx.globalAlpha = this.globalOpacity;
 
     // Draw shadow
-    this.ctx.shadowColor = `rgba(0, 0, 0, ${0.3 * this.globalOpacity})`;
-    this.ctx.shadowBlur = isSelected || isHovered ? 12 : 6;
+    this.ctx.shadowColor = COLORS.shadow;
+    this.ctx.shadowBlur = isActive ? NODE_SHADOW.blurActive : NODE_SHADOW.blurNormal;
     this.ctx.shadowOffsetX = 0;
-    this.ctx.shadowOffsetY = isSelected || isHovered ? 6 : 4;
+    this.ctx.shadowOffsetY = isActive ? NODE_SHADOW.offsetYActive : NODE_SHADOW.offsetYNormal;
 
     // Create gradient
-    const colors = CATEGORY_COLORS[service.category] || { start: '#666', end: '#444' };
+    const colors = CATEGORY_COLORS[service.category] || COLORS.fallbackCategory;
     const gradient = this.ctx.createLinearGradient(
       x - halfWidth,
       y - halfHeight,
@@ -1130,15 +1100,15 @@ export class CanvasRenderer {
     this.ctx.shadowOffsetY = 0;
 
     // Draw border for selected/hovered state
-    if (isSelected || isHovered) {
-      this.ctx.strokeStyle = isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.6)';
-      this.ctx.lineWidth = isSelected ? 3 : 2;
+    if (isActive) {
+      this.ctx.strokeStyle = isSelected ? COLORS.border.selected : COLORS.border.hovered;
+      this.ctx.lineWidth = isSelected ? NODE_BORDER.widthSelected : NODE_BORDER.widthHovered;
       this.ctx.stroke();
     }
 
     // Draw text
-    this.ctx.fillStyle = '#ffffff';
-    this.ctx.font = '600 13px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+    this.ctx.fillStyle = COLORS.text;
+    this.ctx.font = TYPOGRAPHY.canvasFont;
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(service.name, x, y);
@@ -1188,12 +1158,11 @@ export class CanvasRenderer {
     const centerY = (minY + maxY) / 2;
 
     const rect = this.canvas.getBoundingClientRect();
-    const padding = 80; // Padding around content
 
     // Calculate scale to fit content with padding
-    const scaleX = (rect.width - padding * 2) / contentWidth;
-    const scaleY = (rect.height - padding * 2) / contentHeight;
-    const scale = Math.min(Math.max(0.3, Math.min(scaleX, scaleY, 1.5)), 3);
+    const scaleX = (rect.width - INTERACTION.viewPadding * 2) / contentWidth;
+    const scaleY = (rect.height - INTERACTION.viewPadding * 2) / contentHeight;
+    const scale = Math.min(Math.max(ZOOM.min, Math.min(scaleX, scaleY, ZOOM.maxFitContent)), ZOOM.max);
 
     const targetTranslateX = rect.width / 2 - centerX * scale;
     const targetTranslateY = rect.height / 2 - centerY * scale;
@@ -1203,7 +1172,7 @@ export class CanvasRenderer {
         scale,
         translateX: targetTranslateX,
         translateY: targetTranslateY,
-      }, 400);
+      }, ANIMATION.viewTransitionDuration);
     } else {
       this.state.scale = scale;
       this.state.translateX = targetTranslateX;
@@ -1222,7 +1191,7 @@ export class CanvasRenderer {
     if (!service) return;
 
     const rect = this.canvas.getBoundingClientRect();
-    const targetScale = 1.3;
+    const targetScale = ZOOM.focusScale;
     const targetTranslateX = rect.width / 2 - service.x * targetScale;
     const targetTranslateY = rect.height / 2 - service.y * targetScale;
 
@@ -1239,7 +1208,7 @@ export class CanvasRenderer {
         scale: targetScale,
         translateX: targetTranslateX,
         translateY: targetTranslateY,
-      }, 400);
+      }, ANIMATION.viewTransitionDuration);
     } else {
       this.state.scale = targetScale;
       this.state.translateX = targetTranslateX;

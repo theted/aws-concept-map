@@ -802,3 +802,65 @@
   - The globalAlpha approach is cleaner than manually adjusting each color's alpha channel
 - All tests pass (161 tests: 9 data + 56 canvas + 42 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
 
+## Centralize configuration - remove magic numbers and hardcoded values
+
+- Created src/config/index.ts as the central configuration file containing:
+  - COLORS: Primary color palette (teal/cyan), RGB values, text and border colors, shadow color, fallback category colors
+  - CATEGORY_COLORS: All 10 category gradient colors (compute, storage, database, networking, security, management, cost, messaging, cdn, devtools)
+  - TYPOGRAPHY: Font family, weight, size, and computed canvas font string
+  - NODE_DIMENSIONS: Default width, height, padding, border radius
+  - NODE_WIDTH_CONFIG: Min/max width constraints, horizontal padding for text measurement
+  - ANIMATION: All timing values (fade-in, connection transition, zoom, pan, momentum, view transition durations)
+  - CONNECTION_OPACITY: Normal, highlighted, and dimmed opacity values
+  - CONNECTION_LINE_WIDTH: Normal and highlighted line widths
+  - NODE_SHADOW: Blur and offset values for normal and active states
+  - NODE_BORDER: Border widths for selected and hovered states
+  - ZOOM: Min/max limits, wheel factors, keyboard step, focus scale, max fit content
+  - INTERACTION: Drag threshold, pan step, view padding, viewport culling padding, spatial navigation threshold and weight
+  - MOMENTUM: Velocity threshold, multiplier, smoothing factor
+  - LAYOUT: Node dimensions and spacing for layout engine
+  - BREAKPOINTS: Tablet (768px) and mobile (480px) breakpoints
+- Updated src/canvas/CanvasRenderer.ts to import from config:
+  - Replaced 30+ magic numbers with config constants
+  - Removed local constant definitions (CATEGORY_COLORS, NODE_DIMENSIONS, etc.)
+  - Uses COLORS.primaryRGB for connection stroke color
+  - Uses TYPOGRAPHY.canvasFont for node text rendering
+  - Uses ZOOM.* for all scale limits and factors
+  - Uses ANIMATION.* for all duration values
+  - Uses INTERACTION.* for drag threshold, pan step, spatial navigation
+  - Uses MOMENTUM.* for velocity tracking and inertia
+  - Uses CONNECTION_OPACITY.* and CONNECTION_LINE_WIDTH.* for connection rendering
+  - Uses NODE_SHADOW.* and NODE_BORDER.* for node appearance
+- Updated src/layout/LayoutEngine.ts to import LAYOUT config:
+  - DEFAULT_CONFIG now derives values from LAYOUT constants
+- Updated src/utils/nodeWidths.ts to import from config:
+  - Uses TYPOGRAPHY.canvasFont for font measurement
+  - Uses NODE_WIDTH_CONFIG for width constraints
+- Updated src/style.css with CSS custom properties:
+  - Added --color-primary-rgb: 20, 184, 166 for use in rgba()
+  - Added opacity variants: --color-primary-10 through --color-primary-60
+  - Replaced 20+ instances of `rgba(20, 184, 166, ...)` with CSS variables
+  - Added commented breakpoint variables for documentation
+- Added comprehensive tests in src/config/index.test.ts (29 tests):
+  - Tests for valid color formats and values
+  - Tests for all 10 category colors with hex pattern validation
+  - Tests for typography configuration
+  - Tests for dimension constraints (min < max, positive values)
+  - Tests for opacity values in valid 0-1 range
+  - Tests for hierarchical relationships (highlighted > normal > dimmed)
+  - Tests for zoom constraints (min < max, valid factors)
+  - Tests for interaction thresholds being positive
+  - Tests for momentum smoothing factor in valid range
+  - Tests for layout values and integer constraints
+  - Tests for breakpoint ordering (tablet > mobile)
+- Gotchas discovered:
+  - CSS custom properties with rgb values allow variable opacity via `rgba(var(--color-primary-rgb), 0.5)`
+  - TypeScript `as const` assertions on config objects provide better type inference and prevent accidental mutation
+  - The getter pattern for `canvasFont` ensures the font string is always derived from other config values
+  - Config values that reference other config values (like LAYOUT using NODE_DIMENSIONS) should use the same source of truth
+  - Some constants like shadow color need dynamic opacity calculation at runtime, so storing the base color separately from opacity is useful
+  - CSS variables cascade, so components can override the root variables for theming if needed
+  - When replacing magic numbers, ensure tests still work - some tests may have hardcoded expected values that need updating
+  - Using descriptive constant names makes code more self-documenting (e.g., `ZOOM.maxFitContent` vs `1.5`)
+- All tests pass (190 tests: 9 data + 56 canvas + 42 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths + 29 config)
+

@@ -7,19 +7,45 @@
 :root {
     /* Typography */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+
+    /* Primary color (teal/cyan) - RGB value for use in rgba() */
+    --color-primary-rgb: 20, 184, 166;
+
     /* Teal/cyan color palette */
     --color-primary: #14B8A6;
     --color-primary-light: #2DD4BF;
     --color-primary-dark: #0D9488;
+
+    /* Primary color with opacity variants */
+    --color-primary-10: rgba(var(--color-primary-rgb), 0.1);
+    --color-primary-15: rgba(var(--color-primary-rgb), 0.15);
+    --color-primary-20: rgba(var(--color-primary-rgb), 0.2);
+    --color-primary-25: rgba(var(--color-primary-rgb), 0.25);
+    --color-primary-30: rgba(var(--color-primary-rgb), 0.3);
+    --color-primary-40: rgba(var(--color-primary-rgb), 0.4);
+    --color-primary-50: rgba(var(--color-primary-rgb), 0.5);
+    --color-primary-60: rgba(var(--color-primary-rgb), 0.6);
+
+    /* Background colors */
     --color-bg-dark: rgba(10, 26, 38, 0.95);
     --color-bg-darker: rgba(8, 20, 30, 0.98);
+
+    /* Text colors */
     --color-text: #ffffff;
     --color-text-muted: rgba(255, 255, 255, 0.7);
+
+    /* UI tokens */
     --border-radius: 12px;
     --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.5);
+
+    /* Transition timing */
     --transition-fast: 0.15s ease;
     --transition-normal: 0.25s ease;
+
+    /* Responsive breakpoints (for reference - actual values in media queries) */
+    /* --breakpoint-tablet: 768px; */
+    /* --breakpoint-mobile: 480px; */
 }
 
 body {
@@ -35,7 +61,7 @@ body {
         /* Bottom-right cyan accent */
         radial-gradient(ellipse 70% 50% at 85% 80%, rgba(6, 182, 212, 0.2) 0%, transparent 50%),
         /* Center-left blue-green accent */
-        radial-gradient(ellipse 60% 80% at 25% 60%, rgba(20, 184, 166, 0.15) 0%, transparent 45%),
+        radial-gradient(ellipse 60% 80% at 25% 60%, var(--color-primary-15) 0%, transparent 45%),
         /* Top-right blue accent */
         radial-gradient(ellipse 50% 40% at 75% 15%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
         /* Bottom-left deep teal */
@@ -77,7 +103,7 @@ body {
     background: var(--color-bg-dark);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(20, 184, 166, 0.3);
+    border: 1px solid var(--color-primary-30);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
     transition: box-shadow var(--transition-normal), transform var(--transition-normal);
@@ -118,17 +144,17 @@ body {
 }
 
 .info-panel::-webkit-scrollbar-track {
-    background: rgba(20, 184, 166, 0.1);
+    background: var(--color-primary-10);
     border-radius: 3px;
 }
 
 .info-panel::-webkit-scrollbar-thumb {
-    background: rgba(20, 184, 166, 0.4);
+    background: var(--color-primary-40);
     border-radius: 3px;
 }
 
 .info-panel::-webkit-scrollbar-thumb:hover {
-    background: rgba(20, 184, 166, 0.6);
+    background: var(--color-primary-60);
 }
 
 .info-panel h2 {
@@ -145,8 +171,8 @@ body {
     position: absolute;
     top: 16px;
     right: 16px;
-    background: rgba(20, 184, 166, 0.1);
-    border: 1px solid rgba(20, 184, 166, 0.2);
+    background: var(--color-primary-10);
+    border: 1px solid var(--color-primary-20);
     color: var(--color-primary-light);
     font-size: 20px;
     cursor: pointer;
@@ -164,8 +190,8 @@ body {
 }
 
 .info-panel .close-btn:hover {
-    background: rgba(20, 184, 166, 0.25);
-    border-color: rgba(20, 184, 166, 0.4);
+    background: var(--color-primary-25);
+    border-color: var(--color-primary-40);
     color: var(--color-text);
     transform: scale(1.05);
 }
@@ -202,7 +228,7 @@ body {
 .info-panel .key-points {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid rgba(20, 184, 166, 0.2);
+    border-top: 1px solid var(--color-primary-20);
 }
 
 .info-panel .key-points h3 {
@@ -233,7 +259,7 @@ body {
 .info-panel .relationships {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid rgba(20, 184, 166, 0.2);
+    border-top: 1px solid var(--color-primary-20);
 }
 
 .info-panel .relationships h3 {
@@ -258,9 +284,9 @@ body {
 }
 
 .info-panel .related-service-btn {
-    background: rgba(20, 184, 166, 0.15);
+    background: var(--color-primary-15);
     color: var(--color-primary-light);
-    border: 1px solid rgba(20, 184, 166, 0.3);
+    border: 1px solid var(--color-primary-30);
     padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
@@ -273,15 +299,15 @@ body {
 }
 
 .info-panel .related-service-btn:hover {
-    background: rgba(20, 184, 166, 0.3);
+    background: var(--color-primary-30);
     color: var(--color-text);
-    border-color: rgba(20, 184, 166, 0.5);
+    border-color: var(--color-primary-50);
     transform: translateY(-1px);
 }
 
 .info-panel .related-service-btn:active {
     transform: translateY(0);
-    background: rgba(20, 184, 166, 0.4);
+    background: var(--color-primary-40);
 }
 
 .info-panel .related-service-btn:focus-visible {
@@ -292,7 +318,7 @@ body {
 .info-panel .extended-content {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid rgba(20, 184, 166, 0.2);
+    border-top: 1px solid var(--color-primary-20);
     animation: fadeIn var(--transition-normal) ease;
 }
 
@@ -433,9 +459,9 @@ body {
 }
 
 .controls button {
-    background: rgba(20, 184, 166, 0.15);
+    background: var(--color-primary-15);
     color: var(--color-primary-light);
-    border: 1px solid rgba(20, 184, 166, 0.3);
+    border: 1px solid var(--color-primary-30);
     padding: 8px 14px;
     border-radius: 6px;
     cursor: pointer;
@@ -454,15 +480,15 @@ body {
 }
 
 .controls button:hover {
-    background: rgba(20, 184, 166, 0.3);
+    background: var(--color-primary-30);
     color: var(--color-text);
-    border-color: rgba(20, 184, 166, 0.5);
+    border-color: var(--color-primary-50);
     transform: translateY(-1px);
 }
 
 .controls button:active {
     transform: translateY(0);
-    background: rgba(20, 184, 166, 0.4);
+    background: var(--color-primary-40);
 }
 
 /* Responsive Design */

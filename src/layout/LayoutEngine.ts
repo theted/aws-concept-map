@@ -1,4 +1,5 @@
 import type { ServiceMap, PositionedServiceMap, ServiceCategory } from '../types';
+import { LAYOUT } from '../config';
 
 export type NodeWidthMap = Map<string, number>;
 
@@ -21,11 +22,11 @@ export interface LayoutResult {
 }
 
 const DEFAULT_CONFIG: LayoutConfig = {
-  defaultNodeWidth: 120,
-  nodeHeight: 40,
-  nodePadding: 30, // Space between nodes within a category
-  categoryPadding: 80, // Space between category groups
-  categoryColumns: 4, // Number of category columns per row
+  defaultNodeWidth: LAYOUT.defaultNodeWidth,
+  nodeHeight: LAYOUT.nodeHeight,
+  nodePadding: LAYOUT.nodePadding,
+  categoryPadding: LAYOUT.categoryPadding,
+  categoryColumns: LAYOUT.categoryColumns,
 };
 
 // Define the order and arrangement of categories for visual grouping

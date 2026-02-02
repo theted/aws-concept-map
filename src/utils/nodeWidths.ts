@@ -1,4 +1,5 @@
 import type { ServiceMap } from '../types';
+import { TYPOGRAPHY, NODE_WIDTH_CONFIG } from '../config';
 
 export interface NodeWidthConfig {
   font: string;
@@ -10,10 +11,10 @@ export interface NodeWidthConfig {
 export type NodeWidthMap = Map<string, number>;
 
 const DEFAULT_CONFIG: NodeWidthConfig = {
-  font: '600 13px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-  minWidth: 80,
-  maxWidth: 200,
-  horizontalPadding: 24, // 12px padding on each side
+  font: TYPOGRAPHY.canvasFont,
+  minWidth: NODE_WIDTH_CONFIG.minWidth,
+  maxWidth: NODE_WIDTH_CONFIG.maxWidth,
+  horizontalPadding: NODE_WIDTH_CONFIG.horizontalPadding,
 };
 
 /**
