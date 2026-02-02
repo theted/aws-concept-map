@@ -864,3 +864,45 @@
   - Using descriptive constant names makes code more self-documenting (e.g., `ZOOM.maxFitContent` vs `1.5`)
 - All tests pass (190 tests: 9 data + 56 canvas + 42 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths + 29 config)
 
+## Revise services list - add missing certification-relevant services
+
+- Added 10 new AWS services frequently tested in Cloud Practitioner, Solutions Architect Associate, and Developer Associate certifications:
+  - **Aurora**: Cloud-native relational database with MySQL/PostgreSQL compatibility (database)
+  - **Macie**: Data security service that discovers and protects sensitive data in S3 (security)
+  - **Artifact**: On-demand access to AWS compliance reports and agreements (management)
+  - **FSx**: Fully managed file systems - Windows File Server, Lustre, NetApp ONTAP, OpenZFS (storage)
+  - **Global Accelerator**: Network service that improves global application performance (cdn)
+  - **Transit Gateway**: Network hub for connecting VPCs and on-premises networks (networking)
+  - **DMS**: Database Migration Service for migrating databases to AWS (database)
+  - **Glue**: Serverless data integration and ETL service with Data Catalog (database)
+  - **AppSync**: Managed GraphQL API service with real-time subscriptions (compute)
+  - **Lightsail**: Simple virtual private servers with predictable pricing (compute)
+- Expanded total service count from 57 to 67 services
+- Added 29 new connections for the new services in connections.json:
+  - Aurora connects to: rds, secretsmanager, subnet, securitygroup
+  - Macie connects to: s3, eventbridge, kms
+  - Artifact connects to: organizations
+  - FSx connects to: s3, vpc
+  - Global Accelerator connects to: elb, ec2, shield
+  - Transit Gateway connects to: vpc, vpngateway, directconnect
+  - DMS connects to: rds, aurora, dynamodb, s3, snowfamily
+  - Glue connects to: s3, athena, redshift, dynamodb
+  - AppSync connects to: dynamodb, lambda, cognito, rds
+  - Lightsail connects to: vpc
+- Total connections expanded from 106 to 135
+- Each new service includes:
+  - Comprehensive description and details
+  - 5-6 certification-relevant key points
+  - Extended description covering architecture, use cases, and exam topics
+  - 5 curated resources (documentation, pricing, video tutorials, cheat sheets)
+- Gotchas discovered:
+  - Aurora is often tested separately from RDS in certification exams - it has its own distinct features like Serverless v2, Global Database, and Backtrack
+  - Transit Gateway solves the N×(N-1)/2 VPC peering problem - a common Solutions Architect exam topic
+  - DMS supports both homogeneous and heterogeneous migrations - Schema Conversion Tool (SCT) is needed for heterogeneous
+  - Glue Data Catalog is the central metadata repository that Athena, Redshift Spectrum, and EMR query directly
+  - Global Accelerator vs CloudFront is a common exam comparison: GA optimizes network path, CloudFront caches content
+  - Macie is specifically for S3 sensitive data discovery, while GuardDuty is for threat detection across multiple services
+  - FSx for Lustre integrates with S3 and is commonly used for HPC and ML training workloads
+  - Lightsail is the "beginner-friendly" EC2 alternative with bundled pricing - important for Cloud Practitioner
+- All tests pass (190 tests, unchanged as data tests validate structure dynamically)
+

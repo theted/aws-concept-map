@@ -2136,5 +2136,375 @@
         "url": "https://tutorialsdojo.com/aws-snow-family/"
       }
     ]
+  },
+  "aurora": {
+    "name": "Aurora",
+    "category": "database",
+    "description": "Cloud-native relational database with MySQL/PostgreSQL compatibility",
+    "details": "Amazon Aurora is a fully managed relational database that combines the performance and availability of high-end commercial databases with the simplicity and cost-effectiveness of open-source databases.",
+    "keyPoints": [
+      "5x faster than MySQL, 3x faster than PostgreSQL",
+      "Auto-scales storage from 10GB to 128TB",
+      "6 copies of data across 3 AZs automatically",
+      "Serverless option for variable workloads",
+      "Global Database for cross-region replication",
+      "Compatible with MySQL and PostgreSQL"
+    ],
+    "extendedDescription": "Aurora separates compute and storage layers, allowing independent scaling. Storage is distributed across hundreds of storage nodes with automatic replication to 6 copies across 3 AZs. Read Replicas (up to 15) share the same storage volume for near-instant failover. Aurora Serverless v2 scales capacity in fine-grained increments based on demand - ideal for variable workloads. Aurora Global Database enables cross-region disaster recovery with RPO < 1 second and RTO < 1 minute. Backtrack allows rewinding the database to a specific point without restoring from backup. Aurora Machine Learning integrates with SageMaker and Comprehend for in-database ML. Parallel Query accelerates analytical queries on transactional data. Blue/Green Deployments enable safe database updates.",
+    "resources": [
+      {
+        "title": "Aurora Documentation",
+        "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/"
+      },
+      {
+        "title": "Aurora Serverless v2",
+        "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+      },
+      {
+        "title": "Aurora Pricing",
+        "url": "https://aws.amazon.com/rds/aurora/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Aurora Deep Dive",
+        "url": "https://www.youtube.com/watch?v=U42mC_iKSBg"
+      },
+      {
+        "title": "Tutorials Dojo - Aurora Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-aurora/"
+      }
+    ]
+  },
+  "macie": {
+    "name": "Macie",
+    "category": "security",
+    "description": "Data security service that discovers and protects sensitive data",
+    "details": "Amazon Macie uses machine learning and pattern matching to discover and protect sensitive data stored in Amazon S3.",
+    "keyPoints": [
+      "Automatically discovers sensitive data in S3",
+      "Identifies PII, financial data, credentials",
+      "Uses ML for data classification",
+      "Integrates with EventBridge for alerts",
+      "Provides data security posture assessment",
+      "Helps with compliance requirements"
+    ],
+    "extendedDescription": "Macie automatically and continually evaluates S3 buckets for security and access controls, alerting on public buckets, unencrypted buckets, or buckets shared with external accounts. Sensitive Data Discovery uses managed data identifiers (100+ types including PII, PHI, financial data) and custom data identifiers (regex patterns for organization-specific data). Discovery jobs can be scheduled or run on-demand. Findings are categorized by severity and integrate with Security Hub and EventBridge for automated remediation. Macie provides a data inventory dashboard showing bucket security posture across the organization. Multi-account management through AWS Organizations. Cost management through sampling rather than scanning all objects.",
+    "resources": [
+      {
+        "title": "Macie Documentation",
+        "url": "https://docs.aws.amazon.com/macie/"
+      },
+      {
+        "title": "Macie Getting Started",
+        "url": "https://docs.aws.amazon.com/macie/latest/user/getting-started.html"
+      },
+      {
+        "title": "Macie Pricing",
+        "url": "https://aws.amazon.com/macie/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Data Protection with Macie",
+        "url": "https://www.youtube.com/watch?v=2Ee3-U_Rjoo"
+      },
+      {
+        "title": "Tutorials Dojo - Macie Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-macie/"
+      }
+    ]
+  },
+  "artifact": {
+    "name": "Artifact",
+    "category": "management",
+    "description": "On-demand access to AWS compliance reports",
+    "details": "AWS Artifact provides on-demand access to AWS security and compliance reports and select online agreements.",
+    "keyPoints": [
+      "Access AWS compliance reports (SOC, PCI, ISO)",
+      "Download audit artifacts on-demand",
+      "Manage AWS agreements (BAA, NDA)",
+      "No additional cost for reports",
+      "Self-service portal for compliance docs",
+      "Supports regulatory audit requirements"
+    ],
+    "extendedDescription": "Artifact provides two main sections: Artifact Reports for downloading AWS compliance documents (SOC 1/2/3, PCI DSS, ISO 27001, FedRAMP, HIPAA) and Artifact Agreements for reviewing and accepting agreements like Business Associate Addendum (BAA) for HIPAA or GDPR Data Processing Addendum. Reports are generated by third-party auditors and updated regularly. Access is controlled through IAM policies. Organization Agreements apply to all accounts in an AWS Organization. These documents demonstrate AWS's compliance posture to auditors. Artifact is available in all commercial regions. For customers in regulated industries (healthcare, finance, government), Artifact provides evidence that AWS meets required compliance standards.",
+    "resources": [
+      {
+        "title": "Artifact Documentation",
+        "url": "https://docs.aws.amazon.com/artifact/"
+      },
+      {
+        "title": "AWS Compliance Programs",
+        "url": "https://aws.amazon.com/compliance/programs/"
+      },
+      {
+        "title": "Using Artifact",
+        "url": "https://docs.aws.amazon.com/artifact/latest/ug/using-artifact.html"
+      },
+      {
+        "title": "AWS Compliance Center",
+        "url": "https://aws.amazon.com/financial-services/security-compliance/compliance-center/"
+      },
+      {
+        "title": "Tutorials Dojo - AWS Artifact Overview",
+        "url": "https://tutorialsdojo.com/aws-artifact/"
+      }
+    ]
+  },
+  "fsx": {
+    "name": "FSx",
+    "category": "storage",
+    "description": "Fully managed file systems for various workloads",
+    "details": "Amazon FSx provides fully managed file systems optimized for different workloads: Windows File Server, Lustre, NetApp ONTAP, and OpenZFS.",
+    "keyPoints": [
+      "FSx for Windows: SMB protocol, AD integration",
+      "FSx for Lustre: High-performance for HPC/ML",
+      "FSx for NetApp ONTAP: Enterprise features",
+      "FSx for OpenZFS: Linux workloads",
+      "Fully managed, highly available",
+      "Integrates with S3 for data repositories"
+    ],
+    "extendedDescription": "FSx for Windows File Server: native Windows compatibility, SMB protocol, Active Directory integration, supports Windows features (DFS, shadow copies, quotas). Multi-AZ for high availability. FSx for Lustre: parallel file system for compute-intensive workloads (ML training, HPC, video processing). Integrates with S3 - can present S3 data as a file system and write results back. Scratch (temporary) and Persistent (long-term) deployment options. FSx for NetApp ONTAP: enterprise-grade with snapshots, cloning, replication, compression, data tiering to S3. Multi-protocol (NFS, SMB, iSCSI). FSx for OpenZFS: powerful Linux file system with snapshots, compression, instant cloning. All FSx types are fully managed with automated backups, patching, and monitoring.",
+    "resources": [
+      {
+        "title": "FSx Documentation",
+        "url": "https://docs.aws.amazon.com/fsx/"
+      },
+      {
+        "title": "FSx for Windows File Server",
+        "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/"
+      },
+      {
+        "title": "FSx for Lustre",
+        "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/"
+      },
+      {
+        "title": "AWS re:Invent - FSx Deep Dive",
+        "url": "https://www.youtube.com/watch?v=iHUZ1JprSAk"
+      },
+      {
+        "title": "Tutorials Dojo - FSx Cheat Sheet",
+        "url": "https://tutorialsdojo.com/amazon-fsx/"
+      }
+    ]
+  },
+  "globalaccelerator": {
+    "name": "Global Accelerator",
+    "category": "cdn",
+    "description": "Network service that improves global application performance",
+    "details": "AWS Global Accelerator routes traffic through the AWS global network to improve availability and performance of your applications.",
+    "keyPoints": [
+      "Uses AWS global network instead of internet",
+      "Static anycast IP addresses",
+      "Instant regional failover",
+      "DDoS protection with Shield Standard",
+      "Health checks for endpoint monitoring",
+      "Improves performance by 60% for global users"
+    ],
+    "extendedDescription": "Global Accelerator provides two static anycast IP addresses that act as a fixed entry point to your application. Traffic enters the AWS network at the nearest edge location and travels over AWS's private global network (avoiding internet congestion) to your endpoints. Endpoint groups contain endpoints in one or more regions (ALB, NLB, EC2, Elastic IP). Traffic dials control the percentage of traffic to each endpoint group for blue/green deployments or gradual rollouts. Health checks automatically route away from unhealthy endpoints. Unlike CloudFront (content caching), Global Accelerator optimizes the network path for any TCP/UDP traffic. Ideal for: gaming, IoT, VoIP, HTTP non-cacheable content, and applications requiring static IPs or fast regional failover.",
+    "resources": [
+      {
+        "title": "Global Accelerator Documentation",
+        "url": "https://docs.aws.amazon.com/global-accelerator/"
+      },
+      {
+        "title": "Global Accelerator vs CloudFront",
+        "url": "https://aws.amazon.com/global-accelerator/faqs/"
+      },
+      {
+        "title": "Global Accelerator Pricing",
+        "url": "https://aws.amazon.com/global-accelerator/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Global Accelerator",
+        "url": "https://www.youtube.com/watch?v=s5VpjNYhqNg"
+      },
+      {
+        "title": "Tutorials Dojo - Global Accelerator",
+        "url": "https://tutorialsdojo.com/aws-global-accelerator/"
+      }
+    ]
+  },
+  "transitgateway": {
+    "name": "Transit Gateway",
+    "category": "networking",
+    "description": "Network hub for connecting VPCs and on-premises networks",
+    "details": "AWS Transit Gateway acts as a cloud router, connecting VPCs and on-premises networks through a central hub.",
+    "keyPoints": [
+      "Hub-and-spoke network architecture",
+      "Connect thousands of VPCs and on-premises",
+      "Simplifies network topology",
+      "Supports inter-region peering",
+      "Route tables control traffic flow",
+      "Reduces complex VPC peering meshes"
+    ],
+    "extendedDescription": "Transit Gateway solves the N×(N-1)/2 VPC peering problem by providing a central hub. Attachments connect VPCs, VPN connections, Direct Connect gateways, and other Transit Gateways. Route tables (multiple per TGW) determine how traffic flows between attachments - enabling network segmentation (production vs development). Inter-region peering connects Transit Gateways across regions for global networks. Multicast support enables one-to-many communication. Network Manager provides a global view of your network across regions and on-premises. Transit Gateway Connect enables SD-WAN integration with GRE and BGP. Bandwidth: 50 Gbps per VPC attachment, supports ECMP for higher throughput to VPN/Direct Connect. Common patterns: shared services VPC, centralized egress, network segmentation.",
+    "resources": [
+      {
+        "title": "Transit Gateway Documentation",
+        "url": "https://docs.aws.amazon.com/vpc/latest/tgw/"
+      },
+      {
+        "title": "Transit Gateway Best Practices",
+        "url": "https://docs.aws.amazon.com/vpc/latest/tgw/tgw-best-practices.html"
+      },
+      {
+        "title": "Transit Gateway Pricing",
+        "url": "https://aws.amazon.com/transit-gateway/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Advanced Networking",
+        "url": "https://www.youtube.com/watch?v=9Nikqn_02Oc"
+      },
+      {
+        "title": "Tutorials Dojo - Transit Gateway",
+        "url": "https://tutorialsdojo.com/aws-transit-gateway/"
+      }
+    ]
+  },
+  "dms": {
+    "name": "DMS",
+    "category": "database",
+    "description": "Database Migration Service - Migrate databases to AWS",
+    "details": "AWS Database Migration Service helps you migrate databases to AWS quickly and securely with minimal downtime.",
+    "keyPoints": [
+      "Supports homogeneous and heterogeneous migrations",
+      "Continuous replication for minimal downtime",
+      "Schema Conversion Tool for heterogeneous migrations",
+      "Supports all major database engines",
+      "Source database remains operational during migration",
+      "Pay only for compute resources used"
+    ],
+    "extendedDescription": "DMS supports migrations between: on-premises to AWS, AWS to AWS, and AWS to on-premises. Homogeneous migrations (same engine, e.g., Oracle to Oracle) are straightforward. Heterogeneous migrations (different engines, e.g., Oracle to Aurora PostgreSQL) require AWS Schema Conversion Tool (SCT) to convert schema and code objects. Replication instances run in VPC and connect to source/target databases. Migration types: Full Load (initial bulk copy), CDC (Change Data Capture for ongoing replication), or Full Load + CDC. Supports: Oracle, SQL Server, MySQL, PostgreSQL, MariaDB, MongoDB, SAP, Amazon S3, and more. Serverless option auto-scales capacity. Validation compares source and target data. Premigration assessment identifies potential issues. DMS is commonly used with Snowball for large-scale migrations.",
+    "resources": [
+      {
+        "title": "DMS Documentation",
+        "url": "https://docs.aws.amazon.com/dms/"
+      },
+      {
+        "title": "Schema Conversion Tool",
+        "url": "https://docs.aws.amazon.com/SchemaConversionTool/"
+      },
+      {
+        "title": "DMS Pricing",
+        "url": "https://aws.amazon.com/dms/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Database Migration",
+        "url": "https://www.youtube.com/watch?v=kJs9U4ys5FE"
+      },
+      {
+        "title": "Tutorials Dojo - DMS Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-database-migration-service/"
+      }
+    ]
+  },
+  "glue": {
+    "name": "Glue",
+    "category": "database",
+    "description": "Serverless data integration and ETL service",
+    "details": "AWS Glue is a serverless data integration service that makes it easy to discover, prepare, and combine data for analytics and machine learning.",
+    "keyPoints": [
+      "Serverless ETL (Extract, Transform, Load)",
+      "Data Catalog stores metadata",
+      "Crawlers auto-discover schema",
+      "Supports Spark and Python",
+      "Integrates with Athena, Redshift, EMR",
+      "Pay only for resources consumed"
+    ],
+    "extendedDescription": "Glue Data Catalog is a central metadata repository (like Hive metastore) that stores table definitions, schema, and partition information. Athena, Redshift Spectrum, and EMR can query the catalog directly. Crawlers automatically scan data sources (S3, RDS, DynamoDB, JDBC) and populate the catalog with schema information. Glue ETL jobs run Apache Spark under the hood, using either auto-generated PySpark code or custom scripts. Glue Studio provides visual ETL job authoring. Job bookmarks track processed data for incremental ETL. Glue DataBrew is a visual data preparation tool for cleaning and normalizing data without code. Glue Elastic Views combines data from multiple sources into materialized views. Development endpoints allow interactive ETL development in notebooks.",
+    "resources": [
+      {
+        "title": "Glue Documentation",
+        "url": "https://docs.aws.amazon.com/glue/"
+      },
+      {
+        "title": "Glue Data Catalog",
+        "url": "https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html"
+      },
+      {
+        "title": "Glue Pricing",
+        "url": "https://aws.amazon.com/glue/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Data Lakes with Glue",
+        "url": "https://www.youtube.com/watch?v=0oaRi6PaOvY"
+      },
+      {
+        "title": "Tutorials Dojo - Glue Cheat Sheet",
+        "url": "https://tutorialsdojo.com/aws-glue/"
+      }
+    ]
+  },
+  "appsync": {
+    "name": "AppSync",
+    "category": "compute",
+    "description": "Managed GraphQL API service",
+    "details": "AWS AppSync is a fully managed service that makes it easy to develop GraphQL APIs by handling connection management and real-time subscriptions.",
+    "keyPoints": [
+      "Managed GraphQL API service",
+      "Real-time data with subscriptions",
+      "Offline data synchronization",
+      "Multiple data sources (DynamoDB, Lambda, HTTP)",
+      "Built-in security with Cognito, IAM, API keys",
+      "Automatic schema generation from data sources"
+    ],
+    "extendedDescription": "AppSync lets you build GraphQL APIs that securely access and combine data from DynamoDB, Lambda functions, RDS, OpenSearch, and HTTP endpoints. Define your schema using SDL (Schema Definition Language), then configure resolvers that map GraphQL operations to data sources using VTL (Velocity Template Language) or JavaScript. Real-time subscriptions push data to clients over WebSocket when mutations occur. Conflict resolution strategies (Optimistic Concurrency, Automerge, Lambda) handle offline scenarios - clients can continue working offline and sync when reconnected. Caching reduces API latency and database load. Pipeline resolvers chain multiple data sources in a single operation. AppSync integrates with Amplify for client-side code generation and state management. Merged APIs combine multiple AppSync APIs into one endpoint.",
+    "resources": [
+      {
+        "title": "AppSync Documentation",
+        "url": "https://docs.aws.amazon.com/appsync/"
+      },
+      {
+        "title": "GraphQL Schema Design",
+        "url": "https://docs.aws.amazon.com/appsync/latest/devguide/designing-your-schema.html"
+      },
+      {
+        "title": "AppSync Pricing",
+        "url": "https://aws.amazon.com/appsync/pricing/"
+      },
+      {
+        "title": "AWS re:Invent - Building with AppSync",
+        "url": "https://www.youtube.com/watch?v=9-3wA_7MHpI"
+      },
+      {
+        "title": "Tutorials Dojo - AppSync Overview",
+        "url": "https://tutorialsdojo.com/aws-appsync/"
+      }
+    ]
+  },
+  "lightsail": {
+    "name": "Lightsail",
+    "category": "compute",
+    "description": "Simple virtual private servers for beginners",
+    "details": "Amazon Lightsail offers virtual servers, storage, databases, and networking at a low, predictable price - ideal for simpler workloads and users new to AWS.",
+    "keyPoints": [
+      "Simplified EC2 alternative",
+      "Predictable monthly pricing",
+      "Pre-configured application stacks",
+      "Includes storage, transfer, and DNS",
+      "Easy-to-use console",
+      "Good for WordPress, LAMP, Node.js apps"
+    ],
+    "extendedDescription": "Lightsail provides VPS instances with predictable pricing starting at $3.50/month. Unlike EC2's complex pricing, Lightsail bundles compute, storage, and data transfer into simple plans. Pre-configured blueprints include WordPress, Drupal, Joomla, Magento, LAMP, Node.js, and more - launches in under a minute. Lightsail also offers: managed databases (MySQL, PostgreSQL), object storage (S3-compatible), load balancers, static IPs, DNS management, CDN distributions, and container services. Snapshots enable easy backup and restoration. Networking is simplified but can connect to other AWS services via VPC peering. Lightsail is ideal for: small websites, blogs, development environments, and users learning AWS. When workloads grow complex, resources can be exported to EC2/RDS for more advanced configurations.",
+    "resources": [
+      {
+        "title": "Lightsail Documentation",
+        "url": "https://docs.aws.amazon.com/lightsail/"
+      },
+      {
+        "title": "Lightsail Pricing",
+        "url": "https://aws.amazon.com/lightsail/pricing/"
+      },
+      {
+        "title": "Lightsail vs EC2",
+        "url": "https://aws.amazon.com/lightsail/faq/"
+      },
+      {
+        "title": "AWS re:Invent - Lightsail Overview",
+        "url": "https://www.youtube.com/watch?v=29_LqYnomdg"
+      },
+      {
+        "title": "Tutorials Dojo - Lightsail Overview",
+        "url": "https://tutorialsdojo.com/amazon-lightsail/"
+      }
+    ]
   }
 }
