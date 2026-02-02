@@ -934,3 +934,31 @@
   - The heading colors use the lighter gradient color (colors.start) for better visibility on dark backgrounds
 - All tests pass (191 tests: 9 data + 58 canvas + 42 info panel + 11 lambda + 30 layout + 12 nodeWidths + 29 config)
 
+## Remove title box with buttons - replace with simple title
+
+- Updated index.html:
+  - Replaced `.controls` div containing h3 + 2 buttons with `.title-panel` div containing simple h1 "AWS Services"
+  - Removed Reset View and Focus Security/Network buttons
+- Updated src/main.ts:
+  - Removed DOM references to resetBtn and focusBtn elements
+  - Removed resetView() function
+  - Removed focusNetworking() function
+  - Removed setupControlListeners() function and its call in init()
+- Updated src/style.css:
+  - Renamed `.controls` to `.title-panel` in shared panel styles
+  - Simplified panel from full controls section to minimal title styling
+  - Removed all button styles (.controls button, :hover, :active, :last-child, :focus-visible)
+  - Updated responsive styles for .title-panel at 768px and 480px breakpoints
+  - Removed hover shadow effect (no longer needed for non-interactive panel)
+- Fixed pre-existing TypeScript build errors:
+  - `connectionMap` property was declared but never read - added public getConnectionMap() getter
+  - `fadeInAnimationId` property was declared but never read - added public isFadeInAnimating() method
+  - Changed `_connectionMap` and `_fadeInAnimationId` to remove underscore prefix for consistency
+- Gotchas discovered:
+  - TypeScript's `noUnusedLocals: true` flag catches class properties that are assigned but never read
+  - The underscore prefix convention (`_property`) doesn't suppress "unused" warnings for class properties in TypeScript
+  - Properties built for "future use" or "O(1) lookup" must either be used or exposed via getters to pass strict compilation
+  - When removing UI elements, remember to also remove the JavaScript event listeners and DOM references
+  - The PRD mentioned "3 buttons" but only 2 existed (Reset View, Focus Security/Network) - the Toggle Legend button was removed earlier
+- All tests pass (191 tests: 9 data + 58 canvas + 42 info panel + 11 lambda + 30 layout + 12 nodeWidths + 29 config)
+

@@ -30,7 +30,7 @@ export class CanvasRenderer {
 
   // Cached service data for performance
   private serviceEntries: [string, PositionedService][];
-  private _connectionMap: Map<string, Set<string>>; // Maps service key to connected service keys (for future O(1) lookup)
+  private connectionMap: Map<string, Set<string>>; // Maps service key to connected service keys
   private selectedService: string | null = null;
   private hoveredService: string | null = null;
   private isDragging = false;
@@ -64,7 +64,7 @@ export class CanvasRenderer {
   // Initial fade-in animation state
   private globalOpacity: number = 0;
   private fadeInStartTime: number = 0;
-  private _fadeInAnimationId: number | null = null; // Tracks active fade-in animation
+  private fadeInAnimationId: number | null = null; // Tracks active fade-in animation
 
   // Connection opacity animation state
   private connectionOpacities: Map<string, number> = new Map();
@@ -107,7 +107,7 @@ export class CanvasRenderer {
     this.sortedServiceKeys = this.buildSortedServiceKeys();
 
     // Build connection map for O(1) lookup during rendering
-    this._connectionMap = this.buildConnectionMap(connections);
+    this.connectionMap = this.buildConnectionMap(connections);
 
     // Initialize connection opacities
     this.initializeConnectionOpacities();
@@ -1287,5 +1287,19 @@ export class CanvasRenderer {
    */
   public getNodeWidths(): NodeWidthMap {
     return this.nodeWidths;
+  }
+
+  /**
+   * Gets the connection map for O(1) lookup of service relationships.
+   */
+  public getConnectionMap(): Map<string, Set<string>> {
+    return this.connectionMap;
+  }
+
+  /**
+   * Checks if the initial fade-in animation is still in progress.
+   */
+  public isFadeInAnimating(): boolean {
+    return this.fadeInAnimationId !== null;
   }
 }

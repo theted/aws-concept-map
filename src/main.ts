@@ -8,8 +8,6 @@ import type { PositionedService, PositionedServiceMap } from './types';
 // DOM elements
 const canvasElement = document.getElementById('canvas') as HTMLCanvasElement;
 const infoPanelElement = document.getElementById('infoPanel')!;
-const resetBtn = document.getElementById('resetBtn')!;
-const focusBtn = document.getElementById('focusBtn')!;
 
 // Canvas renderer and info panel
 let renderer: CanvasRenderer;
@@ -45,7 +43,6 @@ function init(): void {
   });
 
   renderer.setOnServiceClick(handleServiceClick);
-  setupControlListeners();
 }
 
 // Handle service click from canvas
@@ -57,25 +54,6 @@ function handleServiceClick(key: string, service: PositionedService): void {
     infoPanel.hide();
     renderer.selectService(null);
   }
-}
-
-// Reset view to initial state
-function resetView(): void {
-  renderer.resetView();
-  infoPanel.hide();
-  renderer.selectService(null);
-}
-
-// Focus on networking/security area (VPC)
-function focusNetworking(): void {
-  renderer.focusOnService('vpc');
-  infoPanel.show('vpc', layoutServices.vpc);
-}
-
-// Set up control button listeners
-function setupControlListeners(): void {
-  resetBtn.addEventListener('click', resetView);
-  focusBtn.addEventListener('click', focusNetworking);
 }
 
 // Start the application
