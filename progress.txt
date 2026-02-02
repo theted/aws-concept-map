@@ -721,3 +721,31 @@
   - URLs should use https:// and point to stable documentation pages that are less likely to change
 - All tests pass (162 tests: 9 data + 50 canvas + 49 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
 
+## Remove "learn more/show less" toggle functionality
+
+- Updated src/ui/InfoPanel.ts to always show extended content:
+  - Removed `isExpanded` state property (no longer needed)
+  - Removed `isExtendedContentVisible()` public method
+  - Removed `toggleExpanded()` public method
+  - Removed `hasExtendedContent()` private method
+  - Updated `render()` to always show extended content when service has extendedDescription or resources
+  - Removed "Learn more"/"Show less" button from HTML output
+  - Removed event listener for the toggle button in `attachEventListeners()`
+  - Simplified `show()` and `hide()` methods (no more isExpanded state reset)
+- Updated src/style.css:
+  - Removed `.learn-more-btn` styles (display, hover, active states)
+  - Removed `.learn-more-btn:focus-visible` from accessibility focus states
+  - Kept `.extended-content` styles for the always-visible extended section
+- Updated src/ui/InfoPanel.test.ts:
+  - Renamed "Learn More functionality" describe block to "Extended content (always visible)"
+  - Removed 10 tests related to toggle behavior (button visibility, click events, aria-expanded, state reset)
+  - Updated remaining 8 tests to verify extended content is always shown when available
+  - Updated XSS protection tests to remove `toggleExpanded()` calls (content now always visible)
+- Gotchas discovered:
+  - Removing state simplifies the component significantly - one less thing that can go wrong
+  - The `hasExtendedContent()` helper was only used for button visibility, so it can be inlined
+  - Test count decreased from 162 to 155 due to removed toggle-specific tests
+  - The fadeIn animation on `.extended-content` still works well for initial panel appearance
+  - Always showing extended content improves discoverability - users don't have to click to see resources
+- All tests pass (155 tests: 9 data + 50 canvas + 42 info panel + 11 lambda + 25 layout + 6 legend toggle + 12 nodeWidths)
+

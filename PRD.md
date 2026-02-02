@@ -59,7 +59,7 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Ensure good performance
 - [x] Add keyboard navigation - tab/arrow keys should navigate between "next/previous" service
 - [x] Add additional 'learn more' links in infopanel for all services - can be any useful external links (tutorials, best practices, blogs, youtube videos, etc.), not only AWS links. Every service should have at least total 3 links and at most 12.
-- [ ] Remove "learn more/show less" functionality - should be expanded by default and does not need this toggle.
+- [x] Remove "learn more/show less" functionality - should be expanded by default and does not need this toggle.
 - [ ] Add additional animations - transition opacity/color of relationships lines when selecting a service, a smooth fade-in animation for the network diagram upon initial page load. Additional animations may also be added.
 - [ ] There are a lot of things that are not stored in variables - for example colors, constants/configs - configs should be centralized, no magick numbers, constants, etc!
 - [ ] Revise services list - are there any services missing?

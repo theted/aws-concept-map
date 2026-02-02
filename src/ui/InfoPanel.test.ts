@@ -235,7 +235,6 @@ describe('InfoPanel', () => {
         extendedDescription: '<script>alert("xss")</script>',
       };
       infoPanel.show('malicious', maliciousService);
-      infoPanel.toggleExpanded();
       const extendedDesc = element.querySelector('.extended-description p');
       expect(extendedDesc?.innerHTML).toContain('&lt;script&gt;');
       expect(extendedDesc?.innerHTML).not.toContain('<script>');
@@ -252,7 +251,6 @@ describe('InfoPanel', () => {
         ],
       };
       infoPanel.show('malicious', maliciousService);
-      infoPanel.toggleExpanded();
       const link = element.querySelector('.resources a');
       // Title should be escaped
       expect(link?.innerHTML).toContain('&lt;script&gt;');
@@ -273,84 +271,33 @@ describe('InfoPanel', () => {
     });
   });
 
-  describe('Learn More functionality', () => {
-    it('should not show Learn More button when no extended content', () => {
+  describe('Extended content (always visible)', () => {
+    it('should not show extended content when no extended data', () => {
       infoPanel.show('ec2', testService);
-      const learnMoreBtn = element.querySelector('.learn-more-btn');
-      expect(learnMoreBtn).toBeNull();
-    });
-
-    it('should show Learn More button when service has extended description', () => {
-      infoPanel.show('s3', testServiceWithOnlyDescription);
-      const learnMoreBtn = element.querySelector('.learn-more-btn');
-      expect(learnMoreBtn).not.toBeNull();
-      expect(learnMoreBtn?.textContent).toBe('Learn more');
-    });
-
-    it('should show Learn More button when service has resources', () => {
-      infoPanel.show('vpc', testServiceWithOnlyResources);
-      const learnMoreBtn = element.querySelector('.learn-more-btn');
-      expect(learnMoreBtn).not.toBeNull();
-    });
-
-    it('should show Learn More button when service has both', () => {
-      infoPanel.show('lambda', testServiceWithExtended);
-      const learnMoreBtn = element.querySelector('.learn-more-btn');
-      expect(learnMoreBtn).not.toBeNull();
-    });
-
-    it('should start with extended content hidden', () => {
-      infoPanel.show('lambda', testServiceWithExtended);
-      expect(infoPanel.isExtendedContentVisible()).toBe(false);
       const extendedContent = element.querySelector('.extended-content');
       expect(extendedContent).toBeNull();
     });
 
-    it('should show extended content when Learn More is clicked', () => {
-      infoPanel.show('lambda', testServiceWithExtended);
-      const learnMoreBtn = element.querySelector('.learn-more-btn') as HTMLButtonElement;
-      learnMoreBtn.click();
-
-      expect(infoPanel.isExtendedContentVisible()).toBe(true);
+    it('should show extended content when service has extended description', () => {
+      infoPanel.show('s3', testServiceWithOnlyDescription);
       const extendedContent = element.querySelector('.extended-content');
       expect(extendedContent).not.toBeNull();
     });
 
-    it('should change button text to "Show less" when expanded', () => {
-      infoPanel.show('lambda', testServiceWithExtended);
-      const learnMoreBtn = element.querySelector('.learn-more-btn') as HTMLButtonElement;
-      learnMoreBtn.click();
-
-      const updatedBtn = element.querySelector('.learn-more-btn');
-      expect(updatedBtn?.textContent).toBe('Show less');
-    });
-
-    it('should set aria-expanded correctly', () => {
-      infoPanel.show('lambda', testServiceWithExtended);
-      let learnMoreBtn = element.querySelector('.learn-more-btn');
-      expect(learnMoreBtn?.getAttribute('aria-expanded')).toBe('false');
-
-      (learnMoreBtn as HTMLButtonElement).click();
-
-      learnMoreBtn = element.querySelector('.learn-more-btn');
-      expect(learnMoreBtn?.getAttribute('aria-expanded')).toBe('true');
-    });
-
-    it('should hide extended content when Show less is clicked', () => {
-      infoPanel.show('lambda', testServiceWithExtended);
-      infoPanel.toggleExpanded(); // expand
-
-      const showLessBtn = element.querySelector('.learn-more-btn') as HTMLButtonElement;
-      showLessBtn.click(); // collapse
-
-      expect(infoPanel.isExtendedContentVisible()).toBe(false);
+    it('should show extended content when service has resources', () => {
+      infoPanel.show('vpc', testServiceWithOnlyResources);
       const extendedContent = element.querySelector('.extended-content');
-      expect(extendedContent).toBeNull();
+      expect(extendedContent).not.toBeNull();
     });
 
-    it('should render extended description when expanded', () => {
+    it('should show extended content when service has both description and resources', () => {
       infoPanel.show('lambda', testServiceWithExtended);
-      infoPanel.toggleExpanded();
+      const extendedContent = element.querySelector('.extended-content');
+      expect(extendedContent).not.toBeNull();
+    });
+
+    it('should render extended description', () => {
+      infoPanel.show('lambda', testServiceWithExtended);
 
       const extendedDesc = element.querySelector('.extended-description');
       expect(extendedDesc).not.toBeNull();
@@ -358,9 +305,8 @@ describe('InfoPanel', () => {
       expect(extendedDesc?.querySelector('p')?.textContent).toContain('200 AWS services');
     });
 
-    it('should render resources as links when expanded', () => {
+    it('should render resources as links', () => {
       infoPanel.show('lambda', testServiceWithExtended);
-      infoPanel.toggleExpanded();
 
       const resources = element.querySelector('.resources');
       expect(resources).not.toBeNull();
@@ -378,7 +324,6 @@ describe('InfoPanel', () => {
 
     it('should only show extended description when resources are not provided', () => {
       infoPanel.show('s3', testServiceWithOnlyDescription);
-      infoPanel.toggleExpanded();
 
       const extendedDesc = element.querySelector('.extended-description');
       const resources = element.querySelector('.resources');
@@ -389,32 +334,12 @@ describe('InfoPanel', () => {
 
     it('should only show resources when extended description is not provided', () => {
       infoPanel.show('vpc', testServiceWithOnlyResources);
-      infoPanel.toggleExpanded();
 
       const extendedDesc = element.querySelector('.extended-description');
       const resources = element.querySelector('.resources');
 
       expect(extendedDesc).toBeNull();
       expect(resources).not.toBeNull();
-    });
-
-    it('should reset expanded state when showing a different service', () => {
-      infoPanel.show('lambda', testServiceWithExtended);
-      infoPanel.toggleExpanded();
-      expect(infoPanel.isExtendedContentVisible()).toBe(true);
-
-      infoPanel.show('s3', testServiceWithOnlyDescription);
-      expect(infoPanel.isExtendedContentVisible()).toBe(false);
-    });
-
-    it('should reset expanded state when hiding', () => {
-      infoPanel.show('lambda', testServiceWithExtended);
-      infoPanel.toggleExpanded();
-      expect(infoPanel.isExtendedContentVisible()).toBe(true);
-
-      infoPanel.hide();
-      infoPanel.show('lambda', testServiceWithExtended);
-      expect(infoPanel.isExtendedContentVisible()).toBe(false);
     });
   });
 
