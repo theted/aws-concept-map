@@ -142,7 +142,7 @@ export const ANIMATION = {
   /** Duration for centerViewOnContent and focusOnService */
   viewTransitionDuration: 400,
   /** Duration for momentum/inertia after drag release */
-  momentumDuration: 600,
+  momentumDuration: 900,
   /** Default animation duration for generic transitions */
   defaultDuration: 300,
 } as const;
@@ -208,7 +208,7 @@ export const NODE_BORDER = {
  */
 export const ZOOM = {
   /** Minimum zoom level (zoomed out) */
-  min: 0.3,
+  min: 0.4,
   /** Maximum zoom level (zoomed in) */
   max: 3,
   /** Maximum zoom level when fitting content to view */

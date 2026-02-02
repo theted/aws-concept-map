@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { CanvasRenderer } from './CanvasRenderer';
+import { ZOOM } from '../config';
 import type { PositionedServiceMap, Connection } from '../types';
 
 // RAF callback queue for manual mocking
@@ -204,7 +205,7 @@ describe('CanvasRenderer', () => {
       const state = renderer.getState();
       // Initial state should be centered on content, not (0,0)
       // Scale should be within valid bounds
-      expect(state.scale).toBeGreaterThanOrEqual(0.3);
+      expect(state.scale).toBeGreaterThanOrEqual(ZOOM.min);
       expect(state.scale).toBeLessThanOrEqual(3);
       // Translation should be set to center content
       expect(typeof state.translateX).toBe('number');
@@ -281,7 +282,7 @@ describe('CanvasRenderer', () => {
       expect(state.translateX).not.toBe(1000);
       expect(state.translateY).not.toBe(1000);
       // Scale should be within valid range
-      expect(state.scale).toBeGreaterThanOrEqual(0.3);
+      expect(state.scale).toBeGreaterThanOrEqual(ZOOM.min);
       expect(state.scale).toBeLessThanOrEqual(3);
     });
 
