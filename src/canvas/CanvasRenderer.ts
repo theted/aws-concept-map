@@ -13,7 +13,6 @@ import {
   ZOOM,
   INTERACTION,
   MOMENTUM,
-  LAYOUT,
 } from '../config';
 
 export interface CanvasState {
@@ -142,27 +141,35 @@ export class CanvasRenderer {
 
   /**
    * Initializes node scales and animation start times for staggered zoom-in.
-   * Nodes are sorted by their position (top-left to bottom-right) to create
-   * a wave-like effect across the canvas.
+   * Nodes are staggered by diagonal position (top-left to bottom-right) to
+   * create a wave-like reveal across the canvas.
    */
   private initializeNodeScales(): void {
-    // Sort services by position to create a wave effect (top-to-bottom, left-to-right)
-    const sortedEntries = [...this.serviceEntries].sort((a, b) => {
-      const [, serviceA] = a;
-      const [, serviceB] = b;
-      // Sort by category first (using category position), then by Y, then by X
-      const categoryOrder = serviceA.category.localeCompare(serviceB.category);
-      if (categoryOrder !== 0) return categoryOrder;
-      const yDiff = serviceA.y - serviceB.y;
-      if (Math.abs(yDiff) > LAYOUT.nodeHeight) return yDiff;
-      return serviceA.x - serviceB.x;
-    });
+    const bounds = this.serviceEntries.reduce(
+      (acc, [, service]) => ({
+        minX: Math.min(acc.minX, service.x),
+        maxX: Math.max(acc.maxX, service.x),
+        minY: Math.min(acc.minY, service.y),
+        maxY: Math.max(acc.maxY, service.y),
+      }),
+      {
+        minX: Number.POSITIVE_INFINITY,
+        maxX: Number.NEGATIVE_INFINITY,
+        minY: Number.POSITIVE_INFINITY,
+        maxY: Number.NEGATIVE_INFINITY,
+      }
+    );
 
-    // Initialize each node with starting scale and staggered animation times
-    sortedEntries.forEach(([key], index) => {
+    const spanX = Math.max(bounds.maxX - bounds.minX, 1);
+    const spanY = Math.max(bounds.maxY - bounds.minY, 1);
+
+    // Initialize each node with starting scale and diagonal staggered animation times
+    this.serviceEntries.forEach(([key, service]) => {
       this.nodeScales.set(key, ANIMATION.nodeZoomInStartScale);
-      // Calculate staggered start time based on index
-      const startDelay = index * ANIMATION.nodeZoomInStaggerDelay;
+      const normalizedX = (service.x - bounds.minX) / spanX;
+      const normalizedY = (service.y - bounds.minY) / spanY;
+      const diagonalProgress = Math.min((normalizedX + normalizedY) / 2, 1);
+      const startDelay = diagonalProgress * ANIMATION.nodeZoomInMaxDelay;
       this.nodeAnimationStartTimes.set(key, startDelay);
     });
   }
@@ -1222,10 +1229,15 @@ export class CanvasRenderer {
     this.ctx.globalAlpha = this.globalOpacity * nodeScale;
 
     // Draw shadow (scaled)
+    const introShadowBoost = nodeScale < 1
+      ? 1 + (1 - nodeScale) * ANIMATION.nodeZoomInShadowBoost
+      : 1;
     this.ctx.shadowColor = COLORS.shadow;
-    this.ctx.shadowBlur = (isActive ? NODE_SHADOW.blurActive : NODE_SHADOW.blurNormal) * nodeScale;
+    this.ctx.shadowBlur = (isActive ? NODE_SHADOW.blurActive : NODE_SHADOW.blurNormal) *
+      nodeScale * introShadowBoost;
     this.ctx.shadowOffsetX = 0;
-    this.ctx.shadowOffsetY = (isActive ? NODE_SHADOW.offsetYActive : NODE_SHADOW.offsetYNormal) * nodeScale;
+    this.ctx.shadowOffsetY = (isActive ? NODE_SHADOW.offsetYActive : NODE_SHADOW.offsetYNormal) *
+      nodeScale * introShadowBoost;
 
     // Create gradient (using scaled dimensions)
     const colors = CATEGORY_COLORS[service.category] || COLORS.fallbackCategory;

@@ -94,7 +94,7 @@ describe('Configuration', () => {
     it('should have positive durations', () => {
       expect(ANIMATION.fadeInDuration).toBeGreaterThan(0);
       expect(ANIMATION.nodeZoomInDuration).toBeGreaterThan(0);
-      expect(ANIMATION.nodeZoomInStaggerDelay).toBeGreaterThan(0);
+      expect(ANIMATION.nodeZoomInMaxDelay).toBeGreaterThan(0);
       expect(ANIMATION.connectionTransitionDuration).toBeGreaterThan(0);
       expect(ANIMATION.wheelZoomDuration).toBeGreaterThan(0);
       expect(ANIMATION.keyboardZoomDuration).toBeGreaterThan(0);
@@ -107,6 +107,10 @@ describe('Configuration', () => {
     it('should have valid node zoom-in start scale', () => {
       expect(ANIMATION.nodeZoomInStartScale).toBeGreaterThan(0);
       expect(ANIMATION.nodeZoomInStartScale).toBeLessThan(1);
+    });
+
+    it('should have valid node zoom-in shadow boost', () => {
+      expect(ANIMATION.nodeZoomInShadowBoost).toBeGreaterThan(0);
     });
   });
 

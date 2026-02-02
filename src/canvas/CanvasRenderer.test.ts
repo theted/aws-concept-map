@@ -945,8 +945,8 @@ describe('CanvasRenderer animations', () => {
     // Fade-in animation should be running
     expect(rafCallbacks.size).toBeGreaterThan(0);
 
-    // Advance time partially through fade-in (800ms duration)
-    advanceMockTime(400);
+    // Advance time partially through fade-in (200ms duration)
+    advanceMockTime(100);
 
     // globalAlpha should have been set to values less than 1 during fade-in
     expect(alphaValues.length).toBeGreaterThan(0);

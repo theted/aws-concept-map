@@ -122,13 +122,15 @@ export const NODE_WIDTH_CONFIG = {
  */
 export const ANIMATION = {
   /** Duration for initial canvas fade-in effect */
-  fadeInDuration: 800,
+  fadeInDuration: 200,
   /** Duration for each node's zoom-in animation */
-  nodeZoomInDuration: 500,
-  /** Delay between each node's zoom-in start (stagger effect) */
-  nodeZoomInStaggerDelay: 25,
+  nodeZoomInDuration: 125,
+  /** Max delay between earliest and latest node zoom-in start (diagonal wave) */
+  nodeZoomInMaxDelay: 200,
   /** Initial scale for nodes before zoom-in animation */
   nodeZoomInStartScale: 0.3,
+  /** Extra shadow boost during initial node zoom-in */
+  nodeZoomInShadowBoost: 0.35,
   /** Duration for connection opacity transitions */
   connectionTransitionDuration: 300,
   /** Duration for wheel/scroll zoom animations */
