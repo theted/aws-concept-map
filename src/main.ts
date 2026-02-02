@@ -49,7 +49,7 @@ function init(): void {
 function handleServiceClick(key: string, service: PositionedService): void {
   if (key && service.name) {
     infoPanel.show(key, service);
-    renderer.selectService(key);
+    renderer.focusOnService(key);
   } else {
     infoPanel.hide();
     renderer.selectService(null);
