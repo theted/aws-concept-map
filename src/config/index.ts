@@ -13,25 +13,25 @@
  */
 export const COLORS = {
   primary: {
-    base: '#14B8A6',      // Teal-500
-    light: '#2DD4BF',     // Teal-400
-    dark: '#0D9488',      // Teal-600
+    base: "#14B8A6", // Teal-500
+    light: "#2DD4BF", // Teal-400
+    dark: "#0D9488", // Teal-600
   },
   /** RGB values for use in rgba() functions */
-  primaryRGB: '20, 184, 166',
+  primaryRGB: "20, 184, 166",
 
   /** Node text color */
-  text: '#ffffff',
+  text: "#ffffff",
   /** Node border colors */
   border: {
-    selected: '#ffffff',
-    hovered: 'rgba(255, 255, 255, 0.6)',
+    selected: "#ffffff",
+    hovered: "rgba(255, 255, 255, 0.6)",
   },
   /** Shadow color for nodes */
-  shadow: 'rgba(0, 0, 0, 0.3)',
+  shadow: "rgba(0, 0, 0, 0.3)",
 
   /** Fallback category color for unknown categories */
-  fallbackCategory: { start: '#666', end: '#444' },
+  fallbackCategory: { start: "#666", end: "#444" },
 } as const;
 
 /**
@@ -39,16 +39,16 @@ export const COLORS = {
  * Each category has a start (lighter) and end (darker) color for gradients.
  */
 export const CATEGORY_COLORS: Record<string, { start: string; end: string }> = {
-  compute: { start: '#FF9900', end: '#FF6600' },
-  storage: { start: '#569A31', end: '#3E7B1F' },
-  database: { start: '#2E5C8A', end: '#1A3A5C' },
-  networking: { start: '#8B5CF6', end: '#6D28D9' },
-  security: { start: '#DC2626', end: '#991B1B' },
-  management: { start: '#0891B2', end: '#0E7490' },
-  cost: { start: '#F59E0B', end: '#D97706' },
-  messaging: { start: '#EC4899', end: '#BE185D' },
-  cdn: { start: '#14B8A6', end: '#0D9488' },
-  devtools: { start: '#3B82F6', end: '#1D4ED8' },
+  compute: { start: "#FF9900", end: "#FF6600" },
+  storage: { start: "#569A31", end: "#3E7B1F" },
+  database: { start: "#2E5C8A", end: "#1A3A5C" },
+  networking: { start: "#8B5CF6", end: "#6D28D9" },
+  security: { start: "#DC2626", end: "#991B1B" },
+  management: { start: "#0891B2", end: "#0E7490" },
+  cost: { start: "#F59E0B", end: "#D97706" },
+  messaging: { start: "#EC4899", end: "#BE185D" },
+  cdn: { start: "#14B8A6", end: "#0D9488" },
+  devtools: { start: "#3B82F6", end: "#1D4ED8" },
 };
 
 // =============================================================================
@@ -60,9 +60,10 @@ export const CATEGORY_COLORS: Record<string, { start: string; end: string }> = {
  */
 export const TYPOGRAPHY = {
   /** Main font family with fallbacks */
-  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  fontFamily:
+    'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   /** Font weight for node labels */
-  fontWeight: '600',
+  fontWeight: "600",
   /** Font size for node labels (pixels) */
   fontSize: 13,
   /** Complete font string for canvas context */
@@ -71,7 +72,7 @@ export const TYPOGRAPHY = {
   },
   /** Category heading configuration */
   categoryHeading: {
-    fontWeight: '700',
+    fontWeight: "700",
     fontSize: 16,
     get font(): string {
       return `${this.fontWeight} ${this.fontSize}px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
@@ -122,17 +123,17 @@ export const NODE_WIDTH_CONFIG = {
  */
 export const ANIMATION = {
   /** Duration for initial canvas fade-in effect */
-  fadeInDuration: 200,
+  fadeInDuration: 3000,
   /** Duration for each node's zoom-in animation */
-  nodeZoomInDuration: 125,
+  nodeZoomInDuration: 225,
   /** Max delay between earliest and latest node zoom-in start (diagonal wave) */
-  nodeZoomInMaxDelay: 200,
+  nodeZoomInMaxDelay: 500,
   /** Initial scale for nodes before zoom-in animation */
   nodeZoomInStartScale: 0.3,
   /** Extra shadow boost during initial node zoom-in */
   nodeZoomInShadowBoost: 0.35,
   /** Duration for connection opacity transitions */
-  connectionTransitionDuration: 300,
+  connectionTransitionDuration: 500,
   /** Duration for wheel/scroll zoom animations */
   wheelZoomDuration: 120,
   /** Duration for keyboard zoom (+/-) animations */

@@ -62,7 +62,7 @@ The IAM user/role used for deployment needs these permissions:
 
 ```bash
 # Set your AWS region
-export AWS_REGION=eu-north-1
+export AWS_REGION=eu-west-1
 
 # Create the ECR repository
 aws ecr create-repository \
@@ -139,6 +139,7 @@ The function URL will be output (format: `https://<id>.lambda-url.<region>.on.aw
 ## GitHub Actions Configuration
 
 The repository includes two workflows:
+
 - **CI** (`.github/workflows/ci.yml`): Runs on all pushes and PRs - tests, type checking, build verification
 - **Deploy** (`.github/workflows/deploy.yml`): Runs on main/master pushes - builds and deploys to Lambda
 
@@ -146,20 +147,20 @@ The repository includes two workflows:
 
 Add these secrets in your GitHub repository settings (Settings → Secrets and variables → Actions → Secrets):
 
-| Secret | Description |
-|--------|-------------|
-| `AWS_ACCESS_KEY_ID` | AWS access key for deployment |
+| Secret                  | Description                   |
+| ----------------------- | ----------------------------- |
+| `AWS_ACCESS_KEY_ID`     | AWS access key for deployment |
 | `AWS_SECRET_ACCESS_KEY` | AWS secret key for deployment |
 
 ### Optional Variables
 
 Add these variables in your GitHub repository settings (Settings → Secrets and variables → Actions → Variables):
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `AWS_REGION` | `eu-north-1` | AWS region for deployment |
-| `ECR_REPOSITORY` | `aws-services-concept-map` | ECR repository name |
-| `LAMBDA_FUNCTION_NAME` | `aws-services-concept-map` | Lambda function name |
+| Variable               | Default                    | Description               |
+| ---------------------- | -------------------------- | ------------------------- |
+| `AWS_REGION`           | `eu-west-1`                | AWS region for deployment |
+| `ECR_REPOSITORY`       | `aws-services-concept-map` | ECR repository name       |
+| `LAMBDA_FUNCTION_NAME` | `aws-services-concept-map` | Lambda function name      |
 
 ## Local Development
 
@@ -281,12 +282,14 @@ aws logs tail /aws/lambda/aws-services-concept-map --follow
 ```
 
 Common issues:
+
 - **Handler not found**: Ensure the handler is compiled to `handler.handler`
 - **Missing dist directory**: Verify the build stage copies files correctly
 
 ### Function URL returns 500
 
 1. Check that static files exist in the container:
+
    ```bash
    docker run --rm aws-services-concept-map:local ls -la /var/task/dist
    ```
@@ -312,6 +315,7 @@ Common issues:
 ## Estimated Costs
 
 For low-traffic usage (< 1M requests/month):
+
 - **Lambda**: Free tier covers 1M requests and 400,000 GB-seconds
 - **ECR**: ~$0.10/GB/month for image storage (image is ~50MB)
 - **Data Transfer**: First 100GB/month is free
