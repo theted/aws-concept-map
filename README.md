@@ -80,12 +80,9 @@ npm run test:run
 │   │   └── LayoutEngine.ts  # Non-overlapping layout algorithm
 │   └── ui/
 │       └── InfoPanel.ts     # Service info panel component
-├── lambda/
-│   └── handler.ts           # AWS Lambda handler for deployment
 ├── index.html               # HTML entry point
 ├── vite.config.ts           # Vite configuration
-├── tsconfig.json            # TypeScript configuration
-└── Dockerfile               # Container image for Lambda deployment
+└── tsconfig.json            # TypeScript configuration
 ```
 
 ## Architecture
@@ -178,12 +175,7 @@ The `InfoPanel` component displays service details:
 
 ## Deployment
 
-The application is designed to be deployed as an AWS Lambda function using container images. See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions including:
-
-- AWS infrastructure setup (ECR, Lambda, Function URL)
-- GitHub Actions CI/CD configuration
-- Local Docker testing
-- Manual deployment steps
+Static site on S3 + CloudFront at https://aws-concept-map.sundbergsolutions.se, deployed by GitHub Actions on every push to `master`. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Tech Stack
 
@@ -202,10 +194,6 @@ The application is designed to be deployed as an AWS Lambda function using conta
 | `npm run preview` | Preview production build |
 | `npm test` | Run tests in watch mode |
 | `npm run test:run` | Run tests once |
-| `npm run build:lambda` | Build Lambda handler |
-| `npm run build:all` | Build app and Lambda handler |
-| `npm run docker:build` | Build Docker image locally |
-| `npm run docker:run` | Run Docker container locally |
 
 ## License
 
