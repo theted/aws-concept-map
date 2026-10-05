@@ -1,0 +1,100 @@
+[
+  {
+    "id": "serverless-web-app",
+    "title": "Serverless web app",
+    "summary": "A static front end plus an API with no servers to manage — the classic modern starter architecture.",
+    "steps": [
+      { "service": "route53", "text": "Users resolve your domain (app.example.com) through Route 53, which points it at CloudFront with an alias record." },
+      { "service": "cloudfront", "text": "CloudFront serves the site from edge locations close to users and forwards /api calls to API Gateway." },
+      { "service": "s3", "text": "The single-page app's HTML, JS and images live in a private S3 bucket that only CloudFront may read (Origin Access Control)." },
+      { "service": "cognito", "links": [], "text": "Users sign in through a Cognito User Pool and receive a JWT to send with every API call." },
+      { "service": "apigateway", "links": ["cloudfront", "cognito"], "text": "API Gateway validates the Cognito token, applies throttling and invokes the backend." },
+      { "service": "lambda", "text": "Lambda runs the business logic per request — it scales to zero and you pay per invocation." },
+      { "service": "dynamodb", "text": "DynamoDB stores the data with millisecond reads at any scale; on-demand mode removes capacity planning." },
+      { "service": "cloudwatch", "links": ["lambda"], "text": "CloudWatch collects Lambda logs and metrics so you can alarm on errors and latency." }
+    ]
+  },
+  {
+    "id": "three-tier",
+    "title": "Classic three-tier app",
+    "summary": "Load balancer, auto-scaled servers and a managed database spread across Availability Zones.",
+    "steps": [
+      { "service": "route53", "text": "A Route 53 alias record points your domain at the load balancer." },
+      { "service": "elb", "text": "An Application Load Balancer in public subnets terminates HTTPS and spreads requests across several AZs." },
+      { "service": "ec2", "text": "Web and app servers run on EC2 in private subnets — unreachable directly from the internet." },
+      { "service": "securitygroup", "links": ["ec2"], "text": "Security groups chain the tiers: the app tier only accepts traffic from the load balancer, the database only from the app tier." },
+      { "service": "autoscaling", "links": ["ec2"], "text": "An Auto Scaling group adds instances under load and replaces unhealthy ones automatically." },
+      { "service": "rds", "links": ["ec2"], "text": "RDS Multi-AZ runs the relational database with a synchronous standby in a second AZ for failover." },
+      { "service": "elasticache", "text": "ElastiCache keeps hot reads and user sessions in memory to offload the database." },
+      { "service": "natgateway", "links": ["ec2"], "text": "A NAT Gateway lets private instances download patches without being reachable from outside." }
+    ]
+  },
+  {
+    "id": "event-driven",
+    "title": "Event-driven processing",
+    "summary": "Decouple producers from consumers so each piece scales and fails independently.",
+    "steps": [
+      { "service": "s3", "text": "A user uploads a file to S3." },
+      { "service": "eventbridge", "text": "S3 emits an \"Object Created\" event to EventBridge, where rules match on bucket and prefix." },
+      { "service": "sqs", "text": "SQS buffers the work so traffic spikes never overwhelm consumers; failed messages land in a dead-letter queue." },
+      { "service": "lambda", "text": "Lambda polls the queue in batches and scales the number of consumers automatically." },
+      { "service": "stepfunctions", "text": "Multi-step jobs run as a Step Functions workflow with retries, branching and waits — no glue code." },
+      { "service": "dynamodb", "text": "The workflow records results and job status in DynamoDB." },
+      { "service": "sns", "links": ["stepfunctions"], "text": "SNS notifies users and downstream systems when the job finishes." }
+    ]
+  },
+  {
+    "id": "data-lake",
+    "title": "Data lake & analytics",
+    "summary": "Stream raw data into S3, catalog it, then query it ad hoc or in a warehouse.",
+    "steps": [
+      { "service": "kinesis", "text": "Clickstream or IoT events stream into Kinesis Data Streams in real time." },
+      { "service": "s3", "text": "Kinesis Data Firehose lands the raw data in an S3 data lake, partitioned by date." },
+      { "service": "glue", "text": "Glue crawlers infer schemas into the Data Catalog; Glue jobs clean the data and convert it to Parquet." },
+      { "service": "athena", "text": "Athena runs ad-hoc SQL directly on S3 using the catalog — you pay per terabyte scanned." },
+      { "service": "redshift", "links": ["glue"], "text": "Curated data is loaded into Redshift for fast, repeated BI dashboards." },
+      { "service": "macie", "links": ["s3"], "text": "Macie scans the lake for personal data so it can be masked or locked down." }
+    ]
+  },
+  {
+    "id": "container-cicd",
+    "title": "Container CI/CD",
+    "summary": "From git push to a running container, with safe, gradual deployments.",
+    "steps": [
+      { "service": "codepipeline", "text": "A push to the main branch starts CodePipeline." },
+      { "service": "codebuild", "text": "CodeBuild runs the tests and builds a Docker image." },
+      { "service": "ecr", "text": "The image is pushed to ECR and scanned for known vulnerabilities." },
+      { "service": "codedeploy", "links": ["codepipeline"], "text": "CodeDeploy starts a blue/green deployment, shifting traffic to the new version gradually." },
+      { "service": "ecs", "links": ["codedeploy", "ecr"], "text": "ECS launches tasks from the new image and keeps the desired count healthy." },
+      { "service": "fargate", "text": "Tasks run on Fargate — no EC2 instances to patch or scale." },
+      { "service": "cloudwatch", "links": ["ecs"], "text": "CloudWatch alarms watch the new version and can trigger an automatic rollback." }
+    ]
+  },
+  {
+    "id": "hybrid-network",
+    "title": "Hybrid & multi-VPC network",
+    "summary": "Connect a data center to many VPCs through one hub instead of a mesh of links.",
+    "steps": [
+      { "service": "directconnect", "text": "A dedicated Direct Connect link carries steady, high-volume traffic from the data center." },
+      { "service": "vpngateway", "links": [], "text": "A Site-to-Site VPN over the internet adds an encrypted backup path that can be up in minutes." },
+      { "service": "transitgateway", "links": ["directconnect", "vpngateway"], "text": "Transit Gateway is the hub: on-premises links and every VPC attach once, and route tables decide who talks to whom." },
+      { "service": "vpc", "text": "Each workload gets its own VPC attached to the hub — isolated by default, connected on purpose." },
+      { "service": "subnet", "text": "Workloads sit in private subnets spread across Availability Zones." },
+      { "service": "nacl", "text": "Network ACLs add a stateless subnet-level filter on top of security groups." }
+    ]
+  },
+  {
+    "id": "security-baseline",
+    "title": "Account security baseline",
+    "summary": "Guardrails, audit trails and threat detection every AWS environment should start with.",
+    "steps": [
+      { "service": "organizations", "text": "Organizations groups accounts; Service Control Policies set guardrails no one in an account can exceed." },
+      { "service": "iam", "text": "IAM roles grant least-privilege, temporary access — no long-lived access keys." },
+      { "service": "cloudtrail", "links": ["organizations"], "text": "An organization trail records every API call in every account to a central S3 bucket." },
+      { "service": "config", "links": [], "text": "Config tracks how resources change over time and flags anything that breaks your rules." },
+      { "service": "guardduty", "links": ["cloudtrail"], "text": "GuardDuty analyzes CloudTrail, VPC Flow Logs and DNS logs for threats like crypto-mining or leaked keys." },
+      { "service": "eventbridge", "text": "Findings flow to EventBridge to alert the team or trigger automated remediation." },
+      { "service": "kms", "links": [], "text": "KMS keys encrypt data at rest across S3, EBS, RDS and more, with every key use logged." }
+    ]
+  }
+]

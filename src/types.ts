@@ -1,58 +1,81 @@
-export type ServiceCategory =
+/** Map zones. Each service belongs to exactly one, which decides its position and color. */
+export type CategoryId =
+  | 'edge'
+  | 'networking'
   | 'compute'
+  | 'integration'
   | 'storage'
   | 'database'
-  | 'networking'
+  | 'analytics'
   | 'security'
+  | 'governance'
   | 'management'
-  | 'cost'
-  | 'messaging'
-  | 'cdn'
-  | 'devtools';
+  | 'devtools'
+  | 'migration';
+
+/** What kind of interaction a relationship describes. */
+export type RelationType = 'network' | 'invoke' | 'data' | 'security' | 'ops';
 
 export interface Resource {
   title: string;
   url: string;
 }
 
-/**
- * Base service interface for raw service data (e.g., from JSON).
- * Positions (x/y) are optional as they are computed dynamically by LayoutEngine.
- */
 export interface Service {
   name: string;
-  category: ServiceCategory;
-  description: string;
-  details: string;
+  fullName: string;
+  /** Two-to-three word "what is it" shown on the map tile */
+  tagline: string;
+  category: CategoryId;
+  summary: string;
   keyPoints: string[];
-  x?: number;
-  y?: number;
-  extendedDescription?: string;
-  resources?: Resource[];
+  extendedDescription: string;
+  resources: Resource[];
 }
 
-/**
- * Service with computed positions. Used after LayoutEngine processes raw services.
- * The x/y coordinates are required as they've been computed.
- */
-export interface PositionedService extends Omit<Service, 'x' | 'y'> {
-  x: number;
-  y: number;
+export type ServiceMap = Readonly<Record<string, Service>>;
+
+/** Directed relationship that reads as a sentence: `${from} ${verb} ${to}` */
+export interface Connection {
+  from: string;
+  to: string;
+  type: RelationType;
+  verb: string;
 }
 
-export type ServiceMap = Record<string, Service>;
-export type PositionedServiceMap = Record<string, PositionedService>;
+export interface TourStep {
+  service: string;
+  text: string;
+  /** Services this step connects from on the map. Defaults to the previous step. */
+  links?: string[];
+}
 
-export type Connection = [string, string];
+export interface Tour {
+  id: string;
+  title: string;
+  summary: string;
+  steps: TourStep[];
+}
 
-/**
- * Category position information for drawing section headings.
- */
-export interface CategoryPosition {
-  category: ServiceCategory;
-  displayName: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+export interface TourPosition {
+  id: string;
+  /** Zero-based step index */
+  step: number;
+}
+
+export type ThemeName = 'light' | 'dark';
+
+export interface AppState {
+  selected: string | null;
+  /** Tile under the pointer or keyboard focus — used for previews */
+  hovered: string | null;
+  /** Edge emphasized from the panel (hovering a relationship row) */
+  focusedEdge: string | null;
+  query: string;
+  tour: TourPosition | null;
+  hiddenTypes: readonly RelationType[];
+  showAllEdges: boolean;
+  /** Small screens: panel opened manually to show the intro/tour list */
+  guideOpen: boolean;
+  theme: ThemeName;
 }

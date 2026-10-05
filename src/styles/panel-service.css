@@ -1,0 +1,94 @@
+/* Relationships */
+.rel-group + .rel-group {
+    margin-top: 12px;
+}
+
+.rel-group-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.rel-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    margin-left: -8px;
+    border-radius: var(--radius-sm);
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-muted);
+    transition: background var(--dur-fast);
+}
+
+.rel-row:hover,
+.rel-row:focus-visible {
+    background: color-mix(in srgb, var(--rel) 12%, transparent);
+}
+
+.rel-arrow {
+    flex: none;
+    font-weight: 700;
+    color: var(--rel);
+}
+
+.rel-other {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.rel-self {
+    color: var(--text-muted);
+}
+
+/* Chips, links, tours */
+.chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chip {
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    font-size: 12.5px;
+    font-weight: 500;
+    transition: background var(--dur-fast), border-color var(--dur-fast);
+}
+
+.chip:hover {
+    background: var(--surface-2);
+    border-color: var(--text-faint);
+}
+
+.links li + li {
+    margin-top: 2px;
+}
+
+.links a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 3px 0;
+    font-size: 13px;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.links a span {
+    font-size: 11px;
+    color: var(--text-faint);
+}
+
+.links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}

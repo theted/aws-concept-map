@@ -1008,3 +1008,25 @@
   - Scaling from center is achieved by using scaled halfWidth/halfHeight in position calculations
   - The animation runs concurrently with the global fade-in, creating a layered effect
 - All tests pass (198 tests: 9 data + 64 canvas + 42 info panel + 11 lambda + 30 layout + 12 nodeWidths + 30 config)
+
+## Redesign: architecture map, typed relationships, guided tours
+
+- Replaced the canvas renderer (CanvasRenderer, LayoutEngine, InfoPanel, nodeWidths, config/index) with a DOM + SVG UI:
+  - Map zones arranged like an architecture: request path down the center, security/governance and operations/delivery rails
+  - Tiles show name + short tagline; lines are drawn only for the hovered/selected service (or all, faintly, via a toggle)
+  - Edge geometry: each line leaves its tile toward its target (border intersection) with a gentle arc so A→B / B→A separate
+- Data model:
+  - services.json: new zone categories, `fullName`, `tagline`, `summary` (was `details`), `description` removed; RDS no longer doubles as Aurora
+  - connections.json: `{ from, to, type, verb }` — 5 relationship types, every service connected
+  - tours.json: 7 guided tours
+- State: tiny store + pure actions + `deriveMapView` (state → tile statuses + edges); URL hash router keeps `#service=` links working, adds `#tour=…&step=…`
+- Panel: intro (how to read the map, tours), service (relationships as sentences grouped by type, key points, deep dive, tours, links), tour (steps, progress, prev/next)
+- Header: search with `/` shortcut and ranked matches, theme toggle (no-flash bootstrap in index.html), Guide button below 1024px
+- Responsive via container queries: 3-column rails → 2 columns → 1 column; panel docks ≥1024px, bottom sheet below
+- Gotchas:
+  - Zones must not create stacking contexts, or the SVG (z 1) can't sit between zone backgrounds and tiles (z 2)
+  - Use `opacity` (not stroke-opacity) on paths so arrowhead markers fade with their line
+  - happy-dom doesn't decode `&gt;`/`&lt;` inside attributes; `esc()` leaves `>` alone (harmless) so edge ids like `a->b` round-trip
+  - Splitting CSS changes cascade order — responsive overrides must live next to (after) their base rules
+- 441 tests (data integrity, graph, search, tours, store, url, actions, derive, geometry, map view, panel view, dom utils)
+

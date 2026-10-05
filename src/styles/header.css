@@ -1,0 +1,169 @@
+/* Header: brand, search and actions */
+.app-header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    z-index: 10;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.brand-mark {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    border-radius: 9px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+}
+
+.brand-mark path {
+    fill: none;
+    stroke: var(--rel-network);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.brand-node--a { fill: var(--rel-data); }
+.brand-node--b { fill: var(--cat-compute); }
+.brand-node--c { fill: var(--rel-ops); }
+
+.brand-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.brand-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* Search */
+.search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    max-width: 420px;
+    margin-left: auto;
+}
+
+.search-icon {
+    position: absolute;
+    left: 11px;
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--text-faint);
+    stroke-width: 2;
+    stroke-linecap: round;
+    pointer-events: none;
+}
+
+.search input {
+    width: 100%;
+    height: 36px;
+    padding: 0 92px 0 34px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    outline: none;
+    transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+
+.search input::placeholder {
+    color: var(--text-faint);
+}
+
+.search input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.search input:focus {
+    border-color: var(--focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent);
+}
+
+.search-status {
+    position: absolute;
+    right: 34px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.search-kbd {
+    position: absolute;
+    right: 9px;
+    pointer-events: none;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+[data-theme='dark'] .icon-moon,
+[data-theme='light'] .icon-sun {
+    display: none;
+}
+
+.guide-btn {
+    display: none;
+}
+
+/* The panel isn't docked below this width, so the guide needs a way in. */
+@media (max-width: 1023px) {
+    .guide-btn {
+        display: inline-flex;
+    }
+}
+
+@media (max-width: 679px) {
+    .app-header {
+        flex-wrap: wrap;
+        gap: 10px 12px;
+        padding: 10px 14px;
+    }
+
+    .brand-sub {
+        display: none;
+    }
+
+    .search {
+        order: 3;
+        flex-basis: 100%;
+        max-width: none;
+    }
+
+    .header-actions {
+        margin-left: auto;
+    }
+
+    .search-kbd {
+        display: none;
+    }
+
+    .search input {
+        padding-right: 80px;
+    }
+
+    .search-status {
+        right: 12px;
+    }
+}

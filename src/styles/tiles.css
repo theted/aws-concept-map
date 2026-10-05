@@ -1,0 +1,130 @@
+/* Tiles */
+.tile {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1px;
+    width: 100%;
+    height: 100%;
+    min-height: 46px;
+    padding: 6px 8px 7px 12px;
+    text-align: left;
+    background: var(--tile);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    /* Keeps a revealed tile clear of the sticky toolbar */
+    scroll-margin: 80px 16px 16px;
+    transition:
+        opacity var(--dur) var(--ease),
+        background var(--dur-fast),
+        border-color var(--dur-fast),
+        box-shadow var(--dur) var(--ease);
+}
+
+.tile::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 9px;
+    bottom: 9px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--cat);
+}
+
+.tile-name {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+}
+
+.tile-tag {
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--text-muted);
+}
+
+.tile:hover {
+    background: var(--tile-hover);
+    border-color: var(--border-strong);
+}
+
+.tile.is-selected,
+.tile.is-preview {
+    background: color-mix(in srgb, var(--cat) 14%, var(--tile));
+    border-color: var(--cat);
+    box-shadow:
+        0 0 0 1px var(--cat),
+        0 8px 28px -8px color-mix(in srgb, var(--cat) 60%, transparent);
+}
+
+.tile.is-related {
+    background: color-mix(in srgb, var(--rel) 8%, var(--tile));
+    border-color: color-mix(in srgb, var(--rel) 75%, transparent);
+}
+
+/* Dim the content but keep a translucent backdrop, so lines read as passing behind tiles. */
+.tile.is-dimmed {
+    background: color-mix(in srgb, var(--tile) 72%, transparent);
+    border-color: color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+.tile > *,
+.tile::before {
+    transition: opacity var(--dur) var(--ease);
+}
+
+.tile.is-dimmed > *,
+.tile.is-dimmed::before {
+    opacity: var(--dim);
+}
+
+.tile.is-dimmed:hover > *,
+.tile.is-dimmed:focus-visible > * {
+    opacity: 0.8;
+}
+
+.tile.is-filtered {
+    opacity: 0.16;
+}
+
+.tile-step {
+    display: none;
+}
+
+.tile.has-step .tile-step {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 10.5px;
+    font-weight: 700;
+    background: var(--surface-3);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+}
+
+.tile.has-step.is-selected .tile-step {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+}
+
+.tile.has-step .tile-name {
+    padding-right: 18px;
+}
+
+/* The toolbar stops being sticky on small screens (layout.css), so less top margin is needed. */
+@container (max-width: 600px) {
+    .tile {
+        scroll-margin-top: 16px;
+    }
+}

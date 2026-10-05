@@ -1,0 +1,108 @@
+/*
+ * Design tokens. Color has two jobs and nothing else:
+ *  - categories tint zones and tiles (subtle),
+ *  - relationship types color the lines (vivid).
+ * The two palettes share hue families (network = violet, data = blue, security = rose,
+ * operate = green, triggers = amber) so a line's color hints at the kind of service it touches.
+ */
+:root {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+    --radius-sm: 8px;
+    --radius: 11px;
+    --radius-lg: 16px;
+    --panel-w: clamp(330px, 25vw, 420px);
+
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --dur-fast: 120ms;
+    --dur: 220ms;
+    --dur-slow: 480ms;
+
+    color-scheme: dark;
+    --bg: #0a0e1a;
+    --bg-glow-a: rgba(124, 58, 237, 0.08);
+    --bg-glow-b: rgba(14, 165, 233, 0.06);
+    --surface: #10162a;
+    --surface-2: #151c32;
+    --surface-3: #1c2440;
+    --tile: #131a2e;
+    --tile-hover: #19223a;
+    --border: rgba(148, 163, 184, 0.13);
+    --border-strong: rgba(148, 163, 184, 0.3);
+    --text: #e8ecf4;
+    --text-muted: #9ba7bd;
+    --text-faint: #6c7891;
+    --accent: #f1f4fa;
+    --accent-contrast: #0a0e1a;
+    --focus: #93c5fd;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 30px -8px rgba(0, 0, 0, 0.45);
+    --dim: 0.26;
+
+    --rel-network: #a78bfa;
+    --rel-invoke: #fbbf24;
+    --rel-data: #38bdf8;
+    --rel-security: #fb7185;
+    --rel-ops: #34d399;
+
+    --cat-edge: #c084fc;
+    --cat-networking: #a78bfa;
+    --cat-compute: #fb923c;
+    --cat-integration: #fbbf24;
+    --cat-storage: #38bdf8;
+    --cat-database: #60a5fa;
+    --cat-analytics: #22d3ee;
+    --cat-security: #fb7185;
+    --cat-governance: #f472b6;
+    --cat-management: #34d399;
+    --cat-devtools: #2dd4bf;
+    --cat-migration: #a3e635;
+}
+
+:root[data-theme='light'] {
+    color-scheme: light;
+    --bg: #f5f6fa;
+    --bg-glow-a: rgba(124, 58, 237, 0.05);
+    --bg-glow-b: rgba(14, 165, 233, 0.05);
+    --surface: #ffffff;
+    --surface-2: #f6f7fb;
+    --surface-3: #ffffff;
+    --tile: #ffffff;
+    --tile-hover: #f8f9fc;
+    --border: rgba(15, 23, 42, 0.1);
+    --border-strong: rgba(15, 23, 42, 0.22);
+    --text: #0f172a;
+    --text-muted: #4a5568;
+    --text-faint: #7a8599;
+    --accent: #0f172a;
+    --accent-contrast: #ffffff;
+    --focus: #2563eb;
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 10px 30px -10px rgba(15, 23, 42, 0.18);
+    --dim: 0.32;
+
+    --rel-network: #7c3aed;
+    --rel-invoke: #d97706;
+    --rel-data: #0284c7;
+    --rel-security: #e11d48;
+    --rel-ops: #059669;
+
+    --cat-edge: #9333ea;
+    --cat-networking: #7c3aed;
+    --cat-compute: #ea580c;
+    --cat-integration: #d97706;
+    --cat-storage: #0284c7;
+    --cat-database: #2563eb;
+    --cat-analytics: #0891b2;
+    --cat-security: #e11d48;
+    --cat-governance: #db2777;
+    --cat-management: #059669;
+    --cat-devtools: #0d9488;
+    --cat-migration: #65a30d;
+}
+
+/* One custom property per relationship type keeps the per-type rules to a single line each. */
+[data-relation='network'], .edge--network, .edge-label--network, .swatch--network, .rel-group[data-type='network'], .legend-chip[data-type='network'] { --rel: var(--rel-network); }
+[data-relation='invoke'], .edge--invoke, .edge-label--invoke, .swatch--invoke, .rel-group[data-type='invoke'], .legend-chip[data-type='invoke'] { --rel: var(--rel-invoke); }
+[data-relation='data'], .edge--data, .edge-label--data, .swatch--data, .rel-group[data-type='data'], .legend-chip[data-type='data'] { --rel: var(--rel-data); }
+[data-relation='security'], .edge--security, .edge-label--security, .swatch--security, .rel-group[data-type='security'], .legend-chip[data-type='security'] { --rel: var(--rel-security); }
+[data-relation='ops'], .edge--ops, .edge-label--ops, .swatch--ops, .rel-group[data-type='ops'], .legend-chip[data-type='ops'] { --rel: var(--rel-ops); }
+.edge--tour { --rel: var(--accent); }
