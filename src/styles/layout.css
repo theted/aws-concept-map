@@ -1,0 +1,97 @@
+/* App shell: header across the top, scrolling map, panel docked right (or a sheet on small screens). */
+.app {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--panel-w);
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100vh;
+    height: 100dvh;
+}
+
+/* Map area */
+.map-scroll {
+    grid-row: 2;
+    grid-column: 1;
+    overflow: hidden auto;
+    container-type: inline-size;
+    overscroll-behavior: contain;
+    background:
+        radial-gradient(60% 50% at 15% 0%, var(--bg-glow-a), transparent 70%),
+        radial-gradient(50% 50% at 90% 100%, var(--bg-glow-b), transparent 70%),
+        var(--bg);
+}
+
+.map-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding: 9px 20px;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+}
+
+#map-root:focus {
+    outline: none;
+}
+
+/* Panel placement */
+.panel {
+    grid-row: 2;
+    grid-column: 2;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+}
+
+/* Below the docking width the panel becomes a bottom sheet: the top of the map stays visible. */
+@media (max-width: 1023px) {
+    .app {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .panel {
+        position: fixed;
+        z-index: 30;
+        left: 50%;
+        bottom: 0;
+        width: min(760px, 100%);
+        max-height: min(62dvh, 680px);
+        border: 1px solid var(--border-strong);
+        border-bottom: 0;
+        border-radius: 18px 18px 0 0;
+        box-shadow: 0 -16px 40px -8px rgba(0, 0, 0, 0.45);
+        transform: translate(-50%, 105%);
+        visibility: hidden;
+        transition: transform var(--dur) var(--ease), visibility 0s linear var(--dur);
+    }
+
+    .panel-open .panel {
+        transform: translate(-50%, 0);
+        visibility: visible;
+        transition: transform var(--dur) var(--ease);
+    }
+
+    /* Room to scroll any tile above the sheet, even the last row. */
+    .panel-open .map {
+        padding-bottom: 66dvh;
+    }
+}
+
+@media (max-width: 679px) {
+    /* Vertical space is precious here; let the legend scroll away with the map. */
+    .map-toolbar {
+        position: static;
+        padding: 8px 14px;
+    }
+
+    .panel {
+        max-height: 66dvh;
+    }
+}

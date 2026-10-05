@@ -1,14 +1,15 @@
 # AWS services concept map
 
-Visual tool for visualizing and learning about additionalAWS services.
+Visual tool for visualizing and learning about AWS services and how they relate.
 
 ## Project description
 
 Tool for visualizing an assortment of AWS services. Intended to be used for learning purposes - specifically in preparation for the AWS Cloud Practitioner, Solutions Architect Associate, and Developer Associate certifications.
 
-- A network of AWS services is displayed on an interactive (movable/zoomable) canvas.
-- The network/graph shows the relationships between the services.
-- Clicking on a service reveals a short description (including the abbreviation), as well as an bullet point with list of features. In this view the user can also click 'Learn more' to see a more detailed description of the service, along with sources for more in-depth learning.
+- Services are laid out as an architecture map: the request path (front door → networking → compute → integration → data) runs top-down, with security/governance and operations/delivery as side rails.
+- Relationships are typed (network, triggers, data, security, operate) and directed, and read as sentences. They are shown on demand (hover/select) to keep the overview clean.
+- Clicking a service opens a panel with its tagline, summary, relationships, exam key points, a deep dive and further reading.
+- Guided tours walk through common architectures step by step.
 
 ## Tech stack
 
@@ -17,17 +18,17 @@ Tool for visualizing an assortment of AWS services. Intended to be used for lear
 - Minimal extra dependencies. Vanilla JS if feasible? External libraries may be used to speed up production and enhance the user experience. Vanilla CSS.
 - Build in Typescript, compile to JS in production. Live reloading in dev environment.
 - Prefer ES6 modules. Logic should be kept in separated, smaller files.
-- The overall network visualization is using the canvas HTML element (library to be decided).
+- The map is rendered with plain DOM (tiles) and an SVG overlay (relationship lines) — accessible, crisp and responsive. (Replaced the original canvas renderer.)
 - Vite as build tool.
 - Tests using Vitest.
 
 ## Deployment
 
-- Deployment as a simple node js AWS Lambda function, serving a compiled static version of the webpage. No DB, no API, no server, just a simple Lambda function, running in a docker container.
+- Static site on S3 + CloudFront (see DEPLOYMENT.md). No DB, no API, no server.
 
 ## Current state
 
-Project structure has been set up with Vite, TypeScript, and Vitest. The POC code has been refactored into modular TypeScript files with proper separation of concerns (types, data, main logic). Tests verify data integrity.
+Redesigned as a layered architecture map (DOM + SVG) with typed relationships, guided tours, search, light/dark themes and a responsive panel. See README.md for structure.
 
 ## Steps
 
@@ -66,3 +67,7 @@ Project structure has been set up with Vite, TypeScript, and Vitest. The POC cod
 - [x] Add title headings for the different sections, remove service categories legend
 - [x] Remove the title box with 3 buttons - replace with a simple title "AWS services"
 - [x] Add a staggered zoom-in animation - each service zooms in in a staggered animation upon initial page load. Service titles fades in as well.
+- [x] Redesign: architecture-layered map instead of category grid; DOM/SVG instead of canvas
+- [x] Typed, directed relationships that read as sentences; shown on demand
+- [x] Guided tours of common architectures
+- [x] Search, legend filters, light/dark theme, responsive bottom sheet

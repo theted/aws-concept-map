@@ -1,0 +1,178 @@
+/* Tour cards (intro) */
+.tour-list {
+    display: grid;
+    gap: 8px;
+}
+
+.tour-card {
+    display: grid;
+    gap: 3px;
+    width: 100%;
+    padding: 11px 13px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    text-align: left;
+    transition: border-color var(--dur-fast), background var(--dur-fast);
+}
+
+.tour-card:hover {
+    border-color: var(--border-strong);
+    background: var(--surface-3);
+}
+
+.tour-card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.tour-card-title {
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.tour-card-meta {
+    flex: none;
+    font-size: 11px;
+    color: var(--text-faint);
+}
+
+.tour-card-summary {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+/* Tour view */
+.progress {
+    height: 4px;
+    margin: 16px 0 6px;
+    border-radius: 999px;
+    background: var(--surface-3);
+    overflow: hidden;
+}
+
+.progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent);
+    transition: width var(--dur-slow) var(--ease);
+}
+
+.steps {
+    margin-top: 10px;
+}
+
+.step {
+    position: relative;
+    padding: 4px 0 10px 34px;
+}
+
+/* Thread connecting the step numbers */
+.step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 30px;
+    bottom: -2px;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--border);
+}
+
+.step.is-done::before {
+    background: var(--text-faint);
+}
+
+.step-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: -34px;
+    padding: 2px 0;
+    text-align: left;
+}
+
+.step-num {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex: none;
+    border-radius: 50%;
+    font-size: 11.5px;
+    font-weight: 700;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-muted);
+}
+
+.step-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.step-text {
+    margin-top: 2px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-faint);
+}
+
+.step.is-done .step-num {
+    background: var(--surface-3);
+    color: var(--text);
+}
+
+.step.is-current .step-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+}
+
+.step.is-current .step-name {
+    color: var(--text);
+}
+
+.step.is-current .step-text {
+    color: var(--text);
+    font-size: 13.5px;
+}
+
+.step-head:hover .step-name {
+    color: var(--text);
+}
+
+.text-btn {
+    margin-top: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.text-btn:hover {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.tour-nav {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 22px;
+    border-top: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.tour-nav .btn {
+    flex: 1;
+}

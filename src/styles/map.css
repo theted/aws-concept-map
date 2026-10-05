@@ -1,0 +1,179 @@
+/*
+ * Map grid: security/governance rail | request path | operations rail.
+ * Zones must not create stacking contexts, so the edge SVG (z 1) can sit between
+ * zone backgrounds and tiles (z 2).
+ */
+.map {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(160px, 0.85fr) minmax(0, 3.6fr) minmax(160px, 0.85fr);
+    gap: 14px;
+    padding: 8px 20px 32px;
+}
+
+.map-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.map-column > .zone:last-child {
+    flex: 1;
+}
+
+.column-caption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.entry-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 12px;
+    border-radius: 999px;
+    border: 1px dashed var(--border-strong);
+    color: var(--text-muted);
+}
+
+.entry-pill::after {
+    content: '↓';
+    font-size: 12px;
+    letter-spacing: 0;
+}
+
+.zone {
+    position: relative;
+    min-width: 0;
+    padding: 17px 10px 10px;
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--cat) 5%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--cat) 20%, var(--border));
+}
+
+/* Label sits on the zone's top border, like a group label in an architecture diagram. */
+.zone-header {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.zone-title,
+.zone-blurb {
+    padding: 0 6px;
+    background: var(--bg);
+    line-height: 18px;
+}
+
+.zone-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: none;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--cat) 65%, var(--text));
+}
+
+.zone-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 3px;
+    background: var(--cat);
+}
+
+.zone-blurb {
+    min-width: 0;
+    border-radius: 0 6px 6px 0;
+    margin-left: -6px;
+    font-size: 11.5px;
+    color: var(--text-faint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Rails are narrow: the label alone tells you what's inside. */
+.map-column:not([data-column='center']) .zone-blurb {
+    display: none;
+}
+
+.map-column:not([data-column='center']) .tile {
+    min-height: 40px;
+    padding-block: 5px;
+}
+
+.zone-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+    gap: 6px;
+}
+
+/* Wide screens: roomier tiles instead of more, narrower ones. */
+@container (min-width: 1360px) {
+    .zone-tiles {
+        grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
+    }
+}
+
+/* Medium: rails dissolve into a two-column grid, request path first. */
+@container (max-width: 960px) {
+    .map {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .map-column {
+        display: contents;
+    }
+
+    .column-caption {
+        display: none;
+    }
+
+    .zone[data-category='edge'],
+    .zone[data-category='networking'],
+    .zone[data-category='compute'] {
+        grid-column: 1 / -1;
+    }
+
+    .map-column:not([data-column='center']) .zone-blurb {
+        display: block;
+    }
+}
+
+@container (max-width: 600px) {
+    .map {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 12px 14px 32px;
+    }
+
+    .zone-tiles {
+        grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+    }
+
+    .zone-blurb,
+    .map-column:not([data-column='center']) .zone-blurb {
+        display: none;
+    }
+}
